@@ -2,7 +2,7 @@ import os
 import json
 from rich.console import Console
 from rich.table import Table
-from config.settings import OUTPUT_DIR
+import config.settings
 from agents.file_ingestion_agent import FileIngestionAgent
 from agents.step1_vsam_discovery import VSAMDiscoveryAgent
 from agents.step2_copybook_locator import CopyBookLocatorAgent
@@ -52,7 +52,7 @@ class PipelineOrchestrator:
             return []
 
         # Create output directory if it doesn't exist
-        out_dir = OUTPUT_DIR
+        out_dir = config.settings.OUTPUT_DIR
         os.makedirs(out_dir, exist_ok=True)
 
         results = []
