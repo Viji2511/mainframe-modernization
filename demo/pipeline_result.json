@@ -1,0 +1,524 @@
+{
+  "vsam_dataset": {
+    "dsn": "AWS.M2.CARDDEMO.ACCTDATA.VSAM.KSDS",
+    "vsam_type": "KSDS",
+    "record_length": 300,
+    "key_length": 11,
+    "key_offset": null,
+    "ci_size": 18432,
+    "record_count": 50,
+    "source_jcl": "ACCTFILE.jcl",
+    "notes": "Indexed, Erase, Shareoptions(2 3)"
+  },
+  "copybook": {
+    "filename": "CVACT01Y.cpy",
+    "dsn_match": "AWS.M2.CARDDEMO.ACCTDATA.VSAM.KSDS",
+    "fields": [
+      {
+        "level": 1,
+        "name": "ACCOUNT-RECORD",
+        "pic": null,
+        "cobol_type": "DISPLAY",
+        "occurs": null,
+        "redefines": null,
+        "offset": null,
+        "length": null,
+        "children": []
+      },
+      {
+        "level": 5,
+        "name": "ACCT-ID",
+        "pic": "9(11)",
+        "cobol_type": "DISPLAY",
+        "occurs": null,
+        "redefines": null,
+        "offset": null,
+        "length": null,
+        "children": []
+      },
+      {
+        "level": 5,
+        "name": "ACCT-ACTIVE-STATUS",
+        "pic": "X(01)",
+        "cobol_type": "DISPLAY",
+        "occurs": null,
+        "redefines": null,
+        "offset": null,
+        "length": null,
+        "children": []
+      },
+      {
+        "level": 5,
+        "name": "ACCT-CURR-BAL",
+        "pic": "S9(10)V99",
+        "cobol_type": "DISPLAY",
+        "occurs": null,
+        "redefines": null,
+        "offset": null,
+        "length": null,
+        "children": []
+      },
+      {
+        "level": 5,
+        "name": "ACCT-CREDIT-LIMIT",
+        "pic": "S9(10)V99",
+        "cobol_type": "DISPLAY",
+        "occurs": null,
+        "redefines": null,
+        "offset": null,
+        "length": null,
+        "children": []
+      },
+      {
+        "level": 5,
+        "name": "ACCT-CASH-CREDIT-LIMIT",
+        "pic": "S9(10)V99",
+        "cobol_type": "DISPLAY",
+        "occurs": null,
+        "redefines": null,
+        "offset": null,
+        "length": null,
+        "children": []
+      },
+      {
+        "level": 5,
+        "name": "ACCT-OPEN-DATE",
+        "pic": "X(10)",
+        "cobol_type": "DISPLAY",
+        "occurs": null,
+        "redefines": null,
+        "offset": null,
+        "length": null,
+        "children": []
+      },
+      {
+        "level": 5,
+        "name": "ACCT-EXPIRAION-DATE",
+        "pic": "X(10)",
+        "cobol_type": "DISPLAY",
+        "occurs": null,
+        "redefines": null,
+        "offset": null,
+        "length": null,
+        "children": []
+      },
+      {
+        "level": 5,
+        "name": "ACCT-REISSUE-DATE",
+        "pic": "X(10)",
+        "cobol_type": "DISPLAY",
+        "occurs": null,
+        "redefines": null,
+        "offset": null,
+        "length": null,
+        "children": []
+      },
+      {
+        "level": 5,
+        "name": "ACCT-CURR-CYC-CREDIT",
+        "pic": "S9(10)V99",
+        "cobol_type": "DISPLAY",
+        "occurs": null,
+        "redefines": null,
+        "offset": null,
+        "length": null,
+        "children": []
+      },
+      {
+        "level": 5,
+        "name": "ACCT-CURR-CYC-DEBIT",
+        "pic": "S9(10)V99",
+        "cobol_type": "DISPLAY",
+        "occurs": null,
+        "redefines": null,
+        "offset": null,
+        "length": null,
+        "children": []
+      },
+      {
+        "level": 5,
+        "name": "ACCT-ADDR-ZIP",
+        "pic": "X(10)",
+        "cobol_type": "DISPLAY",
+        "occurs": null,
+        "redefines": null,
+        "offset": null,
+        "length": null,
+        "children": []
+      },
+      {
+        "level": 5,
+        "name": "ACCT-GROUP-ID",
+        "pic": "X(10)",
+        "cobol_type": "DISPLAY",
+        "occurs": null,
+        "redefines": null,
+        "offset": null,
+        "length": null,
+        "children": []
+      },
+      {
+        "level": 5,
+        "name": "FILLER",
+        "pic": "X(178)",
+        "cobol_type": "DISPLAY",
+        "occurs": null,
+        "redefines": null,
+        "offset": null,
+        "length": null,
+        "children": []
+      }
+    ],
+    "raw_text": "      *****************************************************************\n      *    Data-structure for  account entity (RECLN 300)\n      *****************************************************************\n       01  ACCOUNT-RECORD.\n           05  ACCT-ID                           PIC 9(11).\n           05  ACCT-ACTIVE-STATUS                PIC X(01).\n           05  ACCT-CURR-BAL                     PIC S9(10)V99.\n           05  ACCT-CREDIT-LIMIT                 PIC S9(10)V99.\n           05  ACCT-CASH-CREDIT-LIMIT            PIC S9(10)V99.\n           05  ACCT-OPEN-DATE                    PIC X(10).\n           05  ACCT-EXPIRAION-DATE               PIC X(10). \n           05  ACCT-REISSUE-DATE                 PIC X(10).\n           05  ACCT-CURR-CYC-CREDIT              PIC S9(10)V99.\n           05  ACCT-CURR-CYC-DEBIT               PIC S9(10)V99.\n           05  ACCT-ADDR-ZIP                     PIC X(10).\n           05  ACCT-GROUP-ID                     PIC X(10).\n           05  FILLER                            PIC X(178).      \n      *\n      * Ver: CardDemo_v1.0-15-g27d6c6f-68 Date: 2022-07-19 23:15:59 CDT\n      *\n"
+  },
+  "source_analyses": [
+    {
+      "program_name": "CBACT01C",
+      "vsam_dsn": "AWS.M2.CARDDEMO.ACCTDATA.VSAM.KSDS",
+      "operations": [
+        "READ",
+        "WRITE"
+      ],
+      "key_fields": [
+        "ACCT-ID"
+      ],
+      "business_rules": [
+        {
+          "field_name": "ACCT-ID",
+          "usage": "key",
+          "description": "Used as the record key for the ACCTFILE-FILE",
+          "found_in": "CBACT01C"
+        },
+        {
+          "field_name": "ACCT-ACTIVE-STATUS",
+          "usage": "output",
+          "description": "Written to the OUT-ACCT-REC",
+          "found_in": "CBACT01C"
+        },
+        {
+          "field_name": "ACCT-CURR-BAL",
+          "usage": "output",
+          "description": "Written to the OUT-ACCT-REC",
+          "found_in": "CBACT01C"
+        },
+        {
+          "field_name": "ACCT-CREDIT-LIMIT",
+          "usage": "output",
+          "description": "Written to the OUT-ACCT-REC",
+          "found_in": "CBACT01C"
+        },
+        {
+          "field_name": "ACCT-CASH-CREDIT-LIMIT",
+          "usage": "output",
+          "description": "Written to the OUT-ACCT-REC",
+          "found_in": "CBACT01C"
+        },
+        {
+          "field_name": "ACCT-OPEN-DATE",
+          "usage": "output",
+          "description": "Written to the OUT-ACCT-REC",
+          "found_in": "CBACT01C"
+        },
+        {
+          "field_name": "ACCT-EXPIRAION-DATE",
+          "usage": "output",
+          "description": "Written to the OUT-ACCT-REC",
+          "found_in": "CBACT01C"
+        },
+        {
+          "field_name": "ACCT-REISSUE-DATE",
+          "usage": "output",
+          "description": "Written to the OUT-ACCT-REC and redefined in WS-ACCT-REISSUE-DATE",
+          "found_in": "CBACT01C"
+        },
+        {
+          "field_name": "ACCT-CURR-CYC-CREDIT",
+          "usage": "output",
+          "description": "Written to the OUT-ACCT-REC",
+          "found_in": "CBACT01C"
+        },
+        {
+          "field_name": "ACCT-CURR-CYC-DEBIT",
+          "usage": "output",
+          "description": "Written to the OUT-ACCT-REC",
+          "found_in": "CBACT01C"
+        },
+        {
+          "field_name": "ACCT-GROUP-ID",
+          "usage": "output",
+          "description": "Written to the OUT-ACCT-REC",
+          "found_in": "CBACT01C"
+        }
+      ],
+      "related_files": [
+        "OUTFILE",
+        "ARRYFILE",
+        "VBRCFILE"
+      ]
+    },
+    {
+      "program_name": "CBACT04C",
+      "vsam_dsn": "AWS.M2.CARDDEMO.ACCTDATA.VSAM.KSDS",
+      "operations": [
+        "READ",
+        "REWRITE",
+        "WRITE"
+      ],
+      "key_fields": [
+        "ACCT-ID",
+        "FD-TRANCAT-ACCT-ID",
+        "FD-XREF-ACCT-ID",
+        "FD-XREF-CARD-NUM",
+        "FD-DISCGRP-KEY"
+      ],
+      "business_rules": [
+        {
+          "field_name": "ACCT-ID",
+          "usage": "key",
+          "description": "Used as a record key for the ACCOUNT-FILE.",
+          "found_in": "CBACT04C"
+        },
+        {
+          "field_name": "FD-TRANCAT-ACCT-ID",
+          "usage": "key",
+          "description": "Used as a record key for the TCATBAL-FILE.",
+          "found_in": "CBACT04C"
+        },
+        {
+          "field_name": "FD-XREF-ACCT-ID",
+          "usage": "key",
+          "description": "Used as an alternate record key for the XREF-FILE.",
+          "found_in": "CBACT04C"
+        },
+        {
+          "field_name": "FD-XREF-CARD-NUM",
+          "usage": "key",
+          "description": "Used as a record key for the XREF-FILE.",
+          "found_in": "CBACT04C"
+        },
+        {
+          "field_name": "FD-DISCGRP-KEY",
+          "usage": "key",
+          "description": "Used as a record key for the DISCGRP-FILE.",
+          "found_in": "CBACT04C"
+        }
+      ],
+      "related_files": [
+        "TCATBALF",
+        "XREFFILE",
+        "ACCTFILE",
+        "DISCGRP",
+        "TRANSACT"
+      ]
+    },
+    {
+      "program_name": "CBEXPORT",
+      "vsam_dsn": "AWS.M2.CARDDEMO.ACCTDATA.VSAM.KSDS",
+      "operations": [
+        "READ",
+        "WRITE"
+      ],
+      "key_fields": [
+        "ACCT-ID",
+        "CUST-ID",
+        "XREF-CARD-NUM",
+        "TRAN-ID",
+        "CARD-NUM",
+        "EXPORT-SEQUENCE-NUM"
+      ],
+      "business_rules": [
+        {
+          "field_name": "ACCT-ACTIVE-STATUS",
+          "usage": "validation",
+          "description": "Validates the active status of an account.",
+          "found_in": "CBEXPORT"
+        },
+        {
+          "field_name": "ACCT-CURR-BAL",
+          "usage": "output",
+          "description": "Exports the current balance of an account.",
+          "found_in": "CBEXPORT"
+        },
+        {
+          "field_name": "ACCT-CREDIT-LIMIT",
+          "usage": "output",
+          "description": "Exports the credit limit of an account.",
+          "found_in": "CBEXPORT"
+        },
+        {
+          "field_name": "ACCT-OPEN-DATE",
+          "usage": "output",
+          "description": "Exports the opening date of an account.",
+          "found_in": "CBEXPORT"
+        },
+        {
+          "field_name": "ACCT-EXPIRAION-DATE",
+          "usage": "output",
+          "description": "Exports the expiration date of an account.",
+          "found_in": "CBEXPORT"
+        },
+        {
+          "field_name": "WS-CUSTOMER-STATUS",
+          "usage": "validation",
+          "description": "Checks the status of the customer file.",
+          "found_in": "CBEXPORT"
+        },
+        {
+          "field_name": "WS-ACCOUNT-STATUS",
+          "usage": "validation",
+          "description": "Checks the status of the account file.",
+          "found_in": "CBEXPORT"
+        }
+      ],
+      "related_files": [
+        "CUSTFILE",
+        "ACCTFILE",
+        "XREFFILE",
+        "TRANSACT",
+        "CARDFILE",
+        "EXPFILE"
+      ]
+    },
+    {
+      "program_name": "CBSTM03A",
+      "vsam_dsn": "AWS.M2.CARDDEMO.ACCTDATA.VSAM.KSDS",
+      "operations": [
+        "WRITE"
+      ],
+      "key_fields": [],
+      "business_rules": [
+        {
+          "field_name": "ACCT-ID",
+          "usage": "output",
+          "description": "Account ID is printed on the statement",
+          "found_in": "CBSTM03A"
+        },
+        {
+          "field_name": "ACCT-CURR-BAL",
+          "usage": "output",
+          "description": "Current balance is printed on the statement",
+          "found_in": "CBSTM03A"
+        }
+      ],
+      "related_files": [
+        "STMTFILE",
+        "HTMLFILE",
+        "TRNXFILE"
+      ]
+    },
+    {
+      "program_name": "CBSTM03B.CBL",
+      "vsam_dsn": "AWS.M2.CARDDEMO.ACCTDATA.VSAM.KSDS",
+      "operations": [
+        "READ",
+        "OPEN",
+        "CLOSE"
+      ],
+      "key_fields": [
+        "FD-TRNXS-ID",
+        "FD-XREF-CARD-NUM",
+        "FD-CUST-ID",
+        "FD-ACCT-ID"
+      ],
+      "business_rules": [
+        {
+          "field_name": "LK-M03B-OPER",
+          "usage": "validation",
+          "description": "Determines the operation to be performed on the file",
+          "found_in": "CBSTM03B.CBL"
+        },
+        {
+          "field_name": "LK-M03B-DD",
+          "usage": "lookup",
+          "description": "Determines which file to process",
+          "found_in": "CBSTM03B.CBL"
+        },
+        {
+          "field_name": "FD-ACCT-ID",
+          "usage": "key",
+          "description": "Primary key for the ACCT-FILE",
+          "found_in": "CBSTM03B.CBL"
+        }
+      ],
+      "related_files": [
+        "TRNXFILE",
+        "XREFFILE",
+        "CUSTFILE",
+        "ACCTFILE"
+      ]
+    },
+    {
+      "program_name": "CBTRN01C",
+      "vsam_dsn": "AWS.M2.CARDDEMO.ACCTDATA.VSAM.KSDS",
+      "operations": [
+        "READ"
+      ],
+      "key_fields": [
+        "FD-ACCT-ID"
+      ],
+      "business_rules": [
+        {
+          "field_name": "FD-ACCT-ID",
+          "usage": "key",
+          "description": "Used as the record key for the ACCOUNT-FILE",
+          "found_in": "CBTRN01C"
+        }
+      ],
+      "related_files": [
+        "CUSTOMER-FILE",
+        "XREF-FILE",
+        "CARD-FILE",
+        "TRANSACT-FILE"
+      ]
+    },
+    {
+      "program_name": "CBTRN02C",
+      "vsam_dsn": "AWS.M2.CARDDEMO.ACCTDATA.VSAM.KSDS",
+      "operations": [
+        "READ",
+        "REWRITE",
+        "WRITE"
+      ],
+      "key_fields": [
+        "FD-ACCT-ID",
+        "FD-TRANS-ID",
+        "FD-XREF-CARD-NUM",
+        "FD-TRAN-CAT-KEY"
+      ],
+      "business_rules": [
+        {
+          "field_name": "FD-ACCT-ID",
+          "usage": "key",
+          "description": "Used as the record key for the ACCOUNT-FILE.",
+          "found_in": "CBTRN02C"
+        },
+        {
+          "field_name": "FD-TRANS-ID",
+          "usage": "key",
+          "description": "Used as the record key for the TRANSACT-FILE.",
+          "found_in": "CBTRN02C"
+        },
+        {
+          "field_name": "FD-XREF-CARD-NUM",
+          "usage": "key",
+          "description": "Used as the record key for the XREF-FILE.",
+          "found_in": "CBTRN02C"
+        },
+        {
+          "field_name": "FD-TRAN-CAT-KEY",
+          "usage": "key",
+          "description": "Used as the record key for the TCATBAL-FILE.",
+          "found_in": "CBTRN02C"
+        }
+      ],
+      "related_files": [
+        "DALYTRAN",
+        "TRANSACT-FILE",
+        "XREF-FILE",
+        "DALYREJS-FILE",
+        "TCATBALF"
+      ]
+    }
+  ],
+  "ready_for_schema_design": true
+}

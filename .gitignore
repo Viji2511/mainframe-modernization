@@ -1,0 +1,34 @@
+# Dependency directories
+node_modules/
+.venv/
+env/
+venv/
+ENV/
+
+# Local configuration
+.env
+
+# Build outputs
+dist/
+build/
+bin/
+obj/
+
+# Mainframe Modernizer temporary directories
+uploads/
+outputs/
+jobs_state.json
+*.log
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
+
+# System files
+.DS_Store
+Thumbs.db
