@@ -14,20 +14,20 @@ const DDLPreview = ({ dsn, fields, dialect }) => {
   };
 
   return (
-    <div className="flex flex-col border-2 border-black rounded bg-white overflow-hidden h-[500px] shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+    <div className="flex flex-col border border-gray-200 rounded bg-white overflow-hidden h-[500px] shadow-sm rounded-lg">
       {/* Header controls */}
-      <div className="flex items-center justify-between border-b-2 border-black bg-white px-4 py-2">
+      <div className="flex items-center justify-between border-b border-gray-200 bg-white px-4 py-2">
         <div className="flex items-center gap-2">
           <span className="font-mono text-[9px] font-bold text-zinc-500 uppercase tracking-widest">SQL DIALECT:</span>
           <span className="font-mono text-xs font-bold text-blue-600 uppercase border-b border-blue-600">{dialect}</span>
         </div>
         <button
           onClick={handleCopy}
-          className="flex items-center gap-1.5 border-2 border-black bg-[#00ff4c] px-2.5 py-1 text-[10px] font-mono font-bold uppercase tracking-wider text-black hover:bg-[#00e676]"
+          className="flex items-center gap-1.5 border border-gray-200 bg-blue-600 text-white px-2.5 py-1 text-[10px] font-mono font-bold uppercase tracking-wider text-gray-900 hover:bg-blue-700"
         >
           {copied ? (
             <>
-              <Check size={10} className="text-black" /> Copied!
+              <Check size={10} className="text-gray-900" /> Copied!
             </>
           ) : (
             <>
@@ -43,7 +43,7 @@ const DDLPreview = ({ dsn, fields, dialect }) => {
       </div>
 
       {/* Database Warning note */}
-      <div className="border-t-2 border-black bg-[#f4f4f0] p-3 flex gap-2 items-start">
+      <div className="border-t border-gray-200 bg-[#f3f4f6] p-3 flex gap-2 items-start">
         <ShieldAlert size={14} className="text-yellow-600 shrink-0 mt-0.5" />
         <span className="text-[9px] text-zinc-600 font-sans font-medium uppercase tracking-wide leading-tight">
           This mapping is generated directly from source copybook variable storage formats. Confirm numeric bounds before production deployment.

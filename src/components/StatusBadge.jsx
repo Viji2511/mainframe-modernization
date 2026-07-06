@@ -8,7 +8,7 @@ const StatusBadge = ({ status }) => {
       case 'done':
         return {
           text: 'COMPLETED',
-          classes: 'bg-[#00ff4c]/20 text-green-700 border border-green-500/40 font-bold',
+          classes: 'bg-blue-600 text-white/20 text-green-700 border border-green-500/40 font-bold',
           icon: <CheckCircle2 size={10} className="shrink-0" />
         };
       case 'running':

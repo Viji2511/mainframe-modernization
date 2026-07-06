@@ -5,21 +5,21 @@ import { Terminal, Key, FileSymlink, AlertCircle } from 'lucide-react';
 const ProgramCard = ({ analysis }) => {
   const getOpBadgeColor = (op) => {
     const o = op.toUpperCase();
-    if (o.includes('READ')) return 'bg-blue-100 text-blue-900 border border-black font-bold';
-    if (o.includes('WRITE')) return 'bg-green-100 text-green-950 border border-black font-bold';
-    if (o.includes('REWRITE')) return 'bg-yellow-100 text-yellow-955 border border-black font-bold';
-    if (o.includes('DELETE')) return 'bg-red-100 text-red-700 border border-black font-bold';
-    return 'bg-zinc-100 text-zinc-800 border border-black font-bold';
+    if (o.includes('READ')) return 'bg-blue-100 text-blue-900 border border-gray-200 font-bold';
+    if (o.includes('WRITE')) return 'bg-green-100 text-green-950 border border-gray-200 font-bold';
+    if (o.includes('REWRITE')) return 'bg-yellow-100 text-yellow-955 border border-gray-200 font-bold';
+    if (o.includes('DELETE')) return 'bg-red-100 text-red-700 border border-gray-200 font-bold';
+    return 'bg-zinc-100 text-zinc-800 border border-gray-200 font-bold';
   };
 
   return (
-    <div className="border-2 border-black rounded bg-white p-4 flex flex-col justify-between hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+    <div className="border border-gray-200 rounded bg-white p-4 flex flex-col justify-between hover:shadow-sm rounded-lg transition-all shadow-sm rounded-lg">
       {/* Title & Ops Header */}
       <div>
-        <div className="flex items-center gap-2 border-b-2 border-black pb-2.5 mb-3 justify-between">
+        <div className="flex items-center gap-2 border-b border-gray-200 pb-2.5 mb-3 justify-between">
           <div className="flex items-center gap-1.5 min-w-0">
-            <Terminal size={12} className="text-black shrink-0" />
-            <span className="font-mono text-xs font-bold text-black truncate">
+            <Terminal size={12} className="text-gray-900 shrink-0" />
+            <span className="font-mono text-xs font-bold text-gray-900 truncate">
               {analysis.program_name}
             </span>
           </div>
@@ -38,10 +38,10 @@ const ProgramCard = ({ analysis }) => {
         </div>
 
         {/* Card Properties List */}
-        <div className="space-y-2 text-[10px] font-mono text-black">
+        <div className="space-y-2 text-[10px] font-mono text-gray-900">
           {/* Key Fields */}
           <div className="flex items-start gap-2">
-            <Key size={12} className="text-black shrink-0 mt-0.5" />
+            <Key size={12} className="text-gray-900 shrink-0 mt-0.5" />
             <div className="break-all font-medium">
               <span className="text-zinc-500 uppercase text-[9px] font-bold">Keys:</span>{' '}
               {analysis.key_fields.length > 0 ? (
@@ -54,7 +54,7 @@ const ProgramCard = ({ analysis }) => {
 
           {/* Related Files */}
           <div className="flex items-start gap-2">
-            <FileSymlink size={12} className="text-black shrink-0 mt-0.5" />
+            <FileSymlink size={12} className="text-gray-900 shrink-0 mt-0.5" />
             <div className="break-all font-medium">
               <span className="text-zinc-500 uppercase text-[9px] font-bold">Relations:</span>{' '}
               {analysis.related_files.length > 0 ? (

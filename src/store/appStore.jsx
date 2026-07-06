@@ -4,9 +4,13 @@ import PropTypes from 'prop-types';
 const AppStoreContext = createContext(null);
 
 export const AppProvider = ({ children }) => {
-  const [currentPage, setCurrentPage] = useState('upload');
+  const [currentPage, setCurrentPage] = useState(() => {
+    return localStorage.getItem('mainframe_ai_current_page') || 'upload';
+  });
   const [activeTab, setActiveTab] = useState('overview');
-  const [currentJobId, setCurrentJobId] = useState(null);
+  const [currentJobId, setCurrentJobId] = useState(() => {
+    return localStorage.getItem('mainframe_ai_current_job_id') || null;
+  });
   const [currentResult, setCurrentResult] = useState(null);
   const [jobs, setJobs] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -19,6 +23,18 @@ export const AppProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem('mainframe_ai_settings', JSON.stringify(settings));
   }, [settings]);
+
+  useEffect(() => {
+    localStorage.setItem('mainframe_ai_current_page', currentPage);
+  }, [currentPage]);
+
+  useEffect(() => {
+    if (currentJobId) {
+      localStorage.setItem('mainframe_ai_current_job_id', currentJobId);
+    } else {
+      localStorage.removeItem('mainframe_ai_current_job_id');
+    }
+  }, [currentJobId]);
 
   // Ping backend to check health
   useEffect(() => {
@@ -38,6 +54,33 @@ export const AppProvider = ({ children }) => {
     const interval = setInterval(checkHealth, 5000);
     return () => clearInterval(interval);
   }, [settings.apiBaseUrl]);
+
+  // Fetch jobs once on startup / backend connection
+  useEffect(() => {
+    if (!backendOnline) return;
+    const loadInitialJobs = async () => {
+      try {
+        const res = await fetch(`${settings.apiBaseUrl}/api/jobs`);
+        if (res.ok) {
+          const data = await res.json();
+          setJobs(data);
+        }
+      } catch (err) {
+        console.error('Failed to load initial jobs:', err);
+      }
+    };
+    loadInitialJobs();
+  }, [backendOnline, settings.apiBaseUrl]);
+
+  // Auto-select latest completed job on startup if none is active
+  useEffect(() => {
+    if (jobs.length > 0 && !currentJobId) {
+      const completed = jobs.find(j => j.status === 'done');
+      if (completed) {
+        setCurrentJobId(completed.job_id);
+      }
+    }
+  }, [jobs, currentJobId]);
 
   const updateSettings = (newSettings) => {
     setSettings((prev) => ({ ...prev, ...newSettings }));

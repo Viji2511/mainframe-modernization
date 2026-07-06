@@ -122,10 +122,10 @@ const UploadPage = () => {
       <div className="lg:col-span-5 space-y-6">
         <div className="pb-2">
           {/* Neon micro-tag */}
-          <span className="inline-block bg-[#00ff4c]/20 text-green-700 border border-green-500/40 text-[9px] font-mono font-bold tracking-widest uppercase px-2 py-0.5 rounded mb-3">
+          <span className="inline-block bg-blue-600 text-white/20 text-green-700 border border-green-500/40 text-[9px] font-mono font-bold tracking-widest uppercase px-2 py-0.5 rounded mb-3">
             Agentic AI Systems
           </span>
-          <h1 className="font-serif text-5xl font-normal leading-[1.1] text-black tracking-tight mb-3">
+          <h1 className="font-serif text-5xl font-normal leading-[1.1] text-gray-900 tracking-tight mb-3">
             We modernize,<br />not replace
           </h1>
           <p className="text-xs text-zinc-700 leading-relaxed font-sans max-w-sm">
@@ -134,8 +134,8 @@ const UploadPage = () => {
         </div>
 
         {/* Upload box */}
-        <div className="rounded bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-5 space-y-4">
-          <h2 className="text-[10px] font-bold font-mono tracking-widest text-black uppercase">
+        <div className="rounded bg-white border border-gray-200 shadow-sm rounded-lg p-5 space-y-4">
+          <h2 className="text-[10px] font-bold font-mono tracking-widest text-gray-900 uppercase">
             File Ingestion
           </h2>
           <FileDropzone
@@ -146,8 +146,8 @@ const UploadPage = () => {
         </div>
 
         {/* Options Panel */}
-        <div className="rounded bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-5 space-y-4">
-          <h2 className="text-[10px] font-bold font-mono tracking-widest text-black uppercase">
+        <div className="rounded bg-white border border-gray-200 shadow-sm rounded-lg p-5 space-y-4">
+          <h2 className="text-[10px] font-bold font-mono tracking-widest text-gray-900 uppercase">
             Run Configurations
           </h2>
           
@@ -155,13 +155,13 @@ const UploadPage = () => {
             {/* DB selector */}
             <div className="flex items-center justify-between border-b border-black pb-3">
               <span className="text-zinc-600 font-mono font-semibold uppercase text-[10px]">Target Dialect:</span>
-              <div className="flex rounded bg-[#f4f4f0] p-0.5 border border-black">
+              <div className="flex rounded bg-[#f3f4f6] p-0.5 border border-gray-200">
                 <button
                   onClick={() => setDbType('postgresql')}
                   className={`rounded px-2.5 py-1 font-mono font-bold text-[10px] uppercase transition-colors ${
                     dbType === 'postgresql'
                       ? 'bg-black text-[#00ff4c]'
-                      : 'text-zinc-500 hover:text-black'
+                      : 'text-zinc-500 hover:text-gray-900'
                   }`}
                 >
                   PostgreSQL
@@ -171,7 +171,7 @@ const UploadPage = () => {
                   className={`rounded px-2.5 py-1 font-mono font-bold text-[10px] uppercase transition-colors ${
                     dbType === 'mysql'
                       ? 'bg-black text-[#00ff4c]'
-                      : 'text-zinc-500 hover:text-black'
+                      : 'text-zinc-500 hover:text-gray-900'
                   }`}
                 >
                   MySQL
@@ -187,7 +187,7 @@ const UploadPage = () => {
                 value={dsnFilter}
                 onChange={(e) => setDsnFilter(e.target.value)}
                 placeholder="e.g. ACCTDATA (Optional)"
-                className="rounded border-2 border-black bg-white px-2.5 py-1.5 text-xs text-black focus:border-[#00ff4c] focus:outline-none font-mono"
+                className="rounded border border-gray-200 bg-white px-2.5 py-1.5 text-xs text-gray-900 focus:border-[#00ff4c] focus:outline-none font-mono"
               />
             </div>
 
@@ -199,12 +199,12 @@ const UploadPage = () => {
               </div>
               <button
                 onClick={() => setListVsamOnly(!listVsamOnly)}
-                className={`w-9 h-5 rounded-full p-0.5 transition-colors duration-200 border border-black focus:outline-none ${
+                className={`w-9 h-5 rounded-full p-0.5 transition-colors duration-200 border border-gray-200 focus:outline-none ${
                   listVsamOnly ? 'bg-black' : 'bg-zinc-200'
                 }`}
               >
                 <div
-                  className={`w-4 h-4 rounded-full bg-white border border-black transition-transform duration-200 transform ${
+                  className={`w-4 h-4 rounded-full bg-white border border-gray-200 transition-transform duration-200 transform ${
                     listVsamOnly ? 'translate-x-4' : 'translate-x-0'
                   }`}
                 />
@@ -216,7 +216,7 @@ const UploadPage = () => {
           <button
             onClick={() => startPipelineRun()}
             disabled={files.length === 0 || isRunning || !backendOnline}
-            className="flex w-full items-center justify-center gap-2 border-2 border-black bg-[#00ff4c] py-2.5 font-mono text-xs font-bold uppercase tracking-wider text-black hover:bg-[#00e676] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            className="flex w-full items-center justify-center gap-2 border border-gray-200 bg-blue-600 text-white py-2.5 font-mono text-xs font-bold uppercase tracking-wider text-gray-900 hover:bg-blue-700 shadow-sm rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
             {isRunning ? (
               <>

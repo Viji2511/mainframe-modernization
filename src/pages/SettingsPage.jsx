@@ -40,15 +40,15 @@ const SettingsPage = () => {
   return (
     <div className="max-w-2xl space-y-6">
       {/* Header */}
-      <div className="border-b-2 border-black pb-4">
-        <h1 className="text-2xl font-bold font-mono text-black">SYSTEM SETTINGS</h1>
+      <div className="border-b border-gray-200 pb-4">
+        <h1 className="text-2xl font-bold font-mono text-gray-900">SYSTEM SETTINGS</h1>
         <p className="text-xs text-zinc-600 mt-1 font-sans">Configure pipeline connections, database default engines, and storage logs.</p>
       </div>
 
       {/* Connection options card */}
-      <div className="rounded bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-5 space-y-4 font-mono text-xs text-black">
-        <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-black">
-          <Settings size={14} className="text-black" /> MIGRATION & ENDPOINT PARAMETERS
+      <div className="rounded bg-white border border-gray-200 shadow-sm rounded-lg p-5 space-y-4 font-mono text-xs text-gray-900">
+        <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-gray-900">
+          <Settings size={14} className="text-gray-900" /> MIGRATION & ENDPOINT PARAMETERS
         </div>
 
         {/* API Base URL */}
@@ -59,7 +59,7 @@ const SettingsPage = () => {
             value={baseUrlInput}
             onChange={(e) => setBaseUrlInput(e.target.value)}
             placeholder="http://localhost:8000"
-            className="rounded border-2 border-black bg-white px-3 py-2 text-black font-bold focus:border-[#00ff4c] focus:outline-none"
+            className="rounded border border-gray-200 bg-white px-3 py-2 text-gray-900 font-bold focus:border-[#00ff4c] focus:outline-none"
           />
         </div>
 
@@ -69,7 +69,7 @@ const SettingsPage = () => {
           <select
             value={dbTypeInput}
             onChange={(e) => setDbTypeInput(e.target.value)}
-            className="rounded border-2 border-black bg-white px-3 py-2 text-black font-bold focus:border-[#00ff4c] focus:outline-none cursor-pointer"
+            className="rounded border border-gray-200 bg-white px-3 py-2 text-gray-900 font-bold focus:border-[#00ff4c] focus:outline-none cursor-pointer"
           >
             <option value="postgresql">PostgreSQL Dialect</option>
             <option value="mysql">MySQL Dialect</option>
@@ -81,7 +81,7 @@ const SettingsPage = () => {
           <span className="text-[10px] text-zinc-500 font-sans font-medium">Local settings persist in browser cache storage.</span>
           <button
             onClick={handleSave}
-            className="flex items-center gap-1.5 border-2 border-black bg-[#00ff4c] px-4 py-2 font-bold uppercase tracking-wider text-black hover:bg-[#00e676] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+            className="flex items-center gap-1.5 border border-gray-200 bg-blue-600 text-white px-4 py-2 font-bold uppercase tracking-wider text-gray-900 hover:bg-blue-700 shadow-sm rounded-lg"
           >
             <Save size={12} /> {saveSuccess ? 'SAVED CONFIG!' : 'SAVE CHANGES'}
           </button>
@@ -89,7 +89,7 @@ const SettingsPage = () => {
       </div>
 
       {/* Clear logs card */}
-      <div className="rounded bg-red-50 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-5 space-y-4 font-mono text-xs text-black">
+      <div className="rounded bg-red-50 border border-gray-200 shadow-sm rounded-lg p-5 space-y-4 font-mono text-xs text-gray-900">
         <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-red-700">
           <Trash2 size={14} /> DANGER ZONE
         </div>
@@ -98,20 +98,20 @@ const SettingsPage = () => {
         </p>
         <button
           onClick={handleClearAll}
-          className="flex items-center gap-1.5 border-2 border-black bg-red-100 border-red-400 text-red-700 px-4 py-2 font-bold uppercase tracking-wider hover:bg-red-200 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+          className="flex items-center gap-1.5 border border-gray-200 bg-red-100 border-red-400 text-red-700 px-4 py-2 font-bold uppercase tracking-wider hover:bg-red-200 shadow-sm rounded-lg"
         >
           <Trash2 size={12} /> Clear System History
         </button>
       </div>
 
       {/* About Box */}
-      <div className="rounded bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-5 space-y-4 font-sans text-black">
-        <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-black font-mono">
-          <Cpu size={14} className="text-black" /> ABOUT MAINFRAMEAI
+      <div className="rounded bg-white border border-gray-200 shadow-sm rounded-lg p-5 space-y-4 font-sans text-gray-900">
+        <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-gray-900 font-mono">
+          <Cpu size={14} className="text-gray-900" /> ABOUT MAINFRAMEAI
         </div>
         <div className="text-xs text-zinc-600 space-y-2 leading-relaxed font-medium">
           <p>
-            <strong className="text-black font-mono">MainframeAI Modernizer (v1.0.0)</strong> — A general-purpose AI-driven migration assistant mapping legacy systems data stores into standard SQL formats.
+            <strong className="text-gray-900 font-mono">MainframeAI Modernizer (v1.0.0)</strong> — A general-purpose AI-driven migration assistant mapping legacy systems data stores into standard SQL formats.
           </p>
           <div className="flex gap-4 font-mono text-[9px] text-zinc-400 pt-2 font-bold uppercase">
             <span>React 18 / Vite</span>

@@ -71,8 +71,8 @@ const FileDropzone = ({ files, onFilesSelected, onRemoveFile }) => {
         onClick={() => fileInputRef.current?.click()}
         className={`flex flex-col items-center justify-center rounded border-2 border-dashed p-6 text-center cursor-pointer transition-all ${
           isDragActive 
-            ? 'border-[#00ff4c] bg-[#00ff4c]/5' 
-            : 'border-black bg-[#f4f4f0] hover:bg-zinc-100'
+            ? 'border-[#00ff4c] bg-blue-600 text-white/5' 
+            : 'border-black bg-[#f3f4f6] hover:bg-zinc-100'
         }`}
       >
         <input
@@ -82,8 +82,8 @@ const FileDropzone = ({ files, onFilesSelected, onRemoveFile }) => {
           multiple
           className="hidden"
         />
-        <UploadCloud className="h-8 w-8 text-black mb-3" />
-        <p className="text-xs font-mono font-bold text-black uppercase">
+        <UploadCloud className="h-8 w-8 text-gray-900 mb-3" />
+        <p className="text-xs font-mono font-bold text-gray-900 uppercase">
           Drag and drop ZIP or raw mainframe assets here
         </p>
         <p className="text-[10px] text-zinc-500 font-mono mt-1 uppercase">
@@ -93,24 +93,24 @@ const FileDropzone = ({ files, onFilesSelected, onRemoveFile }) => {
 
       {/* Stats Summary */}
       {files.length > 0 && (
-        <div className="rounded border-2 border-black bg-white px-4 py-2 font-mono text-[10px] font-bold uppercase text-black">
+        <div className="rounded border border-gray-200 bg-white px-4 py-2 font-mono text-[10px] font-bold uppercase text-gray-900">
           {getStatsString()}
         </div>
       )}
 
       {/* Files List */}
       {files.length > 0 && (
-        <div className="max-h-60 overflow-y-auto space-y-2 border-2 border-black rounded p-2 bg-[#f4f4f0]">
+        <div className="max-h-60 overflow-y-auto space-y-2 border border-gray-200 rounded p-2 bg-[#f3f4f6]">
           {files.map((file, idx) => {
             const classInfo = classifyFile(file.name);
             return (
               <div
                 key={idx}
-                className="flex items-center justify-between rounded bg-white p-2 border border-black hover:bg-zinc-50 transition-colors"
+                className="flex items-center justify-between rounded bg-white p-2 border border-gray-200 hover:bg-zinc-50 transition-colors"
               >
                 <div className="flex items-center gap-2 overflow-hidden">
-                  <File size={14} className="text-black shrink-0" />
-                  <span className="truncate text-[10px] font-mono font-medium text-black">{file.name}</span>
+                  <File size={14} className="text-gray-900 shrink-0" />
+                  <span className="truncate text-[10px] font-mono font-medium text-gray-900">{file.name}</span>
                   <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase font-mono shrink-0 ${classInfo.color}`}>
                     {classInfo.label}
                   </span>
@@ -120,7 +120,7 @@ const FileDropzone = ({ files, onFilesSelected, onRemoveFile }) => {
                     e.stopPropagation();
                     onRemoveFile(idx);
                   }}
-                  className="p-1 text-black hover:text-red-600"
+                  className="p-1 text-gray-900 hover:text-red-600"
                 >
                   <Trash2 size={12} />
                 </button>

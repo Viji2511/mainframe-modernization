@@ -19,12 +19,12 @@ const FieldNode = ({ field, depth }) => {
     <div className="font-mono text-xs select-none">
       {/* Node Header Row */}
       <div 
-        className="flex items-center gap-2 py-1.5 px-2 hover:bg-zinc-100 rounded border border-transparent hover:border-black cursor-pointer"
+        className="flex items-center gap-2 py-1.5 px-2 hover:bg-zinc-100 rounded border border-transparent hover:border-gray-400 cursor-pointer"
         style={{ paddingLeft: `${depth * 16 + 8}px` }}
         onClick={() => hasChildren && setIsOpen(!isOpen)}
       >
         {/* Collapse Arrow */}
-        <div className="w-4 h-4 flex items-center justify-center text-black">
+        <div className="w-4 h-4 flex items-center justify-center text-gray-900">
           {hasChildren ? (isOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />) : null}
         </div>
 
@@ -41,14 +41,14 @@ const FieldNode = ({ field, depth }) => {
         )}
 
         {/* Variable Name */}
-        <span className={`truncate font-bold ${hasChildren ? 'text-black' : 'text-zinc-700'}`}>
+        <span className={`truncate font-bold ${hasChildren ? 'text-gray-900' : 'text-zinc-700'}`}>
           {field.name}
         </span>
 
         {/* Field Details info spacer */}
         <div className="ml-auto flex items-center gap-4 text-[9px] text-zinc-500 shrink-0 font-bold">
           {field.pic && (
-            <span className="bg-zinc-200 border border-black text-black px-1.5 py-0.5 rounded">
+            <span className="bg-zinc-200 border border-gray-200 text-gray-900 px-1.5 py-0.5 rounded">
               PIC {field.pic}
             </span>
           )}
@@ -77,7 +77,7 @@ const FieldNode = ({ field, depth }) => {
 
       {/* Render children nodes recursively */}
       {hasChildren && isOpen && (
-        <div className="border-l-2 border-black ml-6 pl-1 space-y-0.5 mt-0.5">
+        <div className="border-l border-gray-200 ml-6 pl-1 space-y-0.5 mt-0.5">
           {field.children.map((child, idx) => (
             <FieldNode key={idx} field={child} depth={depth + 1} />
           ))}
@@ -95,14 +95,14 @@ FieldNode.propTypes = {
 const FieldTree = ({ fields }) => {
   if (!fields || fields.length === 0) {
     return (
-      <div className="flex h-40 items-center justify-center border-2 border-black rounded bg-white text-zinc-500 text-xs font-mono">
+      <div className="flex h-40 items-center justify-center border border-gray-200 rounded bg-white text-zinc-500 text-xs font-mono">
         No field nodes discovered to render.
       </div>
     );
   }
 
   return (
-    <div className="border-2 border-black rounded bg-white p-4 overflow-x-auto space-y-1 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+    <div className="border border-gray-200 rounded bg-white p-4 overflow-x-auto space-y-1 shadow-sm rounded-lg">
       {fields.map((field, idx) => (
         <FieldNode key={idx} field={field} depth={0} />
       ))}

@@ -60,34 +60,34 @@ const JobsPage = () => {
   return (
     <div className="space-y-6">
       {/* Header controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b-2 border-black pb-4 gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-200 pb-4 gap-4">
         <div>
-          <h1 className="text-2xl font-bold font-mono text-black">PIPELINE EXECUTION LOGS</h1>
+          <h1 className="text-2xl font-bold font-mono text-gray-900">PIPELINE EXECUTION LOGS</h1>
           <p className="text-xs text-zinc-600 mt-1 font-sans">Monitor pipeline runs, validation checks, and data layouts.</p>
         </div>
         <button
           onClick={fetchJobs}
-          className="flex items-center gap-1.5 border-2 border-black bg-white px-3 py-1.5 text-xs font-bold text-black hover:bg-zinc-50 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] font-mono shrink-0"
+          className="flex items-center gap-1.5 border border-gray-200 bg-white px-3 py-1.5 text-xs font-bold text-gray-900 hover:bg-zinc-50 shadow-sm rounded-lg font-mono shrink-0"
         >
           <RefreshCw size={12} className={loading ? 'animate-spin' : ''} /> RELOAD JOBS
         </button>
       </div>
 
       {/* Jobs grid table */}
-      <div className="overflow-x-auto border-2 border-black rounded bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+      <div className="overflow-x-auto border border-gray-200 rounded bg-white shadow-sm rounded-lg">
         <table className="min-w-full divide-y-2 divide-black text-left">
-          <thead className="bg-[#f4f4f0] font-mono text-[10px] uppercase text-black tracking-wider font-bold">
+          <thead className="bg-[#f3f4f6] font-mono text-[10px] uppercase text-gray-900 tracking-wider font-bold">
             <tr>
-              <th className="px-4 py-3 border-r-2 border-black">Job ID</th>
-              <th className="px-4 py-3 border-r-2 border-black">Source Input</th>
-              <th className="px-4 py-3 border-r-2 border-black">Target DSN</th>
-              <th className="px-4 py-3 border-r-2 border-black">Database</th>
-              <th className="px-4 py-3 border-r-2 border-black">Status</th>
-              <th className="px-4 py-3 border-r-2 border-black">Started At</th>
+              <th className="px-4 py-3 border-r border-gray-200">Job ID</th>
+              <th className="px-4 py-3 border-r border-gray-200">Source Input</th>
+              <th className="px-4 py-3 border-r border-gray-200">Target DSN</th>
+              <th className="px-4 py-3 border-r border-gray-200">Database</th>
+              <th className="px-4 py-3 border-r border-gray-200">Status</th>
+              <th className="px-4 py-3 border-r border-gray-200">Started At</th>
               <th className="px-4 py-3 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y-2 divide-black bg-white text-xs font-mono text-black">
+          <tbody className="divide-y-2 divide-black bg-white text-xs font-mono text-gray-900">
             {jobs.length > 0 ? (
               jobs.map((job) => (
                 <tr 
@@ -99,22 +99,22 @@ const JobsPage = () => {
                       : 'opacity-80'
                   }`}
                 >
-                  <td className="px-4 py-3 text-blue-600 font-bold border-r-2 border-black truncate max-w-[120px]">
+                  <td className="px-4 py-3 text-blue-600 font-bold border-r border-gray-200 truncate max-w-[120px]">
                     {job.job_id}
                   </td>
-                  <td className="px-4 py-3 text-black border-r-2 border-black">
+                  <td className="px-4 py-3 text-gray-900 border-r border-gray-200">
                     {job.files_count} files loaded
                   </td>
-                  <td className="px-4 py-3 text-yellow-600 font-bold border-r-2 border-black">
+                  <td className="px-4 py-3 text-yellow-600 font-bold border-r border-gray-200">
                     {job.dsn}
                   </td>
-                  <td className="px-4 py-3 uppercase text-zinc-500 border-r-2 border-black">
+                  <td className="px-4 py-3 uppercase text-zinc-500 border-r border-gray-200">
                     {job.db}
                   </td>
-                  <td className="px-4 py-3 border-r-2 border-black">
+                  <td className="px-4 py-3 border-r border-gray-200">
                     <StatusBadge status={job.status} />
                   </td>
-                  <td className="px-4 py-3 text-zinc-500 text-[10px] border-r-2 border-black">
+                  <td className="px-4 py-3 text-zinc-500 text-[10px] border-r border-gray-200">
                     {job.created_at ? new Date(job.created_at).toLocaleString() : '—'}
                   </td>
                   <td className="px-4 py-3 text-right">
@@ -122,14 +122,14 @@ const JobsPage = () => {
                       {job.status === 'done' && (
                         <button
                           onClick={() => handleOpenResults(job.job_id)}
-                          className="flex items-center gap-1 bg-[#00ff4c] text-black border-2 border-black px-2 py-1 text-[9px] font-bold uppercase tracking-wider hover:bg-[#00e676]"
+                          className="flex items-center gap-1 bg-blue-600 text-white text-gray-900 border border-gray-200 px-2 py-1 text-[9px] font-bold uppercase tracking-wider hover:bg-blue-700"
                         >
                           <ExternalLink size={10} /> View Result
                         </button>
                       )}
                       <button
                         onClick={(e) => handleDeleteJob(job.job_id, e)}
-                        className="p-1 text-black hover:text-red-600 rounded border border-transparent hover:border-black hover:bg-zinc-50"
+                        className="p-1 text-gray-900 hover:text-red-600 rounded border border-transparent hover:border-gray-400 hover:bg-zinc-50"
                       >
                         <Trash2 size={12} />
                       </button>

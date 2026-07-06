@@ -22,14 +22,31 @@ import {
   Layers,
   ChevronDown
 } from 'lucide-react';
+import demoResult from '../../demo/pipeline_result.json';
 
 const ResultsPage = () => {
-  const { currentJobId, currentResult, setCurrentResult, settings } = useAppStore();
+  const { currentJobId, setCurrentJobId, currentResult, setCurrentResult, settings, addJob } = useAppStore();
   const api = useApi();
 
   const [activeTab, setActiveTab] = useState('overview');
   const [allResults, setAllResults] = useState([]);
   const [selectedDsn, setSelectedDsn] = useState('');
+
+  const handleLoadDemo = () => {
+    const fakeJobId = 'demo-job-id';
+    const fakeJob = {
+      job_id: fakeJobId,
+      status: 'done',
+      db: 'postgresql',
+      dsn: demoResult.vsam_dataset.dsn,
+      files_count: 5,
+      created_at: new Date().toISOString(),
+    };
+    addJob(fakeJob);
+    setCurrentJobId(fakeJobId);
+    setCurrentResult(demoResult);
+    setAllResults([demoResult]);
+  };
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -65,10 +82,16 @@ const ResultsPage = () => {
 
   if (!currentResult) {
     return (
-      <div className="flex flex-col h-[70vh] items-center justify-center border-2 border-black rounded bg-white text-zinc-500 p-6 text-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-        <Database size={40} className="mb-3 text-black" />
-        <h3 className="font-mono text-sm font-bold text-black uppercase">No Result Loaded</h3>
-        <p className="text-xs max-w-xs mt-1 font-sans font-medium">Select a completed job on the Pipeline Jobs page or run a modernization task.</p>
+      <div className="flex flex-col h-[70vh] items-center justify-center border border-gray-200 rounded bg-white text-zinc-500 p-6 text-center shadow-sm rounded-lg">
+        <Database size={40} className="mb-3 text-gray-900" />
+        <h3 className="font-mono text-sm font-bold text-gray-900 uppercase">No Result Loaded</h3>
+        <p className="text-xs max-w-xs mt-1 font-sans font-medium mb-4">Select a completed job on the Pipeline Jobs page or run a modernization task.</p>
+        <button
+          onClick={handleLoadDemo}
+          className="bg-blue-600 text-white text-gray-900 border border-gray-200 px-4 py-2 text-xs font-mono font-bold uppercase tracking-wider hover:bg-blue-700 shadow-sm rounded-lg active:translate-y-0.5 active:shadow-sm rounded-lg transition-all"
+        >
+          Load Sample Demo Data
+        </button>
       </div>
     );
   }
@@ -105,21 +128,21 @@ const ResultsPage = () => {
   return (
     <div className="space-y-6">
       {/* Header with Dataset Select */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between border-b-2 border-black pb-4 gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-gray-200 pb-4 gap-4">
         <div>
-          <h1 className="text-2xl font-bold font-mono text-black">MODERNIZATION ANALYSIS REPORT</h1>
+          <h1 className="text-2xl font-bold font-mono text-gray-900">MODERNIZATION ANALYSIS REPORT</h1>
           <p className="text-xs text-zinc-600 mt-1 font-sans">Job ID: <span className="font-mono text-blue-600 font-bold">{currentJobId}</span></p>
         </div>
 
         {/* Dataset dropdown selector */}
         {allResults.length > 1 && (
           <div className="flex items-center gap-2">
-            <span className="font-mono text-xs font-bold text-black uppercase">Target Dataset:</span>
+            <span className="font-mono text-xs font-bold text-gray-900 uppercase">Target Dataset:</span>
             <div className="relative">
               <select
                 value={selectedDsn}
                 onChange={handleDsnChange}
-                className="appearance-none font-mono text-xs rounded border-2 border-black bg-white pl-3 pr-8 py-2 text-black font-bold focus:outline-none focus:border-[#00ff4c] cursor-pointer shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                className="appearance-none font-mono text-xs rounded border border-gray-200 bg-white pl-3 pr-8 py-2 text-gray-900 font-bold focus:outline-none focus:border-[#00ff4c] cursor-pointer shadow-sm rounded-lg"
               >
                 {allResults.map((res) => (
                   <option key={res.vsam_dataset.dsn} value={res.vsam_dataset.dsn}>
@@ -127,14 +150,14 @@ const ResultsPage = () => {
                   </option>
                 ))}
               </select>
-              <ChevronDown size={14} className="absolute right-2.5 top-2.5 text-black pointer-events-none" />
+              <ChevronDown size={14} className="absolute right-2.5 top-2.5 text-gray-900 pointer-events-none" />
             </div>
           </div>
         )}
       </div>
 
       {/* Tabs navigation */}
-      <div className="flex border-b-2 border-black overflow-x-auto bg-white rounded">
+      <div className="flex border-b border-gray-200 overflow-x-auto bg-white rounded">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -144,8 +167,8 @@ const ResultsPage = () => {
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 border-r border-zinc-200 px-4 py-3.5 text-xs font-mono font-bold uppercase transition-colors text-nowrap ${
                 isActive
-                  ? 'bg-[#00ff4c]/20 text-black border-b-4 border-black'
-                  : 'text-zinc-500 hover:text-black hover:bg-zinc-50'
+                  ? 'bg-blue-600 text-white/20 text-gray-900 border-b-4 border-black'
+                  : 'text-zinc-500 hover:text-gray-900 hover:bg-zinc-50'
               }`}
             >
               <Icon size={12} />
@@ -161,45 +184,45 @@ const ResultsPage = () => {
           <div className="space-y-6">
             {/* Overview cards summary */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="rounded bg-white border-2 border-black p-4 flex items-center justify-between shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+              <div className="rounded bg-white border border-gray-200 p-4 flex items-center justify-between shadow-sm rounded-lg">
                 <div>
                   <span className="text-[9px] font-mono font-bold text-zinc-500 uppercase tracking-widest">VSAM Datasets</span>
-                  <div className="text-xl font-bold font-mono text-black mt-1">{totalDatasets}</div>
+                  <div className="text-xl font-bold font-mono text-gray-900 mt-1">{totalDatasets}</div>
                 </div>
-                <Database size={20} className="text-black" />
+                <Database size={20} className="text-gray-900" />
               </div>
 
-              <div className="rounded bg-white border-2 border-black p-4 flex items-center justify-between shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+              <div className="rounded bg-white border border-gray-200 p-4 flex items-center justify-between shadow-sm rounded-lg">
                 <div>
                   <span className="text-[9px] font-mono font-bold text-zinc-500 uppercase tracking-widest">Parsed Fields</span>
-                  <div className="text-xl font-bold font-mono text-black mt-1">{totalFields}</div>
+                  <div className="text-xl font-bold font-mono text-gray-900 mt-1">{totalFields}</div>
                 </div>
-                <Layout size={20} className="text-black" />
+                <Layout size={20} className="text-gray-900" />
               </div>
 
-              <div className="rounded bg-white border-2 border-black p-4 flex items-center justify-between shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+              <div className="rounded bg-white border border-gray-200 p-4 flex items-center justify-between shadow-sm rounded-lg">
                 <div>
                   <span className="text-[9px] font-mono font-bold text-zinc-500 uppercase tracking-widest">Analyzed Programs</span>
-                  <div className="text-xl font-bold font-mono text-black mt-1">{totalPrograms}</div>
+                  <div className="text-xl font-bold font-mono text-gray-900 mt-1">{totalPrograms}</div>
                 </div>
-                <FileCode size={20} className="text-black" />
+                <FileCode size={20} className="text-gray-900" />
               </div>
 
-              <div className="rounded bg-white border-2 border-black p-4 flex items-center justify-between shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+              <div className="rounded bg-white border border-gray-200 p-4 flex items-center justify-between shadow-sm rounded-lg">
                 <div>
                   <span className="text-[9px] font-mono font-bold text-zinc-500 uppercase tracking-widest">Avg Confidence</span>
-                  <div className="text-xl font-bold font-mono text-black mt-1">{(confidence * 100).toFixed(0)}%</div>
+                  <div className="text-xl font-bold font-mono text-gray-900 mt-1">{(confidence * 100).toFixed(0)}%</div>
                 </div>
-                <Award size={20} className="text-black" />
+                <Award size={20} className="text-gray-900" />
               </div>
             </div>
 
             {/* Graphs and metadata descriptions */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               {/* Dataset Meta details */}
-              <div className="lg:col-span-7 rounded bg-white border-2 border-black p-5 space-y-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                <h3 className="font-mono text-[10px] font-bold text-black uppercase tracking-widest border-b border-black pb-2">Dataset Metadata</h3>
-                <div className="grid grid-cols-2 gap-4 text-xs font-mono text-black">
+              <div className="lg:col-span-7 rounded bg-white border border-gray-200 p-5 space-y-4 shadow-sm rounded-lg">
+                <h3 className="font-mono text-[10px] font-bold text-gray-900 uppercase tracking-widest border-b border-black pb-2">Dataset Metadata</h3>
+                <div className="grid grid-cols-2 gap-4 text-xs font-mono text-gray-900">
                   <div>
                     <div className="text-zinc-500 text-[10px] uppercase">DSN:</div>
                     <div className="text-blue-600 break-all font-bold mt-0.5">{currentResult.vsam_dataset.dsn}</div>
@@ -232,8 +255,8 @@ const ResultsPage = () => {
               </div>
 
               {/* Chart operations layout */}
-              <div className="lg:col-span-5 rounded bg-white border-2 border-black p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                <h3 className="font-mono text-[10px] font-bold text-black uppercase tracking-widest border-b border-black pb-2 mb-4">Operations Profile</h3>
+              <div className="lg:col-span-5 rounded bg-white border border-gray-200 p-5 shadow-sm rounded-lg">
+                <h3 className="font-mono text-[10px] font-bold text-gray-900 uppercase tracking-widest border-b border-black pb-2 mb-4">Operations Profile</h3>
                 <div className="h-44 w-full">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={getOpsData()}>
@@ -255,11 +278,11 @@ const ResultsPage = () => {
         {activeTab === 'schema' && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             <div className="lg:col-span-7 space-y-3">
-              <h3 className="font-mono text-[10px] font-bold text-black uppercase tracking-widest">Copybook Field Tree ({currentResult.copybook?.language})</h3>
+              <h3 className="font-mono text-[10px] font-bold text-gray-900 uppercase tracking-widest">Copybook Field Tree ({currentResult.copybook?.language})</h3>
               <FieldTree fields={currentResult.copybook?.fields || []} />
             </div>
             <div className="lg:col-span-5 space-y-3">
-              <h3 className="font-mono text-[10px] font-bold text-black uppercase tracking-widest">Target DDL Preview</h3>
+              <h3 className="font-mono text-[10px] font-bold text-gray-900 uppercase tracking-widest">Target DDL Preview</h3>
               <DDLPreview 
                 dsn={currentResult.vsam_dataset.dsn} 
                 fields={currentResult.copybook?.fields || []} 
@@ -272,7 +295,7 @@ const ResultsPage = () => {
         {/* Tab 3: Business rules logic */}
         {activeTab === 'rules' && (
           <div className="space-y-3">
-            <h3 className="font-mono text-[10px] font-bold text-black uppercase tracking-widest">Variables Logic and Validation Rules</h3>
+            <h3 className="font-mono text-[10px] font-bold text-gray-900 uppercase tracking-widest">Variables Logic and Validation Rules</h3>
             <BusinessRulesTable rules={allRules} />
           </div>
         )}
@@ -280,7 +303,7 @@ const ResultsPage = () => {
         {/* Tab 4: Program map list */}
         {activeTab === 'programs' && (
           <div className="space-y-4">
-            <h3 className="font-mono text-[10px] font-bold text-black uppercase tracking-widest">Referencing Mainframe Batch Programs</h3>
+            <h3 className="font-mono text-[10px] font-bold text-gray-900 uppercase tracking-widest">Referencing Mainframe Batch Programs</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               {currentResult.source_analyses.map((analysis, idx) => (
                 <ProgramCard key={idx} analysis={analysis} />
@@ -293,7 +316,7 @@ const ResultsPage = () => {
         {activeTab === 'json' && (
           <div className="space-y-3">
             <div className="flex justify-between items-center">
-              <h3 className="font-mono text-[10px] font-bold text-black uppercase tracking-widest">Pipeline Result JSON</h3>
+              <h3 className="font-mono text-[10px] font-bold text-gray-900 uppercase tracking-widest">Pipeline Result JSON</h3>
               <button
                 onClick={() => {
                   const blob = new Blob([JSON.stringify(currentResult, null, 2)], { type: 'application/json' });
@@ -303,12 +326,12 @@ const ResultsPage = () => {
                   link.download = `${currentResult.vsam_dataset.dsn.replace(/\./g, '_')}_result.json`;
                   link.click();
                 }}
-                className="rounded border-2 border-black bg-white px-3 py-1 font-mono text-[10px] font-bold text-black uppercase hover:bg-zinc-100 shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]"
+                className="rounded border border-gray-200 bg-white px-3 py-1 font-mono text-[10px] font-bold text-gray-900 uppercase hover:bg-zinc-100 shadow-sm rounded-lg"
               >
                 Download JSON
               </button>
             </div>
-            <pre className="border-2 border-black rounded bg-white p-4 overflow-auto max-h-[500px] font-mono text-xs text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] select-text">
+            <pre className="border border-gray-200 rounded bg-white p-4 overflow-auto max-h-[500px] font-mono text-xs text-gray-900 shadow-sm rounded-lg select-text">
               {JSON.stringify(currentResult, null, 2)}
             </pre>
           </div>

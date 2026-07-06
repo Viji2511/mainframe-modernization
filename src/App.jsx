@@ -26,20 +26,11 @@ const App = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#f4f4f0] text-[#0d1117] font-sans selection:bg-[#00ff4c]/40 overflow-hidden">
+    <div className="flex min-h-screen bg-[#f3f4f6] text-gray-900 font-sans selection:bg-blue-100 overflow-hidden">
       
-      {/* Outer Brutalist Frame - Left Edge Column */}
-      <div className="hidden md:flex w-10 border-r-2 border-black items-center justify-center bg-white select-none shrink-0">
-        <div className="transform -rotate-90 text-[8px] font-mono tracking-[0.25em] font-bold text-[#0d1117]/50 uppercase whitespace-nowrap">
-          MAINFRAMEAI SYSTEM PORTAL
-        </div>
-      </div>
-
       {/* Main Container Enclosure */}
-      <div className="flex-1 flex flex-col min-w-0 min-h-screen border-r-2 md:border-r-0 border-black">
+      <div className="flex-1 flex flex-col min-w-0 min-h-screen">
         
-
-
         <div className="flex-1 flex min-w-0 relative">
           {/* Collapsible Sidebar inside main content grid */}
           <Sidebar />
@@ -51,24 +42,24 @@ const App = () => {
             }`}
           >
             {/* Page Header */}
-            <header className="flex h-14 items-center justify-between border-b-2 border-black bg-white px-6 shrink-0">
+            <header className="flex h-14 items-center justify-between border-b border-gray-200 bg-white px-6 shrink-0">
               <div className="flex items-center gap-2">
-                <span className="font-mono text-[10px] font-bold tracking-widest text-[#0d1117]/50">WORKSPACE:</span>
-                <span className="font-mono text-xs font-bold text-black border-b border-black">
+                <span className="text-xs font-semibold tracking-wider text-gray-500 uppercase">Workspace:</span>
+                <span className="text-sm font-semibold text-gray-900">
                   mainframe-modernizer
                 </span>
               </div>
-              <div className="flex items-center gap-4 text-[10px] font-mono font-bold text-[#0d1117]/50">
+              <div className="flex items-center gap-4 text-xs font-semibold text-gray-500">
                 <span>V. 1.3</span>
               </div>
             </header>
 
             {/* Content Body */}
-            <div className="flex-1 overflow-y-auto p-6 bg-[#f4f4f0]">
+            <div className="flex-1 overflow-y-auto p-6 bg-[#f3f4f6]">
               <Suspense
                 fallback={
                   <div className="flex h-full items-center justify-center">
-                    <div className="h-8 w-8 animate-spin rounded-full border-2 border-black border-t-transparent" />
+                    <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
                   </div>
                 }
               >
@@ -77,22 +68,15 @@ const App = () => {
             </div>
 
             {/* Bottom Footer block */}
-            <footer className="border-t-2 border-black py-3 px-6 bg-white font-mono text-[9px] tracking-widest flex flex-col sm:flex-row justify-between gap-2 uppercase text-[#0d1117]/50 shrink-0">
-              <div>Born from the spirit of Enterprise Dynamism</div>
+            <footer className="border-t border-gray-200 py-3 px-6 bg-white text-xs flex flex-col sm:flex-row justify-between gap-2 text-gray-500 shrink-0">
+              <div>System Active</div>
               <div className="flex gap-4 sm:gap-6">
-                <span>OPTIMIZE</span>
-                <span>ADAPT</span>
-                <span>EVOLVE</span>
+                <span>Help</span>
+                <span>Privacy</span>
+                <span>Terms</span>
               </div>
             </footer>
           </div>
-        </div>
-      </div>
-
-      {/* Outer Brutalist Frame - Right Edge Column */}
-      <div className="hidden md:flex w-10 border-l-2 border-black items-center justify-center bg-white select-none shrink-0">
-        <div className="transform rotate-90 text-[8px] font-mono tracking-[0.25em] font-bold text-[#0d1117]/50 uppercase whitespace-nowrap">
-          BORN FROM ENTERPRISE DYNAMISM
         </div>
       </div>
     </div>
