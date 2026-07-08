@@ -121,10 +121,7 @@ const UploadPage = () => {
       {/* Brutalist Tagline & Upload column */}
       <div className="lg:col-span-5 space-y-6">
         <div className="pb-2">
-          {/* Neon micro-tag */}
-          <span className="inline-block bg-blue-600 text-white/20 text-green-700 border border-green-500/40 text-[9px] font-mono font-bold tracking-widest uppercase px-2 py-0.5 rounded mb-3">
-            Agentic AI Systems
-          </span>
+
           <h1 className="font-serif text-5xl font-normal leading-[1.1] text-gray-900 tracking-tight mb-3">
             We modernize,<br />not replace
           </h1>

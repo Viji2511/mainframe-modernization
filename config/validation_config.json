@@ -1,0 +1,67 @@
+{
+  "thresholds": {
+    "PASS": 90.0,
+    "WARNING": 70.0,
+    "FAIL": 0.0
+  },
+  "dataset_discovery": {
+    "found_in_listcat": {
+      "score": 40.0,
+      "reason": "Found in LISTCAT catalog"
+    },
+    "found_in_jcl": {
+      "score": 20.0,
+      "reason": "Found in JCL DD statement"
+    },
+    "found_in_cobol_select": {
+      "score": 15.0,
+      "reason": "Found in COBOL SELECT assignment"
+    },
+    "found_in_cobol_fd": {
+      "score": 10.0,
+      "reason": "File Descriptor (FD) block mapped"
+    },
+    "crud_operations_detected": {
+      "score": 10.0,
+      "reason": "CRUD operations detected in source code"
+    },
+    "llm_inferred_only": {
+      "score": 20.0,
+      "reason": "Dataset metadata inferred solely by AI (low confidence)"
+    }
+  },
+  "copybook_resolution": {
+    "direct_copy_statement": {
+      "score": 80.0,
+      "reason": "Direct COPY/INCLUDE statement found inside mapped FD"
+    },
+    "layout_fields_parsed": {
+      "score": 20.0,
+      "reason": "Record layout fields successfully parsed"
+    },
+    "fallback_heuristic_used": {
+      "score": -40.0,
+      "reason": "Used substring fallback heuristic instead of true dependency"
+    }
+  },
+  "schema_extraction": {
+    "no_duplicate_fields": {
+      "score": 50.0,
+      "reason": "No duplicate field names found"
+    },
+    "valid_offsets": {
+      "score": 50.0,
+      "reason": "All byte offsets logically aligned"
+    }
+  },
+  "relationships": {
+    "evidence_found": {
+      "score": 100.0,
+      "reason": "Concrete syntactic evidence traces relationship"
+    },
+    "missing_evidence": {
+      "score": 0.0,
+      "reason": "Missing concrete evidence; relationship unverified"
+    }
+  }
+}

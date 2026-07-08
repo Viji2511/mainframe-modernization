@@ -28,44 +28,32 @@ Below is the conceptual architecture of the modernizer pipeline showing the sequ
 +--------------------------------------------------------------------------------+
                                        |
                                        v
-                     +-----------------------------------+
-                     |       FileIngestionAgent          |
-                     |  - Sniffs and classifies assets   |
-                     |  - Extracts candidate DSNs        |
-                     +-----------------------------------+
-                                       |
-                                       | (Inventory)
-                                       v
-                     +-----------------------------------+
-                     |       VSAMDiscoveryAgent          |
-                     |  - Resolves metadata specifications|
-                     |  - Determines confidence scores   |
-                     +-----------------------------------+
-                                       |
-                                       | (list[VSAMDataset])
-                                       v
-                     +-----------------------------------+
-                     |      CopyBookLocatorAgent         |
-                     |  - Locates logical schema files    |
-                     |  - Parses fields hierarchy        |
-                     +-----------------------------------+
-                                       |
-                                       | (CopyBook Schema)
-                                       v
-                     +-----------------------------------+
-                     |     SourceCodeAnalyzerAgent       |
-                     |  - Maps program references        |
-                     |  - Extracts business rules & verbs|
-                     +-----------------------------------+
-                                       |
-                                       | (list[SourceCodeAnalysis])
-                                       v
-                     +-----------------------------------+
-                     |       PipelineOrchestrator        |
-                     |  - Saves outputs/                 |
-                     |  - Prints Rich console summary    |
-                     +-----------------------------------+
 ```
+mainframe-modernizer/
+├── src/
+│   ├── ingestion/       # Parses raw ZIP uploads and organizes mainframe files by language
+│   ├── discovery/       # Dynamic dataset resolution via Strategy Pattern (JCL, LISTCAT, Source)
+│   ├── parsers/         # Resolves Copybook dependencies and future AST parsing
+│   ├── analyzers/       # AI-driven semantic rule extraction and code slicing
+│   ├── relationships/   # Explicit graph edge construction for enterprise metadata
+│   ├── orchestrator/    # Pipeline state management mapping across all phases
+│   ├── metadata/        # Canonical graph models (Repository, Relationship, Program)
+│   └── ai/              # Base LLM interaction layer
+├── agents/              # Facade proxies for backward compatibility
+├── models/              # Facade proxies for backward compatibility
+├── docs/                # Architecture Decision Records (ADR)
+├── config/              # Centralized settings and overrides
+├── api/                 # FastAPI routes for async background processing
+```
+
+## 🏗️ Architecture
+
+MainframeAI has transitioned from a linear heuristic script to an **enterprise-ready, modular graph architecture**:
+- **Strategy Pattern Discovery:** Extensible discovery classes dynamically test `LISTCAT`, JCL, or Source to map datasets without hardcoded assumptions.
+- **Dependency-Based Resolution:** Follows the true data-flow (`SELECT` -> `FD` -> `COPY`) to mathematically link code to schemas.
+- **Code Slicing:** Extracts targeted logical paragraphs for AI analysis to eliminate token limits and hallucinations on 100k+ line legacy monolithic apps.
+- **Graph Metadata Engine:** Automatically generates deterministic Graph edges (`Program -> INCLUDES -> Copybook`, `JCL -> ALLOCATES -> Dataset`) to build the foundation for export to Neo4j.
+- **Future-Proof AST Parsing (ADR-001):** The framework is laying the groundwork to replace Regex with deterministic Tree-Sitter AST grammars.
 
 ---
 

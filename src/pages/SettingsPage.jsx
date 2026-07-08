@@ -104,22 +104,7 @@ const SettingsPage = () => {
         </button>
       </div>
 
-      {/* About Box */}
-      <div className="rounded bg-white border border-gray-200 shadow-sm rounded-lg p-5 space-y-4 font-sans text-gray-900">
-        <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-gray-900 font-mono">
-          <Cpu size={14} className="text-gray-900" /> ABOUT MAINFRAMEAI
-        </div>
-        <div className="text-xs text-zinc-600 space-y-2 leading-relaxed font-medium">
-          <p>
-            <strong className="text-gray-900 font-mono">MainframeAI Modernizer (v1.0.0)</strong> — A general-purpose AI-driven migration assistant mapping legacy systems data stores into standard SQL formats.
-          </p>
-          <div className="flex gap-4 font-mono text-[9px] text-zinc-400 pt-2 font-bold uppercase">
-            <span>React 18 / Vite</span>
-            <span>FastAPI</span>
-            <span>Llama-3.3-70B</span>
-          </div>
-        </div>
-      </div>
+
     </div>
   );
 };
