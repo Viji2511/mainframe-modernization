@@ -14,6 +14,7 @@ export const useApi = () => {
     const config = {
       ...options,
       headers,
+      cache: 'no-store',
     };
 
     if (config.isMultipart) {

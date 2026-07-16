@@ -1,0 +1,102 @@
+from typing import List, Dict, Any, Optional
+from pydantic import BaseModel, Field
+
+class Traceability(BaseModel):
+    source_file: str
+    line_numbers: List[int] = Field(default_factory=list)
+    parser: str = "Unknown"
+    originating_evidence_id: Optional[str] = None
+
+class KnowledgeObject(BaseModel):
+    id: str
+    name: str
+    traceability: Traceability
+    properties: Dict[str, Any] = Field(default_factory=dict)
+
+class EntityMetadata(KnowledgeObject):
+    type: str
+    
+class FieldSchema(BaseModel):
+    name: str
+    data_type: str
+    length: Optional[int] = None
+    offset: Optional[int] = None
+    decimals: Optional[int] = None
+    is_key: bool = False
+
+class DatasetKnowledge(KnowledgeObject):
+    dsn: str
+    type: str = "UNKNOWN"
+    organization: Optional[str] = None
+    record_length: Optional[int] = None
+    key_length: Optional[int] = None
+    key_offset: Optional[int] = None
+    associated_jcl: List[str] = Field(default_factory=list)
+    fields: List[FieldSchema] = Field(default_factory=list)
+
+class CopybookKnowledge(KnowledgeObject):
+    filepath: str
+    fields: List[FieldSchema] = Field(default_factory=list)
+
+class BusinessRuleKnowledge(KnowledgeObject):
+    description: str
+    source_program: str
+    related_fields: List[str] = Field(default_factory=list)
+    logic: str
+    
+class ProgramKnowledge(KnowledgeObject):
+    language: str
+    filepath: str
+    datasets_accessed: List[str] = Field(default_factory=list)
+    copybooks_used: List[str] = Field(default_factory=list)
+    business_rules: List[str] = Field(default_factory=list) # IDs to BusinessRuleKnowledge
+
+class JCLJobKnowledge(KnowledgeObject):
+    filepath: str
+    executed_programs: List[str] = Field(default_factory=list)
+    allocated_datasets: List[str] = Field(default_factory=list)
+
+class IDCAMSKnowledge(KnowledgeObject):
+    filepath: str
+    defined_clusters: List[str] = Field(default_factory=list)
+
+class Relationship(BaseModel):
+    source_id: str
+    target_id: str
+    rel_type: str
+    properties: Dict[str, Any] = Field(default_factory=dict)
+
+class Dependency(BaseModel):
+    source_id: str
+    target_id: str
+    dependency_type: str
+
+class RepositorySummary(BaseModel):
+    repository_name: str = "default_repo"
+    total_files: int = 0
+    cobol_programs: int = 0
+    copybooks: int = 0
+    jcl_jobs: int = 0
+    idcams_scripts: int = 0
+    catalog_files: int = 0
+    datasets: int = 0
+    business_rules: int = 0
+    relationships: int = 0
+    schema_generation_readiness: bool = False
+    migration_readiness: str = "Evaluating"
+    repository_health_score: int = 0
+
+class RepositoryKnowledge(BaseModel):
+    repository_id: str
+    summary: RepositorySummary = Field(default_factory=RepositorySummary)
+    programs: Dict[str, ProgramKnowledge] = Field(default_factory=dict)
+    copybooks: Dict[str, CopybookKnowledge] = Field(default_factory=dict)
+    datasets: Dict[str, DatasetKnowledge] = Field(default_factory=dict)
+    jcl_jobs: Dict[str, JCLJobKnowledge] = Field(default_factory=dict)
+    idcams_definitions: Dict[str, IDCAMSKnowledge] = Field(default_factory=dict)
+    business_rules: Dict[str, BusinessRuleKnowledge] = Field(default_factory=dict)
+    relationships: List[Relationship] = Field(default_factory=list)
+    database_schema: Dict[str, Any] = Field(default_factory=dict)
+    dependencies: List[Dependency] = Field(default_factory=list)
+    statistics: Dict[str, Any] = Field(default_factory=dict)
+    knowledge_graph_reference: str = ""

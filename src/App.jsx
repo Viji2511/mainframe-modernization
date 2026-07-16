@@ -4,7 +4,7 @@ import { useAppStore } from './store/appStore';
 
 const UploadPage = lazy(() => import('./pages/UploadPage'));
 const JobsPage = lazy(() => import('./pages/JobsPage'));
-const ResultsPage = lazy(() => import('./pages/ResultsPage'));
+const KnowledgeExplorer = lazy(() => import('./pages/KnowledgeExplorer'));
 const SettingsPage = lazy(() => import('./pages/SettingsPage'));
 
 const App = () => {
@@ -17,7 +17,7 @@ const App = () => {
       case 'jobs':
         return <JobsPage />;
       case 'results':
-        return <ResultsPage />;
+        return <KnowledgeExplorer />;
       case 'settings':
         return <SettingsPage />;
       default:

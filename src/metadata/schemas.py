@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import Optional, Literal
 from enum import Enum
-import models.metadata
+import src.metadata.metadata as canonical
 
 class VSAMType(str, Enum):
     KSDS = "KSDS"
@@ -26,8 +26,8 @@ class VSAMDataset(BaseModel):
     confidence_reasons: list[str] = Field(default_factory=list)
     validation_result: Optional[dict] = None
 
-    def to_canonical(self) -> models.metadata.Dataset:
-        return models.metadata.Dataset(
+    def to_canonical(self) -> canonical.Dataset:
+        return canonical.Dataset(
             id=self.dsn,
             dsn=self.dsn,
             organization=self.vsam_type.value,
@@ -50,8 +50,8 @@ class COBOLField(BaseModel):
     length: Optional[int] = None
     children: list["COBOLField"] = Field(default_factory=list)
 
-    def to_canonical(self) -> models.metadata.Field:
-        return models.metadata.Field(
+    def to_canonical(self) -> canonical.Field:
+        return canonical.Field(
             id=self.name,
             name=self.name,
             pic_type=self.cobol_type,
@@ -75,8 +75,8 @@ class CopyBook(BaseModel):
     confidence_reasons: list[str] = Field(default_factory=list)
     validation_result: Optional[dict] = None
 
-    def to_canonical(self) -> models.metadata.Copybook:
-        return models.metadata.Copybook(
+    def to_canonical(self) -> canonical.Copybook:
+        return canonical.Copybook(
             id=self.filename,
             filepath=self.filename,
             language=self.language,
@@ -98,8 +98,8 @@ class BusinessRule(BaseModel):
     confidence_reasons: list[str] = Field(default_factory=list)
     validation_result: Optional[dict] = None
 
-    def to_canonical(self) -> models.metadata.BusinessRule:
-        return models.metadata.BusinessRule(
+    def to_canonical(self) -> canonical.BusinessRule:
+        return canonical.BusinessRule(
             id=f"{self.field_name}_{self.usage}",
             rule_type=self.usage,
             description=self.description,
@@ -123,8 +123,8 @@ class SourceCodeAnalysis(BaseModel):
     confidence_reasons: list[str] = Field(default_factory=list)
     validation_result: Optional[dict] = None
 
-    def to_canonical_program(self) -> models.metadata.Program:
-        return models.metadata.Program(
+    def to_canonical_program(self) -> canonical.Program:
+        return canonical.Program(
             id=self.program_name,
             filepath=f"{self.program_name}.cbl",  # Assumed for now
             language="Unknown",

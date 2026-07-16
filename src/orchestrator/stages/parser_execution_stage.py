@@ -7,37 +7,47 @@ logger = logging.getLogger(__name__)
 
 class ParserExecutionStage(PipelineStage):
     def execute(self, context: PipelineContext) -> None:
-        inventory = context.session.artifact_inventory
-        if not inventory:
-            return
+        try:
+            inventory = context.session.artifact_inventory
+            if not inventory:
+                return
+                
+            parsers_run = 0
+            if not parser_registry._parsers:
+                parser_registry.discover_parsers()
             
-        parsers_run = 0
-        
-        # We process COBOL
-        if inventory.cobol_files:
-            cobol_parser = parser_registry.get_parser("COBOL")
-            if cobol_parser:
-                parsers_run += 1
-                for path, content in inventory.cobol_files.items():
-                    try:
-                        cobol_parser.parse(path, content, context.session)
-                    except Exception as e:
-                        logger.error(f"Error parsing COBOL {path}: {e}")
-
-        # We process JCL
-        if inventory.jcl_files:
-            jcl_parser = parser_registry.get_parser("JCL")
-            if jcl_parser:
-                parsers_run += 1
-                for path, content in inventory.jcl_files.items():
-                    try:
-                        jcl_parser.parse(path, content, context.session)
-                    except Exception as e:
-                        logger.error(f"Error parsing JCL {path}: {e}")
-                        
-        # We process IDCAMS (if categorized)
-        # Note: In standard inventory, IDCAMS might fall into other_files or listcat depending on how it was sniffed.
-        # But we'd parse it here if there's a specific parser. We check the registry dynamically.
-        # For this prototype we'll assume the registry handles known mappings.
-        
-        context.metrics['parsers_executed'] = parsers_run
+            # We process COBOL
+            if inventory.cobol_files:
+                cobol_parser = parser_registry.get_parser("COBOL")
+                if cobol_parser:
+                    parsers_run += 1
+                    for path, content in inventory.cobol_files.items():
+                        try:
+                            evidence = cobol_parser.parse(path, content, context.session)
+                            context.session.extracted_evidence.extend(evidence)
+                        except Exception as e:
+                            logger.exception(f"Error parsing COBOL {path}: {e}")
+                            raise
+    
+            # We process JCL
+            if inventory.jcl_files:
+                jcl_parser = parser_registry.get_parser("JCL")
+                if jcl_parser:
+                    parsers_run += 1
+                    for path, content in inventory.jcl_files.items():
+                        try:
+                            evidence = jcl_parser.parse(path, content, context.session)
+                            context.session.extracted_evidence.extend(evidence)
+                        except Exception as e:
+                            logger.exception(f"Error parsing JCL {path}: {e}")
+                            raise
+                            
+            # We process IDCAMS (if categorized)
+            # Note: In standard inventory, IDCAMS might fall into other_files or listcat depending on how it was sniffed.
+            # But we'd parse it here if there's a specific parser. We check the registry dynamically.
+            # For this prototype we'll assume the registry handles known mappings.
+            
+            context.metrics['parsers_executed'] = parsers_run
+        except Exception as e:
+            logger.exception("Exception occurred in ParserExecutionStage")
+            raise

@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 const AppStoreContext = createContext(null);
+const DEFAULT_API_BASE_URL = 'http://localhost:8000';
 
 export const AppProvider = ({ children }) => {
   const [currentPage, setCurrentPage] = useState(() => {
@@ -17,7 +18,8 @@ export const AppProvider = ({ children }) => {
   const [backendOnline, setBackendOnline] = useState(false);
   const [settings, setSettings] = useState(() => {
     const saved = localStorage.getItem('mainframe_ai_settings');
-    return saved ? JSON.parse(saved) : { apiBaseUrl: 'http://localhost:8000' };
+    const parsed = saved ? JSON.parse(saved) : {};
+    return { ...parsed, apiBaseUrl: DEFAULT_API_BASE_URL };
   });
 
   useEffect(() => {
@@ -40,7 +42,7 @@ export const AppProvider = ({ children }) => {
   useEffect(() => {
     const checkHealth = async () => {
       try {
-        const res = await fetch(`${settings.apiBaseUrl}/api/health`);
+        const res = await fetch(`${settings.apiBaseUrl}/api/health`, { cache: 'no-store' });
         if (res.ok) {
           setBackendOnline(true);
         } else {
@@ -60,7 +62,7 @@ export const AppProvider = ({ children }) => {
     if (!backendOnline) return;
     const loadInitialJobs = async () => {
       try {
-        const res = await fetch(`${settings.apiBaseUrl}/api/jobs`);
+        const res = await fetch(`${settings.apiBaseUrl}/api/jobs`, { cache: 'no-store' });
         if (res.ok) {
           const data = await res.json();
           setJobs(data);

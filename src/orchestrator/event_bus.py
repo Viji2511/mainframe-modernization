@@ -23,15 +23,27 @@ class EventBus:
         """
         Publish an event to all registered subscribers.
         """
+        logger.info(f"Published:\n{event_type}")
+        
         if event_type not in self._subscribers:
-            logger.debug(f"No subscribers for event: {event_type}")
+            logger.info(f"Subscribers:\nNone")
             return
             
-        for callback in self._subscribers[event_type]:
+        subscribers = self._subscribers[event_type]
+        sub_names = [cb.__name__ if hasattr(cb, '__name__') else type(cb).__name__ for cb in subscribers]
+        logger.info(f"Subscribers:\n{', '.join(sub_names)} (Count: {len(subscribers)})")
+        
+        for callback in subscribers:
+            cb_name = callback.__name__ if hasattr(callback, '__name__') else type(callback).__name__
             try:
+                logger.info(f"Subscriber execution started: {cb_name}")
                 callback(event_data)
+                logger.info(f"Subscriber execution finished: {cb_name}")
             except Exception as e:
-                logger.error(f"Error executing callback for event {event_type}: {str(e)}")
+                logger.exception(f"Error executing callback {cb_name} for event {event_type}")
+                raise
+                
+        logger.info(f"Event completion: {event_type}")
 
 # Global instance for ease of use across the application
 event_bus = EventBus()

@@ -1,0 +1,2787 @@
+{
+  "repository_id": "uploads\\94ee8af8-86c3-42aa-a92d-78a93d48e44c",
+  "summary": {
+    "repository_name": "94ee8af8-86c3-42aa-a92d-78a93d48e44c",
+    "total_files": 99,
+    "cobol_programs": 32,
+    "copybooks": 29,
+    "jcl_jobs": 38,
+    "idcams_scripts": 0,
+    "catalog_files": 0,
+    "datasets": 29,
+    "business_rules": 0,
+    "relationships": 80,
+    "schema_generation_readiness": false,
+    "migration_readiness": "Evaluating",
+    "repository_health_score": 0
+  },
+  "programs": {
+    "CBACT01C": {
+      "id": "CBACT01C",
+      "name": "CBACT01C",
+      "traceability": {
+        "source_file": "CBACT01C.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "CBACT01C.cbl",
+      "datasets_accessed": [
+        "ACCTFILE",
+        "OUTFILE",
+        "ARRYFILE",
+        "VBRCFILE"
+      ],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "CBACT02C": {
+      "id": "CBACT02C",
+      "name": "CBACT02C",
+      "traceability": {
+        "source_file": "CBACT02C.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "CBACT02C.cbl",
+      "datasets_accessed": [
+        "CARDFILE"
+      ],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "CBACT03C": {
+      "id": "CBACT03C",
+      "name": "CBACT03C",
+      "traceability": {
+        "source_file": "CBACT03C.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "CBACT03C.cbl",
+      "datasets_accessed": [
+        "XREFFILE"
+      ],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "CBACT04C": {
+      "id": "CBACT04C",
+      "name": "CBACT04C",
+      "traceability": {
+        "source_file": "CBACT04C.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "CBACT04C.cbl",
+      "datasets_accessed": [
+        "TCATBALF",
+        "XREFFILE",
+        "ACCTFILE",
+        "DISCGRP",
+        "TRANSACT"
+      ],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "CBCUS01C": {
+      "id": "CBCUS01C",
+      "name": "CBCUS01C",
+      "traceability": {
+        "source_file": "CBCUS01C.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "CBCUS01C.cbl",
+      "datasets_accessed": [
+        "CUSTFILE"
+      ],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "CBEXPORT": {
+      "id": "CBEXPORT",
+      "name": "CBEXPORT",
+      "traceability": {
+        "source_file": "CBEXPORT.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "CBEXPORT.cbl",
+      "datasets_accessed": [
+        "CUSTFILE",
+        "ACCTFILE",
+        "XREFFILE",
+        "TRANSACT",
+        "CARDFILE",
+        "EXPFILE"
+      ],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "CBIMPORT": {
+      "id": "CBIMPORT",
+      "name": "CBIMPORT",
+      "traceability": {
+        "source_file": "CBIMPORT.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "CBIMPORT.cbl",
+      "datasets_accessed": [
+        "EXPFILE",
+        "CUSTOUT",
+        "ACCTOUT",
+        "XREFOUT",
+        "TRNXOUT",
+        "CARDOUT",
+        "ERROUT"
+      ],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "CBSTM03A": {
+      "id": "CBSTM03A",
+      "name": "CBSTM03A",
+      "traceability": {
+        "source_file": "CBSTM03A.CBL",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "CBSTM03A.CBL",
+      "datasets_accessed": [
+        "STMTFILE",
+        "HTMLFILE"
+      ],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "CBSTM03B": {
+      "id": "CBSTM03B",
+      "name": "CBSTM03B",
+      "traceability": {
+        "source_file": "CBSTM03B.CBL",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "CBSTM03B.CBL",
+      "datasets_accessed": [
+        "TRNXFILE",
+        "XREFFILE",
+        "CUSTFILE",
+        "ACCTFILE"
+      ],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "CBTRN01C": {
+      "id": "CBTRN01C",
+      "name": "CBTRN01C",
+      "traceability": {
+        "source_file": "CBTRN01C.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "CBTRN01C.cbl",
+      "datasets_accessed": [
+        "DALYTRAN",
+        "CUSTFILE",
+        "XREFFILE",
+        "CARDFILE",
+        "ACCTFILE",
+        "TRANFILE"
+      ],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "CBTRN02C": {
+      "id": "CBTRN02C",
+      "name": "CBTRN02C",
+      "traceability": {
+        "source_file": "CBTRN02C.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "CBTRN02C.cbl",
+      "datasets_accessed": [
+        "DALYTRAN",
+        "TRANFILE",
+        "XREFFILE",
+        "DALYREJS",
+        "ACCTFILE",
+        "TCATBALF"
+      ],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "CBTRN03C": {
+      "id": "CBTRN03C",
+      "name": "CBTRN03C",
+      "traceability": {
+        "source_file": "CBTRN03C.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "CBTRN03C.cbl",
+      "datasets_accessed": [
+        "TRANFILE",
+        "CARDXREF",
+        "TRANTYPE",
+        "TRANCATG",
+        "TRANREPT",
+        "DATEPARM"
+      ],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "COACTUPC": {
+      "id": "COACTUPC",
+      "name": "COACTUPC",
+      "traceability": {
+        "source_file": "COACTUPC.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "COACTUPC.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "COACTVWC": {
+      "id": "COACTVWC",
+      "name": "COACTVWC",
+      "traceability": {
+        "source_file": "COACTVWC.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "COACTVWC.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "COADM01C": {
+      "id": "COADM01C",
+      "name": "COADM01C",
+      "traceability": {
+        "source_file": "COADM01C.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "COADM01C.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "COBIL00C": {
+      "id": "COBIL00C",
+      "name": "COBIL00C",
+      "traceability": {
+        "source_file": "COBIL00C.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "COBIL00C.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "COBSWAIT": {
+      "id": "COBSWAIT",
+      "name": "COBSWAIT",
+      "traceability": {
+        "source_file": "COBSWAIT.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "COBSWAIT.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "COCRDLIC": {
+      "id": "COCRDLIC",
+      "name": "COCRDLIC",
+      "traceability": {
+        "source_file": "COCRDLIC.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "COCRDLIC.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "COCRDSLC": {
+      "id": "COCRDSLC",
+      "name": "COCRDSLC",
+      "traceability": {
+        "source_file": "COCRDSLC.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "COCRDSLC.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "COCRDUPC": {
+      "id": "COCRDUPC",
+      "name": "COCRDUPC",
+      "traceability": {
+        "source_file": "COCRDUPC.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "COCRDUPC.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "COMEN01C": {
+      "id": "COMEN01C",
+      "name": "COMEN01C",
+      "traceability": {
+        "source_file": "COMEN01C.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "COMEN01C.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "CORPT00C": {
+      "id": "CORPT00C",
+      "name": "CORPT00C",
+      "traceability": {
+        "source_file": "CORPT00C.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "CORPT00C.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "COSGN00C": {
+      "id": "COSGN00C",
+      "name": "COSGN00C",
+      "traceability": {
+        "source_file": "COSGN00C.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "COSGN00C.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "COTRN00C": {
+      "id": "COTRN00C",
+      "name": "COTRN00C",
+      "traceability": {
+        "source_file": "COTRN00C.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "COTRN00C.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "COTRN01C": {
+      "id": "COTRN01C",
+      "name": "COTRN01C",
+      "traceability": {
+        "source_file": "COTRN01C.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "COTRN01C.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "COTRN02C": {
+      "id": "COTRN02C",
+      "name": "COTRN02C",
+      "traceability": {
+        "source_file": "COTRN02C.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "COTRN02C.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "COUSR00C": {
+      "id": "COUSR00C",
+      "name": "COUSR00C",
+      "traceability": {
+        "source_file": "COUSR00C.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "COUSR00C.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "COUSR01C": {
+      "id": "COUSR01C",
+      "name": "COUSR01C",
+      "traceability": {
+        "source_file": "COUSR01C.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "COUSR01C.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "COUSR02C": {
+      "id": "COUSR02C",
+      "name": "COUSR02C",
+      "traceability": {
+        "source_file": "COUSR02C.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "COUSR02C.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "COUSR03C": {
+      "id": "COUSR03C",
+      "name": "COUSR03C",
+      "traceability": {
+        "source_file": "COUSR03C.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "COUSR03C.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "CSUTLDPY": {
+      "id": "CSUTLDPY",
+      "name": "CSUTLDPY",
+      "traceability": {
+        "source_file": "CSUTLDPY.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "CSUTLDPY.cpy",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "CSUTLDTC": {
+      "id": "CSUTLDTC",
+      "name": "CSUTLDTC",
+      "traceability": {
+        "source_file": "CSUTLDTC.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "CSUTLDTC.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    }
+  },
+  "copybooks": {
+    "COADM02Y": {
+      "id": "COADM02Y",
+      "name": "COADM02Y",
+      "traceability": {
+        "source_file": "COADM02Y.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "COADM02Y.cpy",
+      "fields": []
+    },
+    "COCOM01Y": {
+      "id": "COCOM01Y",
+      "name": "COCOM01Y",
+      "traceability": {
+        "source_file": "COCOM01Y.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "COCOM01Y.cpy",
+      "fields": []
+    },
+    "CODATECN": {
+      "id": "CODATECN",
+      "name": "CODATECN",
+      "traceability": {
+        "source_file": "CODATECN.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CODATECN.cpy",
+      "fields": []
+    },
+    "COMEN02Y": {
+      "id": "COMEN02Y",
+      "name": "COMEN02Y",
+      "traceability": {
+        "source_file": "COMEN02Y.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "COMEN02Y.cpy",
+      "fields": []
+    },
+    "COSTM01": {
+      "id": "COSTM01",
+      "name": "COSTM01",
+      "traceability": {
+        "source_file": "COSTM01.CPY",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "COSTM01.CPY",
+      "fields": []
+    },
+    "COTTL01Y": {
+      "id": "COTTL01Y",
+      "name": "COTTL01Y",
+      "traceability": {
+        "source_file": "COTTL01Y.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "COTTL01Y.cpy",
+      "fields": []
+    },
+    "CSDAT01Y": {
+      "id": "CSDAT01Y",
+      "name": "CSDAT01Y",
+      "traceability": {
+        "source_file": "CSDAT01Y.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CSDAT01Y.cpy",
+      "fields": []
+    },
+    "CSLKPCDY": {
+      "id": "CSLKPCDY",
+      "name": "CSLKPCDY",
+      "traceability": {
+        "source_file": "CSLKPCDY.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CSLKPCDY.cpy",
+      "fields": []
+    },
+    "CSMSG01Y": {
+      "id": "CSMSG01Y",
+      "name": "CSMSG01Y",
+      "traceability": {
+        "source_file": "CSMSG01Y.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CSMSG01Y.cpy",
+      "fields": []
+    },
+    "CSMSG02Y": {
+      "id": "CSMSG02Y",
+      "name": "CSMSG02Y",
+      "traceability": {
+        "source_file": "CSMSG02Y.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CSMSG02Y.cpy",
+      "fields": []
+    },
+    "CSSETATY": {
+      "id": "CSSETATY",
+      "name": "CSSETATY",
+      "traceability": {
+        "source_file": "CSSETATY.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CSSETATY.cpy",
+      "fields": []
+    },
+    "CSSTRPFY": {
+      "id": "CSSTRPFY",
+      "name": "CSSTRPFY",
+      "traceability": {
+        "source_file": "CSSTRPFY.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CSSTRPFY.cpy",
+      "fields": []
+    },
+    "CSUSR01Y": {
+      "id": "CSUSR01Y",
+      "name": "CSUSR01Y",
+      "traceability": {
+        "source_file": "CSUSR01Y.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CSUSR01Y.cpy",
+      "fields": []
+    },
+    "CSUTLDWY": {
+      "id": "CSUTLDWY",
+      "name": "CSUTLDWY",
+      "traceability": {
+        "source_file": "CSUTLDWY.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CSUTLDWY.cpy",
+      "fields": []
+    },
+    "CUSTREC": {
+      "id": "CUSTREC",
+      "name": "CUSTREC",
+      "traceability": {
+        "source_file": "CUSTREC.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CUSTREC.cpy",
+      "fields": []
+    },
+    "CVACT01Y": {
+      "id": "CVACT01Y",
+      "name": "CVACT01Y",
+      "traceability": {
+        "source_file": "CVACT01Y.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CVACT01Y.cpy",
+      "fields": []
+    },
+    "CVACT02Y": {
+      "id": "CVACT02Y",
+      "name": "CVACT02Y",
+      "traceability": {
+        "source_file": "CVACT02Y.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CVACT02Y.cpy",
+      "fields": []
+    },
+    "CVACT03Y": {
+      "id": "CVACT03Y",
+      "name": "CVACT03Y",
+      "traceability": {
+        "source_file": "CVACT03Y.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CVACT03Y.cpy",
+      "fields": []
+    },
+    "CVCRD01Y": {
+      "id": "CVCRD01Y",
+      "name": "CVCRD01Y",
+      "traceability": {
+        "source_file": "CVCRD01Y.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CVCRD01Y.cpy",
+      "fields": []
+    },
+    "CVCUS01Y": {
+      "id": "CVCUS01Y",
+      "name": "CVCUS01Y",
+      "traceability": {
+        "source_file": "CVCUS01Y.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CVCUS01Y.cpy",
+      "fields": []
+    },
+    "CVEXPORT": {
+      "id": "CVEXPORT",
+      "name": "CVEXPORT",
+      "traceability": {
+        "source_file": "CVEXPORT.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CVEXPORT.cpy",
+      "fields": []
+    },
+    "CVTRA01Y": {
+      "id": "CVTRA01Y",
+      "name": "CVTRA01Y",
+      "traceability": {
+        "source_file": "CVTRA01Y.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CVTRA01Y.cpy",
+      "fields": []
+    },
+    "CVTRA02Y": {
+      "id": "CVTRA02Y",
+      "name": "CVTRA02Y",
+      "traceability": {
+        "source_file": "CVTRA02Y.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CVTRA02Y.cpy",
+      "fields": []
+    },
+    "CVTRA03Y": {
+      "id": "CVTRA03Y",
+      "name": "CVTRA03Y",
+      "traceability": {
+        "source_file": "CVTRA03Y.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CVTRA03Y.cpy",
+      "fields": []
+    },
+    "CVTRA04Y": {
+      "id": "CVTRA04Y",
+      "name": "CVTRA04Y",
+      "traceability": {
+        "source_file": "CVTRA04Y.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CVTRA04Y.cpy",
+      "fields": []
+    },
+    "CVTRA05Y": {
+      "id": "CVTRA05Y",
+      "name": "CVTRA05Y",
+      "traceability": {
+        "source_file": "CVTRA05Y.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CVTRA05Y.cpy",
+      "fields": []
+    },
+    "CVTRA06Y": {
+      "id": "CVTRA06Y",
+      "name": "CVTRA06Y",
+      "traceability": {
+        "source_file": "CVTRA06Y.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CVTRA06Y.cpy",
+      "fields": []
+    },
+    "CVTRA07Y": {
+      "id": "CVTRA07Y",
+      "name": "CVTRA07Y",
+      "traceability": {
+        "source_file": "CVTRA07Y.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CVTRA07Y.cpy",
+      "fields": []
+    },
+    "UNUSED1Y": {
+      "id": "UNUSED1Y",
+      "name": "UNUSED1Y",
+      "traceability": {
+        "source_file": "UNUSED1Y.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "UNUSED1Y.cpy",
+      "fields": []
+    }
+  },
+  "datasets": {
+    "OEM.CICSTS.V05R06M0.CICS.SDFHLOAD": {
+      "id": "OEM.CICSTS.V05R06M0.CICS.SDFHLOAD",
+      "name": "OEM.CICSTS.V05R06M0.CICS.SDFHLOAD",
+      "traceability": {
+        "source_file": "CBADMCDJ.jcl",
+        "line_numbers": [],
+        "parser": "JCLParser",
+        "originating_evidence_id": "1dc6cdcf-f585-45d0-9479-fb50533475e2"
+      },
+      "properties": {},
+      "dsn": "OEM.CICSTS.V05R06M0.CICS.SDFHLOAD",
+      "type": "UNKNOWN",
+      "organization": null,
+      "record_length": null,
+      "key_length": null,
+      "key_offset": null,
+      "associated_jcl": [],
+      "fields": []
+    },
+    "OEM.CICSTS.DFHCSD": {
+      "id": "OEM.CICSTS.DFHCSD",
+      "name": "OEM.CICSTS.DFHCSD",
+      "traceability": {
+        "source_file": "CBADMCDJ.jcl",
+        "line_numbers": [],
+        "parser": "JCLParser",
+        "originating_evidence_id": "d3c3b891-cbff-47a5-93eb-3334c04991fe"
+      },
+      "properties": {},
+      "dsn": "OEM.CICSTS.DFHCSD",
+      "type": "UNKNOWN",
+      "organization": null,
+      "record_length": null,
+      "key_length": null,
+      "key_offset": null,
+      "associated_jcl": [],
+      "fields": []
+    },
+    "AWS.M2.CARDDEMO.TRANSACT.VSAM.KSDS": {
+      "id": "AWS.M2.CARDDEMO.TRANSACT.VSAM.KSDS",
+      "name": "AWS.M2.CARDDEMO.TRANSACT.VSAM.KSDS",
+      "traceability": {
+        "source_file": "CREASTMT.JCL",
+        "line_numbers": [],
+        "parser": "JCLParser",
+        "originating_evidence_id": "145b76e5-10eb-49d9-a344-cadab1b7238b"
+      },
+      "properties": {},
+      "dsn": "AWS.M2.CARDDEMO.TRANSACT.VSAM.KSDS",
+      "type": "UNKNOWN",
+      "organization": null,
+      "record_length": null,
+      "key_length": null,
+      "key_offset": null,
+      "associated_jcl": [],
+      "fields": []
+    },
+    "AWS.M2.CARDDEMO.TRXFL.SEQ": {
+      "id": "AWS.M2.CARDDEMO.TRXFL.SEQ",
+      "name": "AWS.M2.CARDDEMO.TRXFL.SEQ",
+      "traceability": {
+        "source_file": "CREASTMT.JCL",
+        "line_numbers": [],
+        "parser": "JCLParser",
+        "originating_evidence_id": "d3005d07-19b6-4e40-be79-54d6fbe0a541"
+      },
+      "properties": {},
+      "dsn": "AWS.M2.CARDDEMO.TRXFL.SEQ",
+      "type": "UNKNOWN",
+      "organization": null,
+      "record_length": null,
+      "key_length": null,
+      "key_offset": null,
+      "associated_jcl": [],
+      "fields": []
+    },
+    "AWS.M2.CARDDEMO.TRXFL.VSAM.KSDS": {
+      "id": "AWS.M2.CARDDEMO.TRXFL.VSAM.KSDS",
+      "name": "AWS.M2.CARDDEMO.TRXFL.VSAM.KSDS",
+      "traceability": {
+        "source_file": "CREASTMT.JCL",
+        "line_numbers": [],
+        "parser": "JCLParser",
+        "originating_evidence_id": "69311a88-7563-4737-9029-9ff9ba21c552"
+      },
+      "properties": {},
+      "dsn": "AWS.M2.CARDDEMO.TRXFL.VSAM.KSDS",
+      "type": "UNKNOWN",
+      "organization": null,
+      "record_length": null,
+      "key_length": null,
+      "key_offset": null,
+      "associated_jcl": [],
+      "fields": []
+    },
+    "AWS.M2.CARDDEMO.LOADLIB": {
+      "id": "AWS.M2.CARDDEMO.LOADLIB",
+      "name": "AWS.M2.CARDDEMO.LOADLIB",
+      "traceability": {
+        "source_file": "CREASTMT.JCL",
+        "line_numbers": [],
+        "parser": "JCLParser",
+        "originating_evidence_id": "e41bb9d4-b9d2-4c26-b03c-02e580271eb6"
+      },
+      "properties": {},
+      "dsn": "AWS.M2.CARDDEMO.LOADLIB",
+      "type": "UNKNOWN",
+      "organization": null,
+      "record_length": null,
+      "key_length": null,
+      "key_offset": null,
+      "associated_jcl": [],
+      "fields": []
+    },
+    "AWS.M2.CARDDEMO.CARDXREF.VSAM.KSDS": {
+      "id": "AWS.M2.CARDDEMO.CARDXREF.VSAM.KSDS",
+      "name": "AWS.M2.CARDDEMO.CARDXREF.VSAM.KSDS",
+      "traceability": {
+        "source_file": "CREASTMT.JCL",
+        "line_numbers": [],
+        "parser": "JCLParser",
+        "originating_evidence_id": "d441d680-bd82-494d-b750-27a3387a60b0"
+      },
+      "properties": {},
+      "dsn": "AWS.M2.CARDDEMO.CARDXREF.VSAM.KSDS",
+      "type": "UNKNOWN",
+      "organization": null,
+      "record_length": null,
+      "key_length": null,
+      "key_offset": null,
+      "associated_jcl": [],
+      "fields": []
+    },
+    "AWS.M2.CARDDEMO.ACCTDATA.VSAM.KSDS": {
+      "id": "AWS.M2.CARDDEMO.ACCTDATA.VSAM.KSDS",
+      "name": "AWS.M2.CARDDEMO.ACCTDATA.VSAM.KSDS",
+      "traceability": {
+        "source_file": "CREASTMT.JCL",
+        "line_numbers": [],
+        "parser": "JCLParser",
+        "originating_evidence_id": "6d32116d-5df9-4f2a-9163-6089303cec77"
+      },
+      "properties": {},
+      "dsn": "AWS.M2.CARDDEMO.ACCTDATA.VSAM.KSDS",
+      "type": "UNKNOWN",
+      "organization": null,
+      "record_length": null,
+      "key_length": null,
+      "key_offset": null,
+      "associated_jcl": [],
+      "fields": []
+    },
+    "AWS.M2.CARDDEMO.CUSTDATA.VSAM.KSDS": {
+      "id": "AWS.M2.CARDDEMO.CUSTDATA.VSAM.KSDS",
+      "name": "AWS.M2.CARDDEMO.CUSTDATA.VSAM.KSDS",
+      "traceability": {
+        "source_file": "CREASTMT.JCL",
+        "line_numbers": [],
+        "parser": "JCLParser",
+        "originating_evidence_id": "45e21449-b027-4d9c-bec3-cde6af9d5a71"
+      },
+      "properties": {},
+      "dsn": "AWS.M2.CARDDEMO.CUSTDATA.VSAM.KSDS",
+      "type": "UNKNOWN",
+      "organization": null,
+      "record_length": null,
+      "key_length": null,
+      "key_offset": null,
+      "associated_jcl": [],
+      "fields": []
+    },
+    "AWS.M2.CARDDEMO.TRANTYPE.PS": {
+      "id": "AWS.M2.CARDDEMO.TRANTYPE.PS",
+      "name": "AWS.M2.CARDDEMO.TRANTYPE.PS",
+      "traceability": {
+        "source_file": "DEFGDGD.jcl",
+        "line_numbers": [],
+        "parser": "JCLParser",
+        "originating_evidence_id": "cee0284a-3903-459c-a29f-fd31d3358c53"
+      },
+      "properties": {},
+      "dsn": "AWS.M2.CARDDEMO.TRANTYPE.PS",
+      "type": "UNKNOWN",
+      "organization": null,
+      "record_length": null,
+      "key_length": null,
+      "key_offset": null,
+      "associated_jcl": [],
+      "fields": []
+    },
+    "AWS.M2.CARDDEMO.TRANTYPE.BKUP": {
+      "id": "AWS.M2.CARDDEMO.TRANTYPE.BKUP",
+      "name": "AWS.M2.CARDDEMO.TRANTYPE.BKUP",
+      "traceability": {
+        "source_file": "DEFGDGD.jcl",
+        "line_numbers": [],
+        "parser": "JCLParser",
+        "originating_evidence_id": "df37163e-67ed-46cd-8091-a0fc6bc4f9cb"
+      },
+      "properties": {},
+      "dsn": "AWS.M2.CARDDEMO.TRANTYPE.BKUP",
+      "type": "UNKNOWN",
+      "organization": null,
+      "record_length": null,
+      "key_length": null,
+      "key_offset": null,
+      "associated_jcl": [],
+      "fields": []
+    },
+    "AWS.M2.CARDDEMO.TRANCATG.PS": {
+      "id": "AWS.M2.CARDDEMO.TRANCATG.PS",
+      "name": "AWS.M2.CARDDEMO.TRANCATG.PS",
+      "traceability": {
+        "source_file": "DEFGDGD.jcl",
+        "line_numbers": [],
+        "parser": "JCLParser",
+        "originating_evidence_id": "998d4289-2f92-416e-abcc-347d3609853e"
+      },
+      "properties": {},
+      "dsn": "AWS.M2.CARDDEMO.TRANCATG.PS",
+      "type": "UNKNOWN",
+      "organization": null,
+      "record_length": null,
+      "key_length": null,
+      "key_offset": null,
+      "associated_jcl": [],
+      "fields": []
+    },
+    "AWS.M2.CARDDEMO.TRANCATG.PS.BKUP": {
+      "id": "AWS.M2.CARDDEMO.TRANCATG.PS.BKUP",
+      "name": "AWS.M2.CARDDEMO.TRANCATG.PS.BKUP",
+      "traceability": {
+        "source_file": "DEFGDGD.jcl",
+        "line_numbers": [],
+        "parser": "JCLParser",
+        "originating_evidence_id": "c4c83cee-1605-4d30-899d-0299f49b8097"
+      },
+      "properties": {},
+      "dsn": "AWS.M2.CARDDEMO.TRANCATG.PS.BKUP",
+      "type": "UNKNOWN",
+      "organization": null,
+      "record_length": null,
+      "key_length": null,
+      "key_offset": null,
+      "associated_jcl": [],
+      "fields": []
+    },
+    "AWS.M2.CARDDEMO.DISCGRP.PS": {
+      "id": "AWS.M2.CARDDEMO.DISCGRP.PS",
+      "name": "AWS.M2.CARDDEMO.DISCGRP.PS",
+      "traceability": {
+        "source_file": "DEFGDGD.jcl",
+        "line_numbers": [],
+        "parser": "JCLParser",
+        "originating_evidence_id": "30a62a6b-64c0-47c3-9dae-28afaee7cab8"
+      },
+      "properties": {},
+      "dsn": "AWS.M2.CARDDEMO.DISCGRP.PS",
+      "type": "UNKNOWN",
+      "organization": null,
+      "record_length": null,
+      "key_length": null,
+      "key_offset": null,
+      "associated_jcl": [],
+      "fields": []
+    },
+    "AWS.M2.CARDDEMO.DISCGRP.BKUP": {
+      "id": "AWS.M2.CARDDEMO.DISCGRP.BKUP",
+      "name": "AWS.M2.CARDDEMO.DISCGRP.BKUP",
+      "traceability": {
+        "source_file": "DEFGDGD.jcl",
+        "line_numbers": [],
+        "parser": "JCLParser",
+        "originating_evidence_id": "5fe05771-aedf-418c-908e-0b7a56c75163"
+      },
+      "properties": {},
+      "dsn": "AWS.M2.CARDDEMO.DISCGRP.BKUP",
+      "type": "UNKNOWN",
+      "organization": null,
+      "record_length": null,
+      "key_length": null,
+      "key_offset": null,
+      "associated_jcl": [],
+      "fields": []
+    },
+    "AWS.M2.CARDDEMO.USRSEC.PS": {
+      "id": "AWS.M2.CARDDEMO.USRSEC.PS",
+      "name": "AWS.M2.CARDDEMO.USRSEC.PS",
+      "traceability": {
+        "source_file": "DUSRSECJ.jcl",
+        "line_numbers": [],
+        "parser": "JCLParser",
+        "originating_evidence_id": "3587d2a2-0f2b-42ff-9d7c-151f32debd19"
+      },
+      "properties": {},
+      "dsn": "AWS.M2.CARDDEMO.USRSEC.PS",
+      "type": "UNKNOWN",
+      "organization": null,
+      "record_length": null,
+      "key_length": null,
+      "key_offset": null,
+      "associated_jcl": [],
+      "fields": []
+    },
+    "AWS.M2.CARDDEMO.USRSEC.VSAM.KSDS": {
+      "id": "AWS.M2.CARDDEMO.USRSEC.VSAM.KSDS",
+      "name": "AWS.M2.CARDDEMO.USRSEC.VSAM.KSDS",
+      "traceability": {
+        "source_file": "DUSRSECJ.jcl",
+        "line_numbers": [],
+        "parser": "JCLParser",
+        "originating_evidence_id": "9aa35227-4cbc-4cf2-af96-21ac7d10a0a8"
+      },
+      "properties": {},
+      "dsn": "AWS.M2.CARDDEMO.USRSEC.VSAM.KSDS",
+      "type": "UNKNOWN",
+      "organization": null,
+      "record_length": null,
+      "key_length": null,
+      "key_offset": null,
+      "associated_jcl": [],
+      "fields": []
+    },
+    "AWS.M2.CARDDEMO.ESDSRRDS.PS": {
+      "id": "AWS.M2.CARDDEMO.ESDSRRDS.PS",
+      "name": "AWS.M2.CARDDEMO.ESDSRRDS.PS",
+      "traceability": {
+        "source_file": "ESDSRRDS.jcl",
+        "line_numbers": [],
+        "parser": "JCLParser",
+        "originating_evidence_id": "0f25414c-0aea-4db5-ab36-7b8cda510d7a"
+      },
+      "properties": {},
+      "dsn": "AWS.M2.CARDDEMO.ESDSRRDS.PS",
+      "type": "UNKNOWN",
+      "organization": null,
+      "record_length": null,
+      "key_length": null,
+      "key_offset": null,
+      "associated_jcl": [],
+      "fields": []
+    },
+    "AWS.M2.CARDDEMO.USRSEC.VSAM.ESDS": {
+      "id": "AWS.M2.CARDDEMO.USRSEC.VSAM.ESDS",
+      "name": "AWS.M2.CARDDEMO.USRSEC.VSAM.ESDS",
+      "traceability": {
+        "source_file": "ESDSRRDS.jcl",
+        "line_numbers": [],
+        "parser": "JCLParser",
+        "originating_evidence_id": "07cc419e-bae4-4fff-8ea8-d454ef44fb29"
+      },
+      "properties": {},
+      "dsn": "AWS.M2.CARDDEMO.USRSEC.VSAM.ESDS",
+      "type": "UNKNOWN",
+      "organization": null,
+      "record_length": null,
+      "key_length": null,
+      "key_offset": null,
+      "associated_jcl": [],
+      "fields": []
+    },
+    "AWS.M2.CARDDEMO.USRSEC.VSAM.RRDS": {
+      "id": "AWS.M2.CARDDEMO.USRSEC.VSAM.RRDS",
+      "name": "AWS.M2.CARDDEMO.USRSEC.VSAM.RRDS",
+      "traceability": {
+        "source_file": "ESDSRRDS.jcl",
+        "line_numbers": [],
+        "parser": "JCLParser",
+        "originating_evidence_id": "828c88fe-196a-40bf-99c8-bd4a4139a5e4"
+      },
+      "properties": {},
+      "dsn": "AWS.M2.CARDDEMO.USRSEC.VSAM.RRDS",
+      "type": "UNKNOWN",
+      "organization": null,
+      "record_length": null,
+      "key_length": null,
+      "key_offset": null,
+      "associated_jcl": [],
+      "fields": []
+    },
+    "AWS.M2.CARDEMO.FTP.TEST": {
+      "id": "AWS.M2.CARDEMO.FTP.TEST",
+      "name": "AWS.M2.CARDEMO.FTP.TEST",
+      "traceability": {
+        "source_file": "INTRDRJ1.JCL",
+        "line_numbers": [],
+        "parser": "JCLParser",
+        "originating_evidence_id": "3bbcbdcc-6266-40c3-8a2d-cd344543e8db"
+      },
+      "properties": {},
+      "dsn": "AWS.M2.CARDEMO.FTP.TEST",
+      "type": "UNKNOWN",
+      "organization": null,
+      "record_length": null,
+      "key_length": null,
+      "key_offset": null,
+      "associated_jcl": [],
+      "fields": []
+    },
+    "AWS.M2.CARDEMO.FTP.TEST.BKUP": {
+      "id": "AWS.M2.CARDEMO.FTP.TEST.BKUP",
+      "name": "AWS.M2.CARDEMO.FTP.TEST.BKUP",
+      "traceability": {
+        "source_file": "INTRDRJ1.JCL",
+        "line_numbers": [],
+        "parser": "JCLParser",
+        "originating_evidence_id": "eef41397-319c-47ca-a01b-afe461eaa4c2"
+      },
+      "properties": {},
+      "dsn": "AWS.M2.CARDEMO.FTP.TEST.BKUP",
+      "type": "UNKNOWN",
+      "organization": null,
+      "record_length": null,
+      "key_length": null,
+      "key_offset": null,
+      "associated_jcl": [],
+      "fields": []
+    },
+    "AWS.M2.CARDDEMO.JCL": {
+      "id": "AWS.M2.CARDDEMO.JCL",
+      "name": "AWS.M2.CARDDEMO.JCL",
+      "traceability": {
+        "source_file": "INTRDRJ1.JCL",
+        "line_numbers": [],
+        "parser": "JCLParser",
+        "originating_evidence_id": "6117dcf1-4fbc-442c-a7ac-a8b4de954efd"
+      },
+      "properties": {},
+      "dsn": "AWS.M2.CARDDEMO.JCL",
+      "type": "UNKNOWN",
+      "organization": null,
+      "record_length": null,
+      "key_length": null,
+      "key_offset": null,
+      "associated_jcl": [],
+      "fields": []
+    },
+    "AWS.M2.CARDEMO.FTP.TEST.BKUP.INTRDR": {
+      "id": "AWS.M2.CARDEMO.FTP.TEST.BKUP.INTRDR",
+      "name": "AWS.M2.CARDEMO.FTP.TEST.BKUP.INTRDR",
+      "traceability": {
+        "source_file": "INTRDRJ2.JCL",
+        "line_numbers": [],
+        "parser": "JCLParser",
+        "originating_evidence_id": "72996baf-8d14-4e14-be81-7f6afdbedf24"
+      },
+      "properties": {},
+      "dsn": "AWS.M2.CARDEMO.FTP.TEST.BKUP.INTRDR",
+      "type": "UNKNOWN",
+      "organization": null,
+      "record_length": null,
+      "key_length": null,
+      "key_offset": null,
+      "associated_jcl": [],
+      "fields": []
+    },
+    "AWS.M2.CARDDEMO.ACCTDATA.PSCOMP": {
+      "id": "AWS.M2.CARDDEMO.ACCTDATA.PSCOMP",
+      "name": "AWS.M2.CARDDEMO.ACCTDATA.PSCOMP",
+      "traceability": {
+        "source_file": "READACCT.jcl",
+        "line_numbers": [],
+        "parser": "JCLParser",
+        "originating_evidence_id": "1d873428-d3cc-4f98-8c14-8dcddd742754"
+      },
+      "properties": {},
+      "dsn": "AWS.M2.CARDDEMO.ACCTDATA.PSCOMP",
+      "type": "UNKNOWN",
+      "organization": null,
+      "record_length": null,
+      "key_length": null,
+      "key_offset": null,
+      "associated_jcl": [],
+      "fields": []
+    },
+    "AWS.M2.CARDDEMO.ACCTDATA.ARRYPS": {
+      "id": "AWS.M2.CARDDEMO.ACCTDATA.ARRYPS",
+      "name": "AWS.M2.CARDDEMO.ACCTDATA.ARRYPS",
+      "traceability": {
+        "source_file": "READACCT.jcl",
+        "line_numbers": [],
+        "parser": "JCLParser",
+        "originating_evidence_id": "c05b639a-8369-4397-85fc-d7ee5c84859e"
+      },
+      "properties": {},
+      "dsn": "AWS.M2.CARDDEMO.ACCTDATA.ARRYPS",
+      "type": "UNKNOWN",
+      "organization": null,
+      "record_length": null,
+      "key_length": null,
+      "key_offset": null,
+      "associated_jcl": [],
+      "fields": []
+    },
+    "AWS.M2.CARDDEMO.ACCTDATA.VBPS": {
+      "id": "AWS.M2.CARDDEMO.ACCTDATA.VBPS",
+      "name": "AWS.M2.CARDDEMO.ACCTDATA.VBPS",
+      "traceability": {
+        "source_file": "READACCT.jcl",
+        "line_numbers": [],
+        "parser": "JCLParser",
+        "originating_evidence_id": "d2ae53d6-91a8-45c7-ae1e-76a33d657005"
+      },
+      "properties": {},
+      "dsn": "AWS.M2.CARDDEMO.ACCTDATA.VBPS",
+      "type": "UNKNOWN",
+      "organization": null,
+      "record_length": null,
+      "key_length": null,
+      "key_offset": null,
+      "associated_jcl": [],
+      "fields": []
+    },
+    "AWS.M2.LBD.TXT2PDF.EXEC": {
+      "id": "AWS.M2.LBD.TXT2PDF.EXEC",
+      "name": "AWS.M2.LBD.TXT2PDF.EXEC",
+      "traceability": {
+        "source_file": "TXT2PDF1.JCL",
+        "line_numbers": [],
+        "parser": "JCLParser",
+        "originating_evidence_id": "1a4b0870-0435-46ed-9c98-269dbafa4821"
+      },
+      "properties": {},
+      "dsn": "AWS.M2.LBD.TXT2PDF.EXEC",
+      "type": "UNKNOWN",
+      "organization": null,
+      "record_length": null,
+      "key_length": null,
+      "key_offset": null,
+      "associated_jcl": [],
+      "fields": []
+    },
+    "AWS.M2.CARDDEMO.STATEMNT.PS": {
+      "id": "AWS.M2.CARDDEMO.STATEMNT.PS",
+      "name": "AWS.M2.CARDDEMO.STATEMNT.PS",
+      "traceability": {
+        "source_file": "TXT2PDF1.JCL",
+        "line_numbers": [],
+        "parser": "JCLParser",
+        "originating_evidence_id": "d5d8e418-a1a8-440e-9f9e-a69897cb3018"
+      },
+      "properties": {},
+      "dsn": "AWS.M2.CARDDEMO.STATEMNT.PS",
+      "type": "UNKNOWN",
+      "organization": null,
+      "record_length": null,
+      "key_length": null,
+      "key_offset": null,
+      "associated_jcl": [],
+      "fields": []
+    }
+  },
+  "jcl_jobs": {
+    "ACCTFILE": {
+      "id": "ACCTFILE",
+      "name": "ACCTFILE",
+      "traceability": {
+        "source_file": "ACCTFILE.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "ACCTFILE.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "CARDFILE": {
+      "id": "CARDFILE",
+      "name": "CARDFILE",
+      "traceability": {
+        "source_file": "CARDFILE.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CARDFILE.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "CBADMCDJ": {
+      "id": "CBADMCDJ",
+      "name": "CBADMCDJ",
+      "traceability": {
+        "source_file": "CBADMCDJ.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CBADMCDJ.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "CBEXPORT": {
+      "id": "CBEXPORT",
+      "name": "CBEXPORT",
+      "traceability": {
+        "source_file": "CBEXPORT.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CBEXPORT.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "CBIMPORT": {
+      "id": "CBIMPORT",
+      "name": "CBIMPORT",
+      "traceability": {
+        "source_file": "CBIMPORT.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CBIMPORT.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "CLOSEFIL": {
+      "id": "CLOSEFIL",
+      "name": "CLOSEFIL",
+      "traceability": {
+        "source_file": "CLOSEFIL.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CLOSEFIL.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "COMBTRAN": {
+      "id": "COMBTRAN",
+      "name": "COMBTRAN",
+      "traceability": {
+        "source_file": "COMBTRAN.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "COMBTRAN.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "CREASTMT": {
+      "id": "CREASTMT",
+      "name": "CREASTMT",
+      "traceability": {
+        "source_file": "CREASTMT.JCL",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CREASTMT.JCL",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "CUSTFILE": {
+      "id": "CUSTFILE",
+      "name": "CUSTFILE",
+      "traceability": {
+        "source_file": "CUSTFILE.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CUSTFILE.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "DALYREJS": {
+      "id": "DALYREJS",
+      "name": "DALYREJS",
+      "traceability": {
+        "source_file": "DALYREJS.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "DALYREJS.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "DEFCUST": {
+      "id": "DEFCUST",
+      "name": "DEFCUST",
+      "traceability": {
+        "source_file": "DEFCUST.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "DEFCUST.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "DEFGDGB": {
+      "id": "DEFGDGB",
+      "name": "DEFGDGB",
+      "traceability": {
+        "source_file": "DEFGDGB.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "DEFGDGB.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "DEFGDGD": {
+      "id": "DEFGDGD",
+      "name": "DEFGDGD",
+      "traceability": {
+        "source_file": "DEFGDGD.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "DEFGDGD.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "DISCGRP": {
+      "id": "DISCGRP",
+      "name": "DISCGRP",
+      "traceability": {
+        "source_file": "DISCGRP.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "DISCGRP.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "DUSRSECJ": {
+      "id": "DUSRSECJ",
+      "name": "DUSRSECJ",
+      "traceability": {
+        "source_file": "DUSRSECJ.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "DUSRSECJ.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "ESDSRRDS": {
+      "id": "ESDSRRDS",
+      "name": "ESDSRRDS",
+      "traceability": {
+        "source_file": "ESDSRRDS.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "ESDSRRDS.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "FTPJCL": {
+      "id": "FTPJCL",
+      "name": "FTPJCL",
+      "traceability": {
+        "source_file": "FTPJCL.JCL",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "FTPJCL.JCL",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "INTCALC": {
+      "id": "INTCALC",
+      "name": "INTCALC",
+      "traceability": {
+        "source_file": "INTCALC.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "INTCALC.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "INTRDRJ1": {
+      "id": "INTRDRJ1",
+      "name": "INTRDRJ1",
+      "traceability": {
+        "source_file": "INTRDRJ1.JCL",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "INTRDRJ1.JCL",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "INTRDRJ2": {
+      "id": "INTRDRJ2",
+      "name": "INTRDRJ2",
+      "traceability": {
+        "source_file": "INTRDRJ2.JCL",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "INTRDRJ2.JCL",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "OPENFIL": {
+      "id": "OPENFIL",
+      "name": "OPENFIL",
+      "traceability": {
+        "source_file": "OPENFIL.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "OPENFIL.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "POSTTRAN": {
+      "id": "POSTTRAN",
+      "name": "POSTTRAN",
+      "traceability": {
+        "source_file": "POSTTRAN.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "POSTTRAN.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "PRTCATBL": {
+      "id": "PRTCATBL",
+      "name": "PRTCATBL",
+      "traceability": {
+        "source_file": "PRTCATBL.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "PRTCATBL.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "READACCT": {
+      "id": "READACCT",
+      "name": "READACCT",
+      "traceability": {
+        "source_file": "READACCT.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "READACCT.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "READCARD": {
+      "id": "READCARD",
+      "name": "READCARD",
+      "traceability": {
+        "source_file": "READCARD.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "READCARD.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "READCUST": {
+      "id": "READCUST",
+      "name": "READCUST",
+      "traceability": {
+        "source_file": "READCUST.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "READCUST.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "READXREF": {
+      "id": "READXREF",
+      "name": "READXREF",
+      "traceability": {
+        "source_file": "READXREF.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "READXREF.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "REPTFILE": {
+      "id": "REPTFILE",
+      "name": "REPTFILE",
+      "traceability": {
+        "source_file": "REPTFILE.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "REPTFILE.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "TCATBALF": {
+      "id": "TCATBALF",
+      "name": "TCATBALF",
+      "traceability": {
+        "source_file": "TCATBALF.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "TCATBALF.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "TRANBKP": {
+      "id": "TRANBKP",
+      "name": "TRANBKP",
+      "traceability": {
+        "source_file": "TRANBKP.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "TRANBKP.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "TRANCATG": {
+      "id": "TRANCATG",
+      "name": "TRANCATG",
+      "traceability": {
+        "source_file": "TRANCATG.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "TRANCATG.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "TRANFILE": {
+      "id": "TRANFILE",
+      "name": "TRANFILE",
+      "traceability": {
+        "source_file": "TRANFILE.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "TRANFILE.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "TRANIDX": {
+      "id": "TRANIDX",
+      "name": "TRANIDX",
+      "traceability": {
+        "source_file": "TRANIDX.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "TRANIDX.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "TRANREPT": {
+      "id": "TRANREPT",
+      "name": "TRANREPT",
+      "traceability": {
+        "source_file": "TRANREPT.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "TRANREPT.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "TRANTYPE": {
+      "id": "TRANTYPE",
+      "name": "TRANTYPE",
+      "traceability": {
+        "source_file": "TRANTYPE.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "TRANTYPE.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "TXT2PDF1": {
+      "id": "TXT2PDF1",
+      "name": "TXT2PDF1",
+      "traceability": {
+        "source_file": "TXT2PDF1.JCL",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "TXT2PDF1.JCL",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "WAITSTEP": {
+      "id": "WAITSTEP",
+      "name": "WAITSTEP",
+      "traceability": {
+        "source_file": "WAITSTEP.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "WAITSTEP.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "XREFFILE": {
+      "id": "XREFFILE",
+      "name": "XREFFILE",
+      "traceability": {
+        "source_file": "XREFFILE.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "XREFFILE.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    }
+  },
+  "idcams_definitions": {},
+  "business_rules": {},
+  "relationships": [
+    {
+      "source_id": "CBACT01C",
+      "target_id": "ACCTFILE",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "50f0d2ce-5cf4-4b17-a357-ea2ee3752435"
+      }
+    },
+    {
+      "source_id": "CBACT01C",
+      "target_id": "OUTFILE",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "02598ee6-fe5e-4f4e-9926-2c0b825e1adf"
+      }
+    },
+    {
+      "source_id": "CBACT01C",
+      "target_id": "ARRYFILE",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "4d0f5860-d656-498b-ae1a-ab889643b345"
+      }
+    },
+    {
+      "source_id": "CBACT01C",
+      "target_id": "VBRCFILE",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "2d347e63-d3e8-4aa4-bc40-69f88c6b3663"
+      }
+    },
+    {
+      "source_id": "CBACT02C",
+      "target_id": "CARDFILE",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "70d8ff58-ee88-4c19-80eb-fcdfceb74a81"
+      }
+    },
+    {
+      "source_id": "CBACT03C",
+      "target_id": "XREFFILE",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "fdf69693-e33a-4f4f-8de2-a9acdd0dfb5a"
+      }
+    },
+    {
+      "source_id": "CBACT04C",
+      "target_id": "TCATBALF",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "bf982538-5f2c-45f5-a9b9-9313aa93f71a"
+      }
+    },
+    {
+      "source_id": "CBACT04C",
+      "target_id": "XREFFILE",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "ef2f0449-e9ba-4be1-b20e-99058e1be41a"
+      }
+    },
+    {
+      "source_id": "CBACT04C",
+      "target_id": "ACCTFILE",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "d49f6156-0170-4099-8f5e-5275221a5379"
+      }
+    },
+    {
+      "source_id": "CBACT04C",
+      "target_id": "DISCGRP",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "f21a85ba-1f43-4bf7-b400-702f60dc49fa"
+      }
+    },
+    {
+      "source_id": "CBACT04C",
+      "target_id": "TRANSACT",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "8dfc1daa-3da8-427a-b9d9-32ee26262674"
+      }
+    },
+    {
+      "source_id": "CBCUS01C",
+      "target_id": "CUSTFILE",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "0a627070-4c5d-4939-89ef-5c91ead258ff"
+      }
+    },
+    {
+      "source_id": "CBEXPORT",
+      "target_id": "CUSTFILE",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "8dbc73d8-5a50-40c0-984a-6101fb8c809a"
+      }
+    },
+    {
+      "source_id": "CBEXPORT",
+      "target_id": "ACCTFILE",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "a46e54ac-6111-456d-b302-bf207f65f3d1"
+      }
+    },
+    {
+      "source_id": "CBEXPORT",
+      "target_id": "XREFFILE",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "abaf40be-377e-4e5a-b17a-de0ceb5873c6"
+      }
+    },
+    {
+      "source_id": "CBEXPORT",
+      "target_id": "TRANSACT",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "9cb4f5cb-19e5-422f-9288-69f326697b19"
+      }
+    },
+    {
+      "source_id": "CBEXPORT",
+      "target_id": "CARDFILE",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "9cc9e360-bb5b-4474-a250-c5764539e6ab"
+      }
+    },
+    {
+      "source_id": "CBEXPORT",
+      "target_id": "EXPFILE",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "78a9d73f-0ccb-4781-86dd-d80803f00efb"
+      }
+    },
+    {
+      "source_id": "CBIMPORT",
+      "target_id": "EXPFILE",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "c7dd188f-c528-45c0-a147-ee87855460bd"
+      }
+    },
+    {
+      "source_id": "CBIMPORT",
+      "target_id": "CUSTOUT",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "7d44a330-1035-40c2-b8e3-14471eac8f1a"
+      }
+    },
+    {
+      "source_id": "CBIMPORT",
+      "target_id": "ACCTOUT",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "defabf10-bc18-4fb3-826c-6eec0dfd2be2"
+      }
+    },
+    {
+      "source_id": "CBIMPORT",
+      "target_id": "XREFOUT",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "9be8c93a-6e22-4078-b056-d82ffa9a8301"
+      }
+    },
+    {
+      "source_id": "CBIMPORT",
+      "target_id": "TRNXOUT",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "a04dcbbf-ee43-45fe-8611-269ec23c5eda"
+      }
+    },
+    {
+      "source_id": "CBIMPORT",
+      "target_id": "CARDOUT",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "af9062be-d165-4384-8da7-e5af67f8f8cd"
+      }
+    },
+    {
+      "source_id": "CBIMPORT",
+      "target_id": "ERROUT",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "f3a177b8-d940-48b0-8846-718207ac2c57"
+      }
+    },
+    {
+      "source_id": "CBSTM03A",
+      "target_id": "STMTFILE",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "6930d415-8d41-4e8b-99a3-9149280f4b97"
+      }
+    },
+    {
+      "source_id": "CBSTM03A",
+      "target_id": "HTMLFILE",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "074bcc71-80f7-435f-89f0-dad6ba11b080"
+      }
+    },
+    {
+      "source_id": "CBSTM03B",
+      "target_id": "TRNXFILE",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "acea0c11-cdbc-4471-b8fe-79317688f3bd"
+      }
+    },
+    {
+      "source_id": "CBSTM03B",
+      "target_id": "XREFFILE",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "2457cff8-1e31-460b-95ec-4f0c2b6731e8"
+      }
+    },
+    {
+      "source_id": "CBSTM03B",
+      "target_id": "CUSTFILE",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "73b19ade-2723-4b47-af08-b1950e6dffce"
+      }
+    },
+    {
+      "source_id": "CBSTM03B",
+      "target_id": "ACCTFILE",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "8f27cd1c-c304-4356-893a-cca4c1540b25"
+      }
+    },
+    {
+      "source_id": "CBTRN01C",
+      "target_id": "DALYTRAN",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "435151b6-c984-412e-892e-374fdeba93bd"
+      }
+    },
+    {
+      "source_id": "CBTRN01C",
+      "target_id": "CUSTFILE",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "2e4a556b-15bb-4fba-b91f-99cbe0f81bfc"
+      }
+    },
+    {
+      "source_id": "CBTRN01C",
+      "target_id": "XREFFILE",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "c645fb17-7b36-4e98-bcdc-f0319113a073"
+      }
+    },
+    {
+      "source_id": "CBTRN01C",
+      "target_id": "CARDFILE",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "358d3de9-957f-4cf6-9832-0ed19cf1348b"
+      }
+    },
+    {
+      "source_id": "CBTRN01C",
+      "target_id": "ACCTFILE",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "38ae24c4-c9b5-4aad-abed-7a5688908b06"
+      }
+    },
+    {
+      "source_id": "CBTRN01C",
+      "target_id": "TRANFILE",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "e618742e-8b72-417a-952c-321cc0b157b1"
+      }
+    },
+    {
+      "source_id": "CBTRN02C",
+      "target_id": "DALYTRAN",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "c8ebd11c-542f-4f1f-82b8-ebbfe4f29219"
+      }
+    },
+    {
+      "source_id": "CBTRN02C",
+      "target_id": "TRANFILE",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "a5e2a95e-f672-414f-a348-7bc80bde4f8b"
+      }
+    },
+    {
+      "source_id": "CBTRN02C",
+      "target_id": "XREFFILE",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "78282f49-81b1-48c4-a706-3bcefc02283a"
+      }
+    },
+    {
+      "source_id": "CBTRN02C",
+      "target_id": "DALYREJS",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "d79a3464-f4bf-41ca-a8e4-a723907923d6"
+      }
+    },
+    {
+      "source_id": "CBTRN02C",
+      "target_id": "ACCTFILE",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "23856004-9f9b-42e1-817a-431e1d0689d1"
+      }
+    },
+    {
+      "source_id": "CBTRN02C",
+      "target_id": "TCATBALF",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "7caab31d-604c-47b1-b4ef-1e120e4246ce"
+      }
+    },
+    {
+      "source_id": "CBTRN03C",
+      "target_id": "TRANFILE",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "079c1063-2fb0-4e5f-b398-8c98521fc0b9"
+      }
+    },
+    {
+      "source_id": "CBTRN03C",
+      "target_id": "CARDXREF",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "fda49ba1-4ae1-4946-adb5-29a18afac410"
+      }
+    },
+    {
+      "source_id": "CBTRN03C",
+      "target_id": "TRANTYPE",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "e2f12b3c-29e6-4b65-8c9a-8f152e07be96"
+      }
+    },
+    {
+      "source_id": "CBTRN03C",
+      "target_id": "TRANCATG",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "f07e1af5-558e-4b29-b0cc-d00247a3d981"
+      }
+    },
+    {
+      "source_id": "CBTRN03C",
+      "target_id": "TRANREPT",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "7c270812-cdd8-47e1-85ca-f47f8ebfb3dd"
+      }
+    },
+    {
+      "source_id": "CBTRN03C",
+      "target_id": "DATEPARM",
+      "rel_type": "ACCESSES",
+      "properties": {
+        "statement": "SELECT",
+        "evidence_id": "764a8153-b218-4b0d-8639-6cf6b03fbff3"
+      }
+    },
+    {
+      "source_id": "CBADMCDJ",
+      "target_id": "OEM.CICSTS.V05R06M0.CICS.SDFHLOAD",
+      "rel_type": "ALLOCATES",
+      "properties": {
+        "dd_name": "STEPLIB",
+        "evidence_id": "1dc6cdcf-f585-45d0-9479-fb50533475e2"
+      }
+    },
+    {
+      "source_id": "CBADMCDJ",
+      "target_id": "OEM.CICSTS.DFHCSD",
+      "rel_type": "ALLOCATES",
+      "properties": {
+        "dd_name": "DFHCSD",
+        "evidence_id": "d3c3b891-cbff-47a5-93eb-3334c04991fe"
+      }
+    },
+    {
+      "source_id": "CREASTMT",
+      "target_id": "AWS.M2.CARDDEMO.TRANSACT.VSAM.KSDS",
+      "rel_type": "ALLOCATES",
+      "properties": {
+        "dd_name": "SORTIN",
+        "evidence_id": "145b76e5-10eb-49d9-a344-cadab1b7238b"
+      }
+    },
+    {
+      "source_id": "CREASTMT",
+      "target_id": "AWS.M2.CARDDEMO.TRXFL.SEQ",
+      "rel_type": "ALLOCATES",
+      "properties": {
+        "dd_name": "SORTOUT",
+        "evidence_id": "d3005d07-19b6-4e40-be79-54d6fbe0a541"
+      }
+    },
+    {
+      "source_id": "CREASTMT",
+      "target_id": "AWS.M2.CARDDEMO.TRXFL.VSAM.KSDS",
+      "rel_type": "ALLOCATES",
+      "properties": {
+        "dd_name": "OUTFILE",
+        "evidence_id": "69311a88-7563-4737-9029-9ff9ba21c552"
+      }
+    },
+    {
+      "source_id": "CREASTMT",
+      "target_id": "AWS.M2.CARDDEMO.LOADLIB",
+      "rel_type": "ALLOCATES",
+      "properties": {
+        "dd_name": "STEPLIB",
+        "evidence_id": "e41bb9d4-b9d2-4c26-b03c-02e580271eb6"
+      }
+    },
+    {
+      "source_id": "CREASTMT",
+      "target_id": "AWS.M2.CARDDEMO.CARDXREF.VSAM.KSDS",
+      "rel_type": "ALLOCATES",
+      "properties": {
+        "dd_name": "XREFFILE",
+        "evidence_id": "d441d680-bd82-494d-b750-27a3387a60b0"
+      }
+    },
+    {
+      "source_id": "CREASTMT",
+      "target_id": "AWS.M2.CARDDEMO.ACCTDATA.VSAM.KSDS",
+      "rel_type": "ALLOCATES",
+      "properties": {
+        "dd_name": "ACCTFILE",
+        "evidence_id": "6d32116d-5df9-4f2a-9163-6089303cec77"
+      }
+    },
+    {
+      "source_id": "CREASTMT",
+      "target_id": "AWS.M2.CARDDEMO.CUSTDATA.VSAM.KSDS",
+      "rel_type": "ALLOCATES",
+      "properties": {
+        "dd_name": "CUSTFILE",
+        "evidence_id": "45e21449-b027-4d9c-bec3-cde6af9d5a71"
+      }
+    },
+    {
+      "source_id": "DEFGDGD",
+      "target_id": "AWS.M2.CARDDEMO.TRANTYPE.PS",
+      "rel_type": "ALLOCATES",
+      "properties": {
+        "dd_name": "SYSUT1",
+        "evidence_id": "cee0284a-3903-459c-a29f-fd31d3358c53"
+      }
+    },
+    {
+      "source_id": "DEFGDGD",
+      "target_id": "AWS.M2.CARDDEMO.TRANTYPE.BKUP",
+      "rel_type": "ALLOCATES",
+      "properties": {
+        "dd_name": "SYSUT2",
+        "evidence_id": "df37163e-67ed-46cd-8091-a0fc6bc4f9cb"
+      }
+    },
+    {
+      "source_id": "DEFGDGD",
+      "target_id": "AWS.M2.CARDDEMO.TRANCATG.PS",
+      "rel_type": "ALLOCATES",
+      "properties": {
+        "dd_name": "SYSUT1",
+        "evidence_id": "998d4289-2f92-416e-abcc-347d3609853e"
+      }
+    },
+    {
+      "source_id": "DEFGDGD",
+      "target_id": "AWS.M2.CARDDEMO.TRANCATG.PS.BKUP",
+      "rel_type": "ALLOCATES",
+      "properties": {
+        "dd_name": "SYSUT2",
+        "evidence_id": "c4c83cee-1605-4d30-899d-0299f49b8097"
+      }
+    },
+    {
+      "source_id": "DEFGDGD",
+      "target_id": "AWS.M2.CARDDEMO.DISCGRP.PS",
+      "rel_type": "ALLOCATES",
+      "properties": {
+        "dd_name": "SYSUT1",
+        "evidence_id": "30a62a6b-64c0-47c3-9dae-28afaee7cab8"
+      }
+    },
+    {
+      "source_id": "DEFGDGD",
+      "target_id": "AWS.M2.CARDDEMO.DISCGRP.BKUP",
+      "rel_type": "ALLOCATES",
+      "properties": {
+        "dd_name": "SYSUT2",
+        "evidence_id": "5fe05771-aedf-418c-908e-0b7a56c75163"
+      }
+    },
+    {
+      "source_id": "DUSRSECJ",
+      "target_id": "AWS.M2.CARDDEMO.USRSEC.PS",
+      "rel_type": "ALLOCATES",
+      "properties": {
+        "dd_name": "DD01",
+        "evidence_id": "3587d2a2-0f2b-42ff-9d7c-151f32debd19"
+      }
+    },
+    {
+      "source_id": "DUSRSECJ",
+      "target_id": "AWS.M2.CARDDEMO.USRSEC.VSAM.KSDS",
+      "rel_type": "ALLOCATES",
+      "properties": {
+        "dd_name": "OUT",
+        "evidence_id": "9aa35227-4cbc-4cf2-af96-21ac7d10a0a8"
+      }
+    },
+    {
+      "source_id": "ESDSRRDS",
+      "target_id": "AWS.M2.CARDDEMO.ESDSRRDS.PS",
+      "rel_type": "ALLOCATES",
+      "properties": {
+        "dd_name": "DD01",
+        "evidence_id": "0f25414c-0aea-4db5-ab36-7b8cda510d7a"
+      }
+    },
+    {
+      "source_id": "ESDSRRDS",
+      "target_id": "AWS.M2.CARDDEMO.USRSEC.VSAM.ESDS",
+      "rel_type": "ALLOCATES",
+      "properties": {
+        "dd_name": "OUT",
+        "evidence_id": "07cc419e-bae4-4fff-8ea8-d454ef44fb29"
+      }
+    },
+    {
+      "source_id": "ESDSRRDS",
+      "target_id": "AWS.M2.CARDDEMO.USRSEC.VSAM.RRDS",
+      "rel_type": "ALLOCATES",
+      "properties": {
+        "dd_name": "OUT",
+        "evidence_id": "828c88fe-196a-40bf-99c8-bd4a4139a5e4"
+      }
+    },
+    {
+      "source_id": "INTRDRJ1",
+      "target_id": "AWS.M2.CARDEMO.FTP.TEST",
+      "rel_type": "ALLOCATES",
+      "properties": {
+        "dd_name": "IN",
+        "evidence_id": "3bbcbdcc-6266-40c3-8a2d-cd344543e8db"
+      }
+    },
+    {
+      "source_id": "INTRDRJ1",
+      "target_id": "AWS.M2.CARDEMO.FTP.TEST.BKUP",
+      "rel_type": "ALLOCATES",
+      "properties": {
+        "dd_name": "OUT",
+        "evidence_id": "eef41397-319c-47ca-a01b-afe461eaa4c2"
+      }
+    },
+    {
+      "source_id": "INTRDRJ1",
+      "target_id": "AWS.M2.CARDDEMO.JCL",
+      "rel_type": "ALLOCATES",
+      "properties": {
+        "dd_name": "SYSUT1",
+        "evidence_id": "6117dcf1-4fbc-442c-a7ac-a8b4de954efd"
+      }
+    },
+    {
+      "source_id": "INTRDRJ2",
+      "target_id": "AWS.M2.CARDEMO.FTP.TEST.BKUP",
+      "rel_type": "ALLOCATES",
+      "properties": {
+        "dd_name": "IN",
+        "evidence_id": "078d9489-62ce-4bc7-899f-53bc8e8f3c9d"
+      }
+    },
+    {
+      "source_id": "INTRDRJ2",
+      "target_id": "AWS.M2.CARDEMO.FTP.TEST.BKUP.INTRDR",
+      "rel_type": "ALLOCATES",
+      "properties": {
+        "dd_name": "OUT",
+        "evidence_id": "72996baf-8d14-4e14-be81-7f6afdbedf24"
+      }
+    },
+    {
+      "source_id": "READACCT",
+      "target_id": "AWS.M2.CARDDEMO.ACCTDATA.PSCOMP",
+      "rel_type": "ALLOCATES",
+      "properties": {
+        "dd_name": "DD01",
+        "evidence_id": "1d873428-d3cc-4f98-8c14-8dcddd742754"
+      }
+    },
+    {
+      "source_id": "READACCT",
+      "target_id": "AWS.M2.CARDDEMO.ACCTDATA.ARRYPS",
+      "rel_type": "ALLOCATES",
+      "properties": {
+        "dd_name": "DD02",
+        "evidence_id": "c05b639a-8369-4397-85fc-d7ee5c84859e"
+      }
+    },
+    {
+      "source_id": "READACCT",
+      "target_id": "AWS.M2.CARDDEMO.ACCTDATA.VBPS",
+      "rel_type": "ALLOCATES",
+      "properties": {
+        "dd_name": "DD03",
+        "evidence_id": "d2ae53d6-91a8-45c7-ae1e-76a33d657005"
+      }
+    },
+    {
+      "source_id": "TXT2PDF1",
+      "target_id": "AWS.M2.LBD.TXT2PDF.EXEC",
+      "rel_type": "ALLOCATES",
+      "properties": {
+        "dd_name": "SYSEXEC",
+        "evidence_id": "1a4b0870-0435-46ed-9c98-269dbafa4821"
+      }
+    },
+    {
+      "source_id": "TXT2PDF1",
+      "target_id": "AWS.M2.CARDDEMO.STATEMNT.PS",
+      "rel_type": "ALLOCATES",
+      "properties": {
+        "dd_name": "INDD",
+        "evidence_id": "d5d8e418-a1a8-440e-9f9e-a69897cb3018"
+      }
+    },
+    {
+      "source_id": "WAITSTEP",
+      "target_id": "AWS.M2.CARDDEMO.LOADLIB",
+      "rel_type": "ALLOCATES",
+      "properties": {
+        "dd_name": "STEPLIB",
+        "evidence_id": "62c32b71-33f9-48e2-bd47-b807f3d444bf"
+      }
+    }
+  ],
+  "database_schema": {},
+  "dependencies": [],
+  "statistics": {},
+  "knowledge_graph_reference": "InternalRelationshipEngineGraph"
+}

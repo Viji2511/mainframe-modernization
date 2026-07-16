@@ -46,3 +46,5 @@ class DiscoverySession(BaseModel):
     executed_rules: List[RuleTrace] = Field(default_factory=list)
     classification_results: List[Classification] = Field(default_factory=list)
     execution_metadata: Dict[str, Any] = Field(default_factory=dict)
+    normalized_metadata: Any = None
+    repository_knowledge: Any = None

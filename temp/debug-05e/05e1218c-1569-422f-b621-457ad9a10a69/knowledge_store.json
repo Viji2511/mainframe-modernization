@@ -1,0 +1,29 @@
+{
+  "repository_id": "uploads\\05e1218c-1569-422f-b621-457ad9a10a69",
+  "summary": {
+    "repository_name": "05e1218c-1569-422f-b621-457ad9a10a69",
+    "total_files": 1,
+    "cobol_programs": 0,
+    "copybooks": 0,
+    "jcl_jobs": 0,
+    "idcams_scripts": 0,
+    "catalog_files": 0,
+    "datasets": 0,
+    "business_rules": 0,
+    "relationships": 0,
+    "schema_generation_readiness": false,
+    "migration_readiness": "Evaluating",
+    "repository_health_score": 0
+  },
+  "programs": {},
+  "copybooks": {},
+  "datasets": {},
+  "jcl_jobs": {},
+  "idcams_definitions": {},
+  "business_rules": {},
+  "relationships": [],
+  "database_schema": {},
+  "dependencies": [],
+  "statistics": {},
+  "knowledge_graph_reference": "InternalRelationshipEngineGraph"
+}

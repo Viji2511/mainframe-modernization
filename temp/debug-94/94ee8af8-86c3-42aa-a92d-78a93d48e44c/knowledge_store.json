@@ -1,0 +1,1453 @@
+{
+  "repository_id": "uploads\\94ee8af8-86c3-42aa-a92d-78a93d48e44c",
+  "summary": {
+    "repository_name": "94ee8af8-86c3-42aa-a92d-78a93d48e44c",
+    "total_files": 99,
+    "cobol_programs": 32,
+    "copybooks": 29,
+    "jcl_jobs": 38,
+    "idcams_scripts": 0,
+    "catalog_files": 0,
+    "datasets": 0,
+    "business_rules": 0,
+    "relationships": 0,
+    "schema_generation_readiness": false,
+    "migration_readiness": "Evaluating",
+    "repository_health_score": 0
+  },
+  "programs": {
+    "CBACT01C": {
+      "id": "CBACT01C",
+      "name": "CBACT01C",
+      "traceability": {
+        "source_file": "CBACT01C.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "CBACT01C.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "CBACT02C": {
+      "id": "CBACT02C",
+      "name": "CBACT02C",
+      "traceability": {
+        "source_file": "CBACT02C.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "CBACT02C.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "CBACT03C": {
+      "id": "CBACT03C",
+      "name": "CBACT03C",
+      "traceability": {
+        "source_file": "CBACT03C.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "CBACT03C.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "CBACT04C": {
+      "id": "CBACT04C",
+      "name": "CBACT04C",
+      "traceability": {
+        "source_file": "CBACT04C.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "CBACT04C.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "CBCUS01C": {
+      "id": "CBCUS01C",
+      "name": "CBCUS01C",
+      "traceability": {
+        "source_file": "CBCUS01C.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "CBCUS01C.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "CBEXPORT": {
+      "id": "CBEXPORT",
+      "name": "CBEXPORT",
+      "traceability": {
+        "source_file": "CBEXPORT.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "CBEXPORT.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "CBIMPORT": {
+      "id": "CBIMPORT",
+      "name": "CBIMPORT",
+      "traceability": {
+        "source_file": "CBIMPORT.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "CBIMPORT.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "CBSTM03A": {
+      "id": "CBSTM03A",
+      "name": "CBSTM03A",
+      "traceability": {
+        "source_file": "CBSTM03A.CBL",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "CBSTM03A.CBL",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "CBSTM03B": {
+      "id": "CBSTM03B",
+      "name": "CBSTM03B",
+      "traceability": {
+        "source_file": "CBSTM03B.CBL",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "CBSTM03B.CBL",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "CBTRN01C": {
+      "id": "CBTRN01C",
+      "name": "CBTRN01C",
+      "traceability": {
+        "source_file": "CBTRN01C.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "CBTRN01C.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "CBTRN02C": {
+      "id": "CBTRN02C",
+      "name": "CBTRN02C",
+      "traceability": {
+        "source_file": "CBTRN02C.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "CBTRN02C.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "CBTRN03C": {
+      "id": "CBTRN03C",
+      "name": "CBTRN03C",
+      "traceability": {
+        "source_file": "CBTRN03C.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "CBTRN03C.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "COACTUPC": {
+      "id": "COACTUPC",
+      "name": "COACTUPC",
+      "traceability": {
+        "source_file": "COACTUPC.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "COACTUPC.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "COACTVWC": {
+      "id": "COACTVWC",
+      "name": "COACTVWC",
+      "traceability": {
+        "source_file": "COACTVWC.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "COACTVWC.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "COADM01C": {
+      "id": "COADM01C",
+      "name": "COADM01C",
+      "traceability": {
+        "source_file": "COADM01C.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "COADM01C.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "COBIL00C": {
+      "id": "COBIL00C",
+      "name": "COBIL00C",
+      "traceability": {
+        "source_file": "COBIL00C.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "COBIL00C.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "COBSWAIT": {
+      "id": "COBSWAIT",
+      "name": "COBSWAIT",
+      "traceability": {
+        "source_file": "COBSWAIT.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "COBSWAIT.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "COCRDLIC": {
+      "id": "COCRDLIC",
+      "name": "COCRDLIC",
+      "traceability": {
+        "source_file": "COCRDLIC.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "COCRDLIC.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "COCRDSLC": {
+      "id": "COCRDSLC",
+      "name": "COCRDSLC",
+      "traceability": {
+        "source_file": "COCRDSLC.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "COCRDSLC.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "COCRDUPC": {
+      "id": "COCRDUPC",
+      "name": "COCRDUPC",
+      "traceability": {
+        "source_file": "COCRDUPC.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "COCRDUPC.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "COMEN01C": {
+      "id": "COMEN01C",
+      "name": "COMEN01C",
+      "traceability": {
+        "source_file": "COMEN01C.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "COMEN01C.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "CORPT00C": {
+      "id": "CORPT00C",
+      "name": "CORPT00C",
+      "traceability": {
+        "source_file": "CORPT00C.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "CORPT00C.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "COSGN00C": {
+      "id": "COSGN00C",
+      "name": "COSGN00C",
+      "traceability": {
+        "source_file": "COSGN00C.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "COSGN00C.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "COTRN00C": {
+      "id": "COTRN00C",
+      "name": "COTRN00C",
+      "traceability": {
+        "source_file": "COTRN00C.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "COTRN00C.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "COTRN01C": {
+      "id": "COTRN01C",
+      "name": "COTRN01C",
+      "traceability": {
+        "source_file": "COTRN01C.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "COTRN01C.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "COTRN02C": {
+      "id": "COTRN02C",
+      "name": "COTRN02C",
+      "traceability": {
+        "source_file": "COTRN02C.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "COTRN02C.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "COUSR00C": {
+      "id": "COUSR00C",
+      "name": "COUSR00C",
+      "traceability": {
+        "source_file": "COUSR00C.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "COUSR00C.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "COUSR01C": {
+      "id": "COUSR01C",
+      "name": "COUSR01C",
+      "traceability": {
+        "source_file": "COUSR01C.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "COUSR01C.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "COUSR02C": {
+      "id": "COUSR02C",
+      "name": "COUSR02C",
+      "traceability": {
+        "source_file": "COUSR02C.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "COUSR02C.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "COUSR03C": {
+      "id": "COUSR03C",
+      "name": "COUSR03C",
+      "traceability": {
+        "source_file": "COUSR03C.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "COUSR03C.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "CSUTLDPY": {
+      "id": "CSUTLDPY",
+      "name": "CSUTLDPY",
+      "traceability": {
+        "source_file": "CSUTLDPY.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "CSUTLDPY.cpy",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    },
+    "CSUTLDTC": {
+      "id": "CSUTLDTC",
+      "name": "CSUTLDTC",
+      "traceability": {
+        "source_file": "CSUTLDTC.cbl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "language": "COBOL",
+      "filepath": "CSUTLDTC.cbl",
+      "datasets_accessed": [],
+      "copybooks_used": [],
+      "business_rules": []
+    }
+  },
+  "copybooks": {
+    "COADM02Y": {
+      "id": "COADM02Y",
+      "name": "COADM02Y",
+      "traceability": {
+        "source_file": "COADM02Y.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "COADM02Y.cpy",
+      "fields": []
+    },
+    "COCOM01Y": {
+      "id": "COCOM01Y",
+      "name": "COCOM01Y",
+      "traceability": {
+        "source_file": "COCOM01Y.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "COCOM01Y.cpy",
+      "fields": []
+    },
+    "CODATECN": {
+      "id": "CODATECN",
+      "name": "CODATECN",
+      "traceability": {
+        "source_file": "CODATECN.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CODATECN.cpy",
+      "fields": []
+    },
+    "COMEN02Y": {
+      "id": "COMEN02Y",
+      "name": "COMEN02Y",
+      "traceability": {
+        "source_file": "COMEN02Y.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "COMEN02Y.cpy",
+      "fields": []
+    },
+    "COSTM01": {
+      "id": "COSTM01",
+      "name": "COSTM01",
+      "traceability": {
+        "source_file": "COSTM01.CPY",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "COSTM01.CPY",
+      "fields": []
+    },
+    "COTTL01Y": {
+      "id": "COTTL01Y",
+      "name": "COTTL01Y",
+      "traceability": {
+        "source_file": "COTTL01Y.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "COTTL01Y.cpy",
+      "fields": []
+    },
+    "CSDAT01Y": {
+      "id": "CSDAT01Y",
+      "name": "CSDAT01Y",
+      "traceability": {
+        "source_file": "CSDAT01Y.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CSDAT01Y.cpy",
+      "fields": []
+    },
+    "CSLKPCDY": {
+      "id": "CSLKPCDY",
+      "name": "CSLKPCDY",
+      "traceability": {
+        "source_file": "CSLKPCDY.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CSLKPCDY.cpy",
+      "fields": []
+    },
+    "CSMSG01Y": {
+      "id": "CSMSG01Y",
+      "name": "CSMSG01Y",
+      "traceability": {
+        "source_file": "CSMSG01Y.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CSMSG01Y.cpy",
+      "fields": []
+    },
+    "CSMSG02Y": {
+      "id": "CSMSG02Y",
+      "name": "CSMSG02Y",
+      "traceability": {
+        "source_file": "CSMSG02Y.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CSMSG02Y.cpy",
+      "fields": []
+    },
+    "CSSETATY": {
+      "id": "CSSETATY",
+      "name": "CSSETATY",
+      "traceability": {
+        "source_file": "CSSETATY.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CSSETATY.cpy",
+      "fields": []
+    },
+    "CSSTRPFY": {
+      "id": "CSSTRPFY",
+      "name": "CSSTRPFY",
+      "traceability": {
+        "source_file": "CSSTRPFY.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CSSTRPFY.cpy",
+      "fields": []
+    },
+    "CSUSR01Y": {
+      "id": "CSUSR01Y",
+      "name": "CSUSR01Y",
+      "traceability": {
+        "source_file": "CSUSR01Y.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CSUSR01Y.cpy",
+      "fields": []
+    },
+    "CSUTLDWY": {
+      "id": "CSUTLDWY",
+      "name": "CSUTLDWY",
+      "traceability": {
+        "source_file": "CSUTLDWY.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CSUTLDWY.cpy",
+      "fields": []
+    },
+    "CUSTREC": {
+      "id": "CUSTREC",
+      "name": "CUSTREC",
+      "traceability": {
+        "source_file": "CUSTREC.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CUSTREC.cpy",
+      "fields": []
+    },
+    "CVACT01Y": {
+      "id": "CVACT01Y",
+      "name": "CVACT01Y",
+      "traceability": {
+        "source_file": "CVACT01Y.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CVACT01Y.cpy",
+      "fields": []
+    },
+    "CVACT02Y": {
+      "id": "CVACT02Y",
+      "name": "CVACT02Y",
+      "traceability": {
+        "source_file": "CVACT02Y.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CVACT02Y.cpy",
+      "fields": []
+    },
+    "CVACT03Y": {
+      "id": "CVACT03Y",
+      "name": "CVACT03Y",
+      "traceability": {
+        "source_file": "CVACT03Y.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CVACT03Y.cpy",
+      "fields": []
+    },
+    "CVCRD01Y": {
+      "id": "CVCRD01Y",
+      "name": "CVCRD01Y",
+      "traceability": {
+        "source_file": "CVCRD01Y.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CVCRD01Y.cpy",
+      "fields": []
+    },
+    "CVCUS01Y": {
+      "id": "CVCUS01Y",
+      "name": "CVCUS01Y",
+      "traceability": {
+        "source_file": "CVCUS01Y.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CVCUS01Y.cpy",
+      "fields": []
+    },
+    "CVEXPORT": {
+      "id": "CVEXPORT",
+      "name": "CVEXPORT",
+      "traceability": {
+        "source_file": "CVEXPORT.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CVEXPORT.cpy",
+      "fields": []
+    },
+    "CVTRA01Y": {
+      "id": "CVTRA01Y",
+      "name": "CVTRA01Y",
+      "traceability": {
+        "source_file": "CVTRA01Y.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CVTRA01Y.cpy",
+      "fields": []
+    },
+    "CVTRA02Y": {
+      "id": "CVTRA02Y",
+      "name": "CVTRA02Y",
+      "traceability": {
+        "source_file": "CVTRA02Y.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CVTRA02Y.cpy",
+      "fields": []
+    },
+    "CVTRA03Y": {
+      "id": "CVTRA03Y",
+      "name": "CVTRA03Y",
+      "traceability": {
+        "source_file": "CVTRA03Y.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CVTRA03Y.cpy",
+      "fields": []
+    },
+    "CVTRA04Y": {
+      "id": "CVTRA04Y",
+      "name": "CVTRA04Y",
+      "traceability": {
+        "source_file": "CVTRA04Y.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CVTRA04Y.cpy",
+      "fields": []
+    },
+    "CVTRA05Y": {
+      "id": "CVTRA05Y",
+      "name": "CVTRA05Y",
+      "traceability": {
+        "source_file": "CVTRA05Y.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CVTRA05Y.cpy",
+      "fields": []
+    },
+    "CVTRA06Y": {
+      "id": "CVTRA06Y",
+      "name": "CVTRA06Y",
+      "traceability": {
+        "source_file": "CVTRA06Y.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CVTRA06Y.cpy",
+      "fields": []
+    },
+    "CVTRA07Y": {
+      "id": "CVTRA07Y",
+      "name": "CVTRA07Y",
+      "traceability": {
+        "source_file": "CVTRA07Y.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CVTRA07Y.cpy",
+      "fields": []
+    },
+    "UNUSED1Y": {
+      "id": "UNUSED1Y",
+      "name": "UNUSED1Y",
+      "traceability": {
+        "source_file": "UNUSED1Y.cpy",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "UNUSED1Y.cpy",
+      "fields": []
+    }
+  },
+  "datasets": {},
+  "jcl_jobs": {
+    "ACCTFILE": {
+      "id": "ACCTFILE",
+      "name": "ACCTFILE",
+      "traceability": {
+        "source_file": "ACCTFILE.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "ACCTFILE.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "CARDFILE": {
+      "id": "CARDFILE",
+      "name": "CARDFILE",
+      "traceability": {
+        "source_file": "CARDFILE.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CARDFILE.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "CBADMCDJ": {
+      "id": "CBADMCDJ",
+      "name": "CBADMCDJ",
+      "traceability": {
+        "source_file": "CBADMCDJ.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CBADMCDJ.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "CBEXPORT": {
+      "id": "CBEXPORT",
+      "name": "CBEXPORT",
+      "traceability": {
+        "source_file": "CBEXPORT.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CBEXPORT.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "CBIMPORT": {
+      "id": "CBIMPORT",
+      "name": "CBIMPORT",
+      "traceability": {
+        "source_file": "CBIMPORT.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CBIMPORT.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "CLOSEFIL": {
+      "id": "CLOSEFIL",
+      "name": "CLOSEFIL",
+      "traceability": {
+        "source_file": "CLOSEFIL.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CLOSEFIL.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "COMBTRAN": {
+      "id": "COMBTRAN",
+      "name": "COMBTRAN",
+      "traceability": {
+        "source_file": "COMBTRAN.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "COMBTRAN.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "CREASTMT": {
+      "id": "CREASTMT",
+      "name": "CREASTMT",
+      "traceability": {
+        "source_file": "CREASTMT.JCL",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CREASTMT.JCL",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "CUSTFILE": {
+      "id": "CUSTFILE",
+      "name": "CUSTFILE",
+      "traceability": {
+        "source_file": "CUSTFILE.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "CUSTFILE.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "DALYREJS": {
+      "id": "DALYREJS",
+      "name": "DALYREJS",
+      "traceability": {
+        "source_file": "DALYREJS.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "DALYREJS.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "DEFCUST": {
+      "id": "DEFCUST",
+      "name": "DEFCUST",
+      "traceability": {
+        "source_file": "DEFCUST.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "DEFCUST.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "DEFGDGB": {
+      "id": "DEFGDGB",
+      "name": "DEFGDGB",
+      "traceability": {
+        "source_file": "DEFGDGB.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "DEFGDGB.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "DEFGDGD": {
+      "id": "DEFGDGD",
+      "name": "DEFGDGD",
+      "traceability": {
+        "source_file": "DEFGDGD.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "DEFGDGD.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "DISCGRP": {
+      "id": "DISCGRP",
+      "name": "DISCGRP",
+      "traceability": {
+        "source_file": "DISCGRP.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "DISCGRP.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "DUSRSECJ": {
+      "id": "DUSRSECJ",
+      "name": "DUSRSECJ",
+      "traceability": {
+        "source_file": "DUSRSECJ.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "DUSRSECJ.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "ESDSRRDS": {
+      "id": "ESDSRRDS",
+      "name": "ESDSRRDS",
+      "traceability": {
+        "source_file": "ESDSRRDS.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "ESDSRRDS.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "FTPJCL": {
+      "id": "FTPJCL",
+      "name": "FTPJCL",
+      "traceability": {
+        "source_file": "FTPJCL.JCL",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "FTPJCL.JCL",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "INTCALC": {
+      "id": "INTCALC",
+      "name": "INTCALC",
+      "traceability": {
+        "source_file": "INTCALC.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "INTCALC.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "INTRDRJ1": {
+      "id": "INTRDRJ1",
+      "name": "INTRDRJ1",
+      "traceability": {
+        "source_file": "INTRDRJ1.JCL",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "INTRDRJ1.JCL",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "INTRDRJ2": {
+      "id": "INTRDRJ2",
+      "name": "INTRDRJ2",
+      "traceability": {
+        "source_file": "INTRDRJ2.JCL",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "INTRDRJ2.JCL",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "OPENFIL": {
+      "id": "OPENFIL",
+      "name": "OPENFIL",
+      "traceability": {
+        "source_file": "OPENFIL.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "OPENFIL.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "POSTTRAN": {
+      "id": "POSTTRAN",
+      "name": "POSTTRAN",
+      "traceability": {
+        "source_file": "POSTTRAN.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "POSTTRAN.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "PRTCATBL": {
+      "id": "PRTCATBL",
+      "name": "PRTCATBL",
+      "traceability": {
+        "source_file": "PRTCATBL.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "PRTCATBL.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "READACCT": {
+      "id": "READACCT",
+      "name": "READACCT",
+      "traceability": {
+        "source_file": "READACCT.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "READACCT.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "READCARD": {
+      "id": "READCARD",
+      "name": "READCARD",
+      "traceability": {
+        "source_file": "READCARD.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "READCARD.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "READCUST": {
+      "id": "READCUST",
+      "name": "READCUST",
+      "traceability": {
+        "source_file": "READCUST.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "READCUST.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "READXREF": {
+      "id": "READXREF",
+      "name": "READXREF",
+      "traceability": {
+        "source_file": "READXREF.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "READXREF.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "REPTFILE": {
+      "id": "REPTFILE",
+      "name": "REPTFILE",
+      "traceability": {
+        "source_file": "REPTFILE.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "REPTFILE.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "TCATBALF": {
+      "id": "TCATBALF",
+      "name": "TCATBALF",
+      "traceability": {
+        "source_file": "TCATBALF.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "TCATBALF.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "TRANBKP": {
+      "id": "TRANBKP",
+      "name": "TRANBKP",
+      "traceability": {
+        "source_file": "TRANBKP.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "TRANBKP.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "TRANCATG": {
+      "id": "TRANCATG",
+      "name": "TRANCATG",
+      "traceability": {
+        "source_file": "TRANCATG.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "TRANCATG.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "TRANFILE": {
+      "id": "TRANFILE",
+      "name": "TRANFILE",
+      "traceability": {
+        "source_file": "TRANFILE.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "TRANFILE.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "TRANIDX": {
+      "id": "TRANIDX",
+      "name": "TRANIDX",
+      "traceability": {
+        "source_file": "TRANIDX.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "TRANIDX.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "TRANREPT": {
+      "id": "TRANREPT",
+      "name": "TRANREPT",
+      "traceability": {
+        "source_file": "TRANREPT.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "TRANREPT.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "TRANTYPE": {
+      "id": "TRANTYPE",
+      "name": "TRANTYPE",
+      "traceability": {
+        "source_file": "TRANTYPE.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "TRANTYPE.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "TXT2PDF1": {
+      "id": "TXT2PDF1",
+      "name": "TXT2PDF1",
+      "traceability": {
+        "source_file": "TXT2PDF1.JCL",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "TXT2PDF1.JCL",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "WAITSTEP": {
+      "id": "WAITSTEP",
+      "name": "WAITSTEP",
+      "traceability": {
+        "source_file": "WAITSTEP.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "WAITSTEP.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    },
+    "XREFFILE": {
+      "id": "XREFFILE",
+      "name": "XREFFILE",
+      "traceability": {
+        "source_file": "XREFFILE.jcl",
+        "line_numbers": [],
+        "parser": "InventoryClassification",
+        "originating_evidence_id": null
+      },
+      "properties": {},
+      "filepath": "XREFFILE.jcl",
+      "executed_programs": [],
+      "allocated_datasets": []
+    }
+  },
+  "idcams_definitions": {},
+  "business_rules": {},
+  "relationships": [],
+  "database_schema": {},
+  "dependencies": [],
+  "statistics": {},
+  "knowledge_graph_reference": "InternalRelationshipEngineGraph"
+}

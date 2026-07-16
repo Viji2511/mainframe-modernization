@@ -47,19 +47,19 @@ class ListcatDiscoveryStrategy(DiscoveryStrategy):
                 if m:
                     hints["record_length"] = int(m.group(1))
             if "KEYLEN" in u or "KEY-LEN" in u:
-                m = re.search(r"KEY.LEN[- ]+(\d+)", u)
+                m = re.search(r"KEY[- ]?LEN[- ]+(\d+)", u)
                 if m:
                     hints["key_length"] = int(m.group(1))
             if "KEYOFF" in u or "KEY-OFF" in u:
-                m = re.search(r"KEY.OFF[- ]+(\d+)", u)
+                m = re.search(r"KEY[- ]?OFF[- ]+(\d+)", u)
                 if m:
                     hints["key_offset"] = int(m.group(1))
             if "CISIZE" in u or "CI-SIZE" in u:
-                m = re.search(r"CI.SIZE[- ]+(\d+)", u)
+                m = re.search(r"CI[- ]?SIZE[- ]+(\d+)", u)
                 if m:
                     hints["ci_size"] = int(m.group(1))
             if "REC-TOTAL" in u:
-                m = re.search(r"REC.TOTAL[- ]+(\d+)", u)
+                m = re.search(r"REC[- ]?TOTAL[- ]+(\d+)", u)
                 if m:
                     hints["record_count"] = int(m.group(1))
             for vtype in ["KSDS", "ESDS", "RRDS", "LDS"]:
@@ -291,6 +291,10 @@ class VSAMDiscoveryAgent(BaseAgent):
             JCLDiscoveryStrategy(),
             SourceDiscoveryStrategy()
         ]
+
+    @staticmethod
+    def _pre_parse_listcat(listcat_text: str) -> dict:
+        return ListcatDiscoveryStrategy()._pre_parse_listcat(listcat_text)
 
     def run(self, inventory: Inventory, target_dsn: str = None) -> list[VSAMDataset]:
         datasets = []

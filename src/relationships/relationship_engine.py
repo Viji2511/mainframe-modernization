@@ -1,79 +1,98 @@
-from models.metadata import Repository, Relationship
-from models.schemas import VSAMDataset, CopyBook, SourceCodeAnalysis
+import logging
+from src.models.knowledge_store import RepositoryKnowledge, Relationship
+
+logger = logging.getLogger(__name__)
 
 class RelationshipEngine:
     """
-    Constructs graph edges (Relationships) between Canonical Metadata Models.
-    Instead of nested JSON, relationships explicitly define the architecture 
-    (e.g. Program -> READS -> Dataset).
+    Constructs the internal Repository Knowledge Graph edges.
+    Connects programs, datasets, copybooks, and rules based on extracted evidence and metadata.
     """
-    def __init__(self):
-        pass
-
-    def build_relationships(self, repository: Repository, vsam: VSAMDataset, copybook: CopyBook, analyses: list[SourceCodeAnalysis]):
+    
+    def build_knowledge_graph(self, knowledge: RepositoryKnowledge) -> RepositoryKnowledge:
         """
-        Infers relationships from the pipeline stage outputs and appends them to the Canonical Repository.
+        Infers and builds explicit relationships across all objects in the RepositoryKnowledge.
         """
-        dsn_id = vsam.dsn
-        
-        # Dataset -> Copybook
-        if copybook and copybook.filename != "NOT_FOUND":
-            copybook_id = copybook.filename
-            repository.relationships.append(Relationship(
-                source_id=dsn_id,
-                target_id=copybook_id,
-                rel_type="FORMATTED_BY"
-            ))
+        try:
+            logger.info(f"Building Repository Knowledge Graph for {knowledge.repository_id}")
             
-            # Dataset -> Field (implied by copybook)
-            for field in copybook.fields:
-                repository.relationships.append(Relationship(
-                    source_id=copybook_id,
-                    target_id=field.name,
-                    rel_type="CONTAINS_FIELD"
-                ))
-        
-        # Programs
-        for analysis in analyses:
-            prog_id = analysis.program_name
+            # We will iterate over the objects and synthesize deterministic edges
             
-            # Program -> Dataset
-            # We can use the operations (e.g. READ, WRITE) as the relationship type, 
-            # but for simplicity, we map Program -> ACCESSES -> Dataset.
-            rel_type = "ACCESSES"
-            if "WRITE" in str(analysis.operations).upper() or "REWRITE" in str(analysis.operations).upper():
-                rel_type = "MODIFIES"
-            elif "READ" in str(analysis.operations).upper():
-                rel_type = "READS"
+            # 1. Programs -> Datasets and Copybooks
+            for prog_id, prog in knowledge.programs.items():
+                for dsn in prog.datasets_accessed:
+                    # Based on the evidence (e.g. READ, WRITE, SELECT), we determine edge type
+                    # For this deterministic phase, we just default to ACCESSES unless specified in properties
+                    knowledge.relationships.append(Relationship(
+                        source_id=prog_id,
+                        target_id=dsn,
+                        rel_type="ACCESSES"
+                    ))
                 
-            repository.relationships.append(Relationship(
-                source_id=prog_id,
-                target_id=dsn_id,
-                rel_type=rel_type
-            ))
+                for cb in prog.copybooks_used:
+                    knowledge.relationships.append(Relationship(
+                        source_id=prog_id,
+                        target_id=cb,
+                        rel_type="USES_COPYBOOK"
+                    ))
+                    
+                for rule_id in prog.business_rules:
+                    knowledge.relationships.append(Relationship(
+                        source_id=prog_id,
+                        target_id=rule_id,
+                        rel_type="IMPLEMENTS_RULE"
+                    ))
+    
+            # 2. JCL -> Programs and Datasets
+            for jcl_id, jcl in knowledge.jcl_jobs.items():
+                for prog in jcl.executed_programs:
+                    knowledge.relationships.append(Relationship(
+                        source_id=jcl_id,
+                        target_id=prog,
+                        rel_type="EXECUTES_PROGRAM"
+                    ))
+                for dsn in jcl.allocated_datasets:
+                    knowledge.relationships.append(Relationship(
+                        source_id=jcl_id,
+                        target_id=dsn,
+                        rel_type="ALLOCATES_DATASET"
+                    ))
+                    
+            # 3. Datasets -> Copybooks/Fields
+            for dsn, ds in knowledge.datasets.items():
+                for cb in ds.associated_jcl:
+                    # If we mapped copybooks to datasets
+                    knowledge.relationships.append(Relationship(
+                        source_id=dsn,
+                        target_id=cb,
+                        rel_type="USES_RECORD_LAYOUT"
+                    ))
+                
+                # If dataset has fields (keys)
+                for field in ds.fields:
+                    if field.is_key:
+                        knowledge.relationships.append(Relationship(
+                            source_id=dsn,
+                            target_id=field.name,
+                            rel_type="HAS_KEY"
+                        ))
+    
+            # De-duplicate relationships based on source, target, and type
+            unique_rels = {}
+            for rel in knowledge.relationships:
+                key = f"{rel.source_id}_{rel.target_id}_{rel.rel_type}"
+                if key not in unique_rels:
+                    unique_rels[key] = rel
+                    
+            knowledge.relationships = list(unique_rels.values())
+            knowledge.summary.relationships = len(knowledge.relationships)
             
-            # Program -> Copybook
-            if copybook and copybook.filename != "NOT_FOUND":
-                repository.relationships.append(Relationship(
-                    source_id=prog_id,
-                    target_id=copybook.filename,
-                    rel_type="INCLUDES"
-                ))
-
-            # Program -> BusinessRule
-            for rule in analysis.business_rules:
-                rule_id = f"{rule.field_name}_{rule.usage}"
-                repository.relationships.append(Relationship(
-                    source_id=prog_id,
-                    target_id=rule_id,
-                    rel_type="IMPLEMENTS_RULE"
-                ))
-
-            # Program -> Program (called programs if any could be traced here)
-            # JCL -> Dataset (source_jcl -> DSN)
-            if vsam.source_jcl:
-                repository.relationships.append(Relationship(
-                    source_id=vsam.source_jcl,
-                    target_id=dsn_id,
-                    rel_type="ALLOCATES"
-                ))
+            logger.info(f"Generated {len(knowledge.relationships)} relationship edges for the Knowledge Graph.")
+            
+            # Mark graph reference
+            knowledge.knowledge_graph_reference = "InternalRelationshipEngineGraph"
+            
+            return knowledge
+        except Exception as e:
+            logger.exception("Exception occurred in RelationshipEngine.build_knowledge_graph")
+            raise

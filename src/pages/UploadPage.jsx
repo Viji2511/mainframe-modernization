@@ -7,7 +7,7 @@ import { parsePrompt } from '../utils/promptParser';
 import { Play, Loader2, Info } from 'lucide-react';
 
 const UploadPage = () => {
-  const { addJob, setCurrentPage, currentResult, jobs, backendOnline } = useAppStore();
+  const { setJobs, setCurrentPage, currentResult, jobs, backendOnline } = useAppStore();
   const api = useApi();
 
   const [files, setFiles] = useState([]);
@@ -56,15 +56,8 @@ const UploadPage = () => {
 
       await api.post('/api/run', runOptions);
 
-      const jobObject = {
-        job_id: jobId,
-        status: 'queued',
-        db: dbType,
-        dsn: runOptions.dsn || 'ALL',
-        files_count: files.length,
-        created_at: new Date().toISOString(),
-      };
-      addJob(jobObject);
+      const backendJobs = await api.get('/api/jobs');
+      setJobs(Array.isArray(backendJobs) ? backendJobs : backendJobs.value || []);
 
       setCurrentPage('jobs');
     } catch (err) {
