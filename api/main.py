@@ -509,6 +509,124 @@ async def get_job_status(job_id: str):
             return job
     raise HTTPException(status_code=404, detail="Job record not found.")
 
+def _db_to_ui_results(job_id: str) -> list[dict]:
+    from src.store.supabase_client import supabase_db
+    
+    # Query all necessary tables from Supabase for this repository
+    repo_datasets = supabase_db.select("Datasets")  # In our schema Datasets are global or need to be filtered? Wait, Datasets doesn't have repository_id! It's global.
+    # Wait! Our schema for Datasets doesn't have repository_id. But relationships links Programs -> Datasets.
+    # Programs have file_id -> Files have repository_id.
+    
+    # So we should get Files for this repo, then Programs, etc.
+    files = supabase_db.select("Files", {"repository_id": job_id})
+    file_ids = {f["file_id"] for f in files}
+    
+    programs = supabase_db.select("Programs")
+    repo_programs = [p for p in programs if p["file_id"] in file_ids]
+    prog_ids = {p["program_id"] for p in repo_programs}
+    
+    copybooks = supabase_db.select("Copybooks")
+    repo_copybooks = [c for c in copybooks if c["file_id"] in file_ids]
+    
+    relationships = supabase_db.select("Relationships")
+    repo_rels = [r for r in relationships if r["source_id"] in prog_ids]
+    
+    dataset_ids = {r["target_id"] for r in repo_rels if r["target_type"] == "Dataset"}
+    all_datasets = supabase_db.select("Datasets")
+    # if no relationships exist, we might have no datasets mapped yet.
+    
+    results = []
+    
+    first_copybook = repo_copybooks[0] if repo_copybooks else None
+    copybook_payload = None
+    if first_copybook:
+        # Get fields
+        cb_fields = supabase_db.select("Fields")
+        cb_fields = [f for f in cb_fields if f.get("dataset_id") == first_copybook["copybook_id"]]
+        
+        copybook_payload = {
+            "filename": first_copybook.get("copybook_name") or "UNKNOWN",
+            "dsn_match": None,
+            "fields": [
+                {
+                    "level": 1,
+                    "name": f.get("field_name", "UNKNOWN"),
+                    "pic": f.get("picture_clause"),
+                    "cobol_type": "DISPLAY",
+                    "occurs": None,
+                    "redefines": None,
+                    "offset": None,
+                    "length": f.get("length"),
+                    "children": [],
+                }
+                for f in cb_fields
+            ],
+            "raw_text": "",
+            "language": "COBOL",
+        }
+
+    # Generate source analyses for programs
+    program_analyses = []
+    for p in repo_programs:
+        prog_rels = [r for r in repo_rels if r["source_id"] == p["program_id"]]
+        p_dss = {r["target_id"] for r in prog_rels if r["target_type"] == "Dataset"}
+        
+        operations = []
+        if p_dss:
+            operations.append("READ")
+            
+        program_analyses.append({
+            "program_name": p["program_name"],
+            "vsam_dsn": list(p_dss)[0] if p_dss else "UNKNOWN",
+            "operations": operations,
+            "key_fields": [],
+            "business_rules": [],
+            "related_files": list(p_dss)
+        })
+
+    # If no datasets were mapped but we have copybooks, still return a row for UI
+    if not dataset_ids:
+        results.append({
+            "vsam_dataset": {
+                "dsn": job_id,
+                "vsam_type": "UNKNOWN",
+                "record_length": None,
+                "key_length": None,
+                "key_offset": None,
+                "source_jcl": None,
+                "notes": "Generated from repository knowledge store.",
+                "confidence": 0.2,
+            },
+            "copybook": copybook_payload,
+            "source_analyses": program_analyses,
+            "ready_for_schema_design": bool(copybook_payload and copybook_payload["fields"]),
+        })
+    else:
+        for ds_id in dataset_ids:
+            ds_info = next((d for d in all_datasets if d["dataset_id"] == ds_id), {})
+            dsn = ds_info.get("dataset_name") or ds_id or "UNKNOWN"
+            results.append({
+                "vsam_dataset": {
+                    "dsn": dsn,
+                    "vsam_type": ds_info.get("dataset_type") or "UNKNOWN",
+                    "record_length": ds_info.get("record_length"),
+                    "key_length": ds_info.get("key_length"),
+                    "key_offset": None,
+                    "source_jcl": None,
+                    "notes": "Generated from Supabase knowledge store.",
+                    "confidence": 0.8,
+                },
+                "copybook": copybook_payload,
+                "source_analyses": [
+                    {**a, "vsam_dsn": dsn}
+                    for a in program_analyses
+                    if not a["related_files"] or ds_id in a["related_files"]
+                ],
+                "ready_for_schema_design": bool(copybook_payload and copybook_payload["fields"]),
+            })
+            
+    return results
+
 @app.get("/api/result/{job_id}")
 async def get_job_result(job_id: str):
     # Verify status first
@@ -534,39 +652,11 @@ async def get_job_result(job_id: str):
     elif target_job["status"] != "done":
         return {"status": target_job["status"]}
 
-    output_dir = os.path.join(OUTPUT_BASE_DIR, job_id)
-    if not os.path.exists(output_dir):
+    try:
+        return _db_to_ui_results(job_id)
+    except Exception as e:
+        print(f"Error reading from Supabase for result: {e}")
         return []
-
-    # Gather legacy UI JSON results, including nested output folders from older runs.
-    results = []
-    for current_root, _, filenames in os.walk(output_dir):
-        for f in filenames:
-            if f.endswith("_result.json"):
-                file_path = os.path.join(current_root, f)
-                try:
-                    with open(file_path, "r", encoding="utf-8") as file:
-                        payload = json.load(file)
-                        if isinstance(payload, list):
-                            results.extend(payload)
-                        else:
-                            results.append(payload)
-                except Exception as e:
-                    print(f"Error loading result {f}: {e}")
-
-    if results:
-        return results
-
-    for file_path in _find_json_files(output_dir, "knowledge_store.json"):
-        try:
-            with open(file_path, "r", encoding="utf-8") as file:
-                knowledge = json.load(file)
-            return _knowledge_store_to_ui_results(knowledge)
-        except Exception as e:
-            print(f"Error loading knowledge store {file_path}: {e}")
-
-    # Return list (or single object if only one)
-    return results
 
 @app.get("/api/jobs")
 async def get_all_jobs():

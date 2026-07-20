@@ -7,9 +7,8 @@ from src.ai.base_agent import BaseAgent
 logger = logging.getLogger(__name__)
 
 class ModernizationAssistant:
-    def __init__(self, knowledge_store: RepositoryKnowledge):
-        self.knowledge = knowledge_store
-        self.context_builder = ContextBuilder(knowledge_store)
+    def __init__(self, repository_id=None):
+        self.context_builder = ContextBuilder(repository_id=repository_id)
         self.llm = BaseAgent(name="ModernizationAssistant")
         
     def _detect_intent(self, query: str) -> str:

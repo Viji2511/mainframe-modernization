@@ -12,7 +12,8 @@ class RepositoryDiscoveryStage(PipelineStage):
             # In a real system, the input_dir would come from the session/repo mapping
             # We assume repository_id is the input path for now to keep it simple
             agent = RepositoryDiscoveryAgent()
-            raw_files = agent.discover(context.session.repository_id)
+            input_dir = context.session.execution_metadata.get("input_dir", context.session.repository_id)
+            raw_files = agent.discover(input_dir)
             
             # We store the raw files temporarily in context to pass to the next stage
             context.session._raw_files = raw_files

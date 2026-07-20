@@ -38,6 +38,43 @@ class BaseParser(ABC):
             event_type = f"{self.artifact_type.capitalize()}MetadataExtracted"
             event_bus.publish(event_type, evidence_list)
             
+            # Insert evidence into Supabase
+            from src.store.supabase_client import supabase_db
+            import os
+            
+            for ev in evidence_list:
+                try:
+                    if ev.evidence_type == "SELECT":
+                        prog_id = os.path.basename(file_path).split(".")[0].upper()
+                        supabase_db.insert("Relationships", {
+                            "relationship_id": f"{prog_id}_{ev.value}_ACCESSES",
+                            "source_type": "Program",
+                            "source_id": prog_id,
+                            "target_type": "Dataset",
+                            "target_id": str(ev.value),
+                            "relationship_type": "ACCESSES"
+                        })
+                    elif ev.evidence_type == "DD":
+                        jcl_id = os.path.basename(file_path).split(".")[0].upper()
+                        supabase_db.insert("Relationships", {
+                            "relationship_id": f"{jcl_id}_{ev.value}_ALLOCATES",
+                            "source_type": "File",
+                            "source_id": jcl_id,
+                            "target_type": "Dataset",
+                            "target_id": str(ev.value),
+                            "relationship_type": "ALLOCATES"
+                        })
+                    elif ev.evidence_type == "DEFINE_CLUSTER":
+                        dsn = ev.entity_name
+                        supabase_db.insert("Datasets", {
+                            "dataset_id": dsn,
+                            "dataset_name": dsn,
+                            "dataset_type": ev.properties.get("organization", "UNKNOWN")
+                        })
+                except Exception as e:
+                    import logging
+                    logging.getLogger(__name__).error(f"Supabase insert error: {e}")
+                    
         # Optional metrics event could be published here
         event_bus.publish("ParserMetrics", metrics)
             

@@ -1,17 +1,16 @@
 import json
 import logging
-from typing import Dict, Any, List
-from src.models.knowledge_store import RepositoryKnowledge
+from src.store.supabase_client import supabase_db
 
 logger = logging.getLogger(__name__)
 
 class ContextBuilder:
     """
-    Acts as an intermediary between the Repository Knowledge Store and the LLM.
+    Acts as an intermediary between the Supabase Database and the LLM.
     Ensures that the LLM only receives a minimal, grounded context based on the user's query.
     """
-    def __init__(self, knowledge_store: RepositoryKnowledge):
-        self.knowledge = knowledge_store
+    def __init__(self, repository_id=None):
+        self.repository_id = repository_id
         
     def build_context_for_intent(self, intent: str, query: str) -> str:
         """
@@ -21,73 +20,134 @@ class ContextBuilder:
             query_upper = query.upper()
             context_items = {}
             
+            # Fetch base repository files to avoid fetching data from other jobs
+            file_ids = None
+            if self.repository_id:
+                files = supabase_db.select("Files", {"repository_id": self.repository_id})
+                file_ids = {f["file_id"] for f in files}
+                
+            def _filter_files(items):
+                if file_ids is None: return items
+                return [item for item in items if item.get("file_id") in file_ids]
+            
             if intent == "Repository Summary":
-                context_items["RepositorySummary"] = self.knowledge.summary.dict() if hasattr(self.knowledge.summary, 'dict') else self.knowledge.summary
+                repos = supabase_db.select("Repository")
+                files = supabase_db.select("Files")
+                progs = _filter_files(supabase_db.select("Programs"))
+                cbs = _filter_files(supabase_db.select("Copybooks"))
+                ds = supabase_db.select("Datasets")
+                
+                context_items["RepositorySummary"] = {
+                    "repositories": repos,
+                    "total_files": len(files),
+                    "total_programs": len(progs),
+                    "total_copybooks": len(cbs),
+                    "total_datasets": len(ds)
+                }
                 
             elif intent == "Program Analysis":
-                for prog_id, prog in self.knowledge.programs.items():
-                    if prog_id in query_upper:
-                        context_items[f"Program:{prog_id}"] = prog.dict() if hasattr(prog, 'dict') else prog
-                        for dsn in (prog.datasets_accessed if hasattr(prog, 'datasets_accessed') else []):
-                            if dsn in self.knowledge.datasets:
-                                ds = self.knowledge.datasets[dsn]
-                                context_items[f"Dataset:{dsn}"] = ds.dict() if hasattr(ds, 'dict') else ds
-                        for cb in (prog.copybooks_used if hasattr(prog, 'copybooks_used') else []):
-                            if cb in self.knowledge.copybooks:
-                                copybook = self.knowledge.copybooks[cb]
-                                context_items[f"Copybook:{cb}"] = copybook.dict() if hasattr(copybook, 'dict') else copybook
-                                
+                progs = _filter_files(supabase_db.select("Programs"))
+                for prog in progs:
+                    if prog["program_id"] in query_upper:
+                        context_items[f"Program:{prog['program_id']}"] = prog
+                        # Fetch Relationships
+                        rels = supabase_db.select("Relationships", {"source_id": prog["program_id"]})
+                        context_items[f"Program:{prog['program_id']}_Relationships"] = rels
+                        
+                        # Fetch Datasets used
+                        for rel in rels:
+                            if rel["target_type"] == "Dataset":
+                                ds = supabase_db.select("Datasets", {"dataset_id": rel["target_id"]})
+                                if ds:
+                                    context_items[f"Dataset:{rel['target_id']}"] = ds[0]
+
             elif intent == "Copybook Analysis":
-                for cb_id, cb in self.knowledge.copybooks.items():
-                    if cb_id in query_upper:
-                        context_items[f"Copybook:{cb_id}"] = cb.dict() if hasattr(cb, 'dict') else cb
+                cbs = _filter_files(supabase_db.select("Copybooks"))
+                for cb in cbs:
+                    if cb["copybook_id"] in query_upper:
+                        context_items[f"Copybook:{cb['copybook_id']}"] = cb
+                        fields = supabase_db.select("Fields", {"dataset_id": cb["copybook_id"]})
+                        context_items[f"Copybook:{cb['copybook_id']}_Fields"] = fields
 
             elif intent == "Dataset Analysis":
-                if "LIST" in query_upper or "WHICH" in query_upper:
-                    context_items["Datasets"] = [
-                        ds.dict() if hasattr(ds, 'dict') else ds 
-                        for ds in self.knowledge.datasets.values()
-                    ]
+                if "LIST" in query_upper or "WHICH" in query_upper or "ALL" in query_upper:
+                    context_items["Datasets"] = supabase_db.select("Datasets")
                 else:
-                    for dsn, ds in self.knowledge.datasets.items():
-                        if dsn in query_upper:
-                            context_items[f"Dataset:{dsn}"] = ds.dict() if hasattr(ds, 'dict') else ds
+                    datasets = supabase_db.select("Datasets")
+                    for ds in datasets:
+                        if ds["dataset_id"] in query_upper or (ds.get("dataset_name") and ds["dataset_name"].upper() in query_upper):
+                            context_items[f"Dataset:{ds['dataset_id']}"] = ds
                             
             elif intent == "Relationship Analysis":
-                # Find program in query to filter relationships
-                target_prog = None
-                for prog_id in self.knowledge.programs.keys():
-                    if prog_id in query_upper:
-                        target_prog = prog_id
-                        break
+                rels = supabase_db.select("Relationships")
+                filtered_rels = []
+                for rel in rels:
+                    if rel["source_id"] in query_upper or rel["target_id"] in query_upper:
+                        filtered_rels.append(rel)
                 
-                relevant_rels = []
-                for rel in self.knowledge.relationships:
-                    if target_prog:
-                        if rel.source_id == target_prog or rel.target_id == target_prog:
-                            relevant_rels.append(rel.dict() if hasattr(rel, 'dict') else rel)
-                    else:
-                        relevant_rels.append(rel.dict() if hasattr(rel, 'dict') else rel)
-                        
-                context_items["Relationships"] = relevant_rels
+                # If they just ask generally "Which programs access CUSTOMER?"
+                if not filtered_rels:
+                    for rel in rels:
+                        if rel["target_id"] in query_upper or "CUSTOMER" in rel["target_id"]:
+                            filtered_rels.append(rel)
+                            
+                context_items["Relationships"] = filtered_rels
 
             elif intent == "Schema Questions":
-                context_items["DatabaseSchema"] = self.knowledge.database_schema
+                schemas = supabase_db.select("GeneratedSchema")
+                filtered_schemas = []
+                for s in schemas:
+                    if s["schema_id"] in query_upper or "CUSTOMER" in s["schema_id"]:
+                        filtered_schemas.append(s)
+                if not filtered_schemas:
+                    filtered_schemas = schemas
+                context_items["DatabaseSchema"] = filtered_schemas
+                
+                # Fetch programs just in case they asked for a program schema
+                progs = supabase_db.select("Programs")
+                for prog in progs:
+                    if prog["program_id"] in query_upper:
+                        context_items[f"Program:{prog['program_id']}"] = prog
+                        rels = supabase_db.select("Relationships", {"source_id": prog["program_id"]})
+                        context_items[f"Program:{prog['program_id']}_Relationships"] = rels
 
             elif intent == "Business Rules":
-                context_items["BusinessRules"] = [br.dict() if hasattr(br, 'dict') else br for br in self.knowledge.business_rules.values()]
+                context_items["BusinessRules"] = supabase_db.select("BusinessRules")
 
             else:
                 # Semantic / Keyword search over everything (Unknown intent)
-                for cb_id, cb in self.knowledge.copybooks.items():
-                    if cb_id in query_upper:
-                        context_items[f"Copybook:{cb_id}"] = cb.dict() if hasattr(cb, 'dict') else cb
-                for prog_id, prog in self.knowledge.programs.items():
-                    if prog_id in query_upper:
-                        context_items[f"Program:{prog_id}"] = prog.dict() if hasattr(prog, 'dict') else prog
-                for dsn, ds in self.knowledge.datasets.items():
-                    if dsn in query_upper:
-                        context_items[f"Dataset:{dsn}"] = ds.dict() if hasattr(ds, 'dict') else ds
+                cbs = _filter_files(supabase_db.select("Copybooks"))
+                progs = _filter_files(supabase_db.select("Programs"))
+                datasets = supabase_db.select("Datasets")
+                
+                for cb in cbs:
+                    if cb["copybook_id"] in query_upper:
+                        context_items[f"Copybook:{cb['copybook_id']}"] = cb
+                for prog in progs:
+                    if prog["program_id"] in query_upper:
+                        context_items[f"Program:{prog['program_id']}"] = prog
+                for ds in datasets:
+                    if ds["dataset_id"] in query_upper:
+                        context_items[f"Dataset:{ds['dataset_id']}"] = ds
+                        
+                # If we still haven't found anything specific, return a general summary
+                # so the assistant can answer general questions like "explain the given files"
+                if not context_items:
+                    rels = supabase_db.select("Relationships")
+                    summary_progs = []
+                    for p in progs:
+                        p_rels = [r for r in rels if r["source_id"] == p["program_id"]]
+                        summary_progs.append({
+                            "program_name": p["program_name"],
+                            "datasets_accessed": [r["target_id"] for r in p_rels if r["target_type"] == "Dataset"],
+                            "copybooks_used": [r["target_id"] for r in p_rels if r["target_type"] == "Copybook"]
+                        })
+                        
+                    context_items["GeneralSummary"] = {
+                        "Programs": summary_progs,
+                        "Copybooks": [c["copybook_name"] for c in cbs],
+                        "Datasets": [d.get("dataset_name", d["dataset_id"]) for d in datasets]
+                    }
 
             return json.dumps(context_items, indent=2, default=str)
         except Exception as e:
@@ -95,5 +155,4 @@ class ContextBuilder:
             raise
 
     def build_context_for_query(self, query: str) -> str:
-        # Fallback for old API if needed
         return self.build_context_for_intent("Unknown", query)
