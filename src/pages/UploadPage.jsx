@@ -7,7 +7,7 @@ import { parsePrompt } from '../utils/promptParser';
 import { Play, Loader2, Info } from 'lucide-react';
 
 const UploadPage = () => {
-  const { setJobs, setCurrentPage, currentResult, jobs, backendOnline } = useAppStore();
+  const { addJob, setCurrentPage, currentResult, jobs, backendOnline } = useAppStore();
   const api = useApi();
 
   const [files, setFiles] = useState([]);
@@ -41,6 +41,7 @@ const UploadPage = () => {
     try {
       const formData = new FormData();
       files.forEach((file) => {
+        formData.append('paths', file.webkitRelativePath || file.name);
         formData.append('files', file);
       });
 
@@ -54,10 +55,22 @@ const UploadPage = () => {
         list_vsam: listVsamOnly,
       };
 
-      await api.post('/api/run', runOptions);
+      const runRes = await api.post('/api/run', runOptions);
 
-      const backendJobs = await api.get('/api/jobs');
-      setJobs(Array.isArray(backendJobs) ? backendJobs : backendJobs.value || []);
+      // /api/run queues the background worker. Do not immediately make a
+      // second request for /api/jobs: during uvicorn reloads that transient
+      // request can fail even though the queued job is valid. Seed the local
+      // job row and let JobsPage's existing polling reconcile its status.
+      addJob({
+        job_id: jobId,
+        status: runRes.status || 'queued',
+        db: dbType,
+        dsn: runOptions.dsn || 'ALL',
+        files_count: uploadRes.file_count || files.length,
+        created_at: new Date().toISOString(),
+        completed_at: null,
+        error: null,
+      });
 
       setCurrentPage('jobs');
     } catch (err) {

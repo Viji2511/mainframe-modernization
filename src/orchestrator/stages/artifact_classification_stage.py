@@ -1,6 +1,7 @@
 from src.orchestrator.stages.base_stage import PipelineStage
 from src.orchestrator.context import PipelineContext
 from src.agents.artifact_classification import ArtifactClassificationAgent
+from src.orchestrator.pipeline_debug import log as debug_log
 
 import logging
 
@@ -25,6 +26,11 @@ class ArtifactClassificationStage(PipelineStage):
                 len(inventory.listcat_files),
                 len(inventory.copybook_files)
             ])
+            for path, details in sorted(inventory.classification_details.items()):
+                debug_log(
+                    "Artifact Discovery",
+                    f"{path} -> {details['artifact_type']} ({details['reason']})"
+                )
         except Exception as e:
             logger.exception("Exception occurred in ArtifactClassificationStage")
             raise

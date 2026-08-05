@@ -2,6 +2,7 @@ import logging
 from src.orchestrator.stages.base_stage import PipelineStage
 from src.orchestrator.context import PipelineContext
 from src.parsers.registry import parser_registry
+from src.orchestrator.pipeline_debug import log as debug_log
 
 logger = logging.getLogger(__name__)
 
@@ -25,6 +26,7 @@ class ParserExecutionStage(PipelineStage):
                         try:
                             evidence = cobol_parser.parse(path, content, context.session)
                             context.session.extracted_evidence.extend(evidence)
+                            debug_log("Parser Execution", f"COBOLParser completed {path}: {len(evidence)} metadata objects")
                         except Exception as e:
                             logger.exception(f"Error parsing COBOL {path}: {e}")
                             raise
@@ -38,16 +40,28 @@ class ParserExecutionStage(PipelineStage):
                         try:
                             evidence = jcl_parser.parse(path, content, context.session)
                             context.session.extracted_evidence.extend(evidence)
+                            debug_log("Parser Execution", f"JCLParser completed {path}: {len(evidence)} metadata objects")
                         except Exception as e:
                             logger.exception(f"Error parsing JCL {path}: {e}")
                             raise
                             
-            # We process IDCAMS (if categorized)
-            # Note: In standard inventory, IDCAMS might fall into other_files or listcat depending on how it was sniffed.
-            # But we'd parse it here if there's a specific parser. We check the registry dynamically.
-            # For this prototype we'll assume the registry handles known mappings.
+            # IDCAMS control statements are repository artifacts in their own
+            # right and must not be silently left in the generic inventory.
+            if inventory.idcams_files:
+                idcams_parser = parser_registry.get_parser("IDCAMS")
+                if idcams_parser:
+                    parsers_run += 1
+                    for path, content in inventory.idcams_files.items():
+                        try:
+                            evidence = idcams_parser.parse(path, content, context.session)
+                            context.session.extracted_evidence.extend(evidence)
+                            debug_log("Parser Execution", f"IDCAMSParser completed {path}: {len(evidence)} metadata objects")
+                        except Exception as e:
+                            logger.exception(f"Error parsing IDCAMS {path}: {e}")
+                            raise
             
             context.metrics['parsers_executed'] = parsers_run
+            debug_log("Parser Execution", f"Parsers executed: {parsers_run}; evidence extracted: {len(context.session.extracted_evidence)}")
         except Exception as e:
             logger.exception("Exception occurred in ParserExecutionStage")
             raise

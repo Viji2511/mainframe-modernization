@@ -66,10 +66,9 @@ CREATE TABLE IF NOT EXISTS BusinessRules (
     description TEXT
 );
 
--- GeneratedSchema
-CREATE TABLE IF NOT EXISTS GeneratedSchema (
-    schema_id TEXT PRIMARY KEY,
+-- ArtifactMetadata
+CREATE TABLE IF NOT EXISTS ArtifactMetadata (
+    artifact_id TEXT PRIMARY KEY,
     file_id TEXT REFERENCES Files(file_id),
-    ddl TEXT,
-    generated_timestamp TIMESTAMP DEFAULT NOW()
+    structure JSONB
 );

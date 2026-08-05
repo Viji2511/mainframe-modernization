@@ -17,12 +17,55 @@ const FileDropzone = ({ files, onFilesSelected, onRemoveFile }) => {
     }
   };
 
-  const handleDrop = (e) => {
+  const getFilesFromEntry = async (entry, path = '') => {
+    if (entry.isFile) {
+      return new Promise((resolve) => {
+        entry.file((file) => {
+          // Object.defineProperty is used to set the read-only webkitRelativePath property
+          Object.defineProperty(file, 'webkitRelativePath', {
+            value: path + file.name,
+            writable: false,
+          });
+          resolve([file]);
+        });
+      });
+    } else if (entry.isDirectory) {
+      const dirReader = entry.createReader();
+      return new Promise((resolve) => {
+        dirReader.readEntries(async (entries) => {
+          const filesPromises = entries.map((e) =>
+            getFilesFromEntry(e, path + entry.name + '/')
+          );
+          const results = await Promise.all(filesPromises);
+          resolve(results.flat());
+        });
+      });
+    }
+    return [];
+  };
+
+  const handleDrop = async (e) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragActive(false);
     
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+    const items = e.dataTransfer.items;
+    if (items) {
+      const promises = [];
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        if (item.kind === 'file') {
+          const entry = item.webkitGetAsEntry();
+          if (entry) {
+            promises.push(getFilesFromEntry(entry));
+          }
+        }
+      }
+      const filesArray = (await Promise.all(promises)).flat();
+      if (filesArray.length > 0) {
+        onFilesSelected(filesArray);
+      }
+    } else if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       onFilesSelected(Array.from(e.dataTransfer.files));
     }
   };
@@ -80,14 +123,16 @@ const FileDropzone = ({ files, onFilesSelected, onRemoveFile }) => {
           ref={fileInputRef}
           onChange={handleFileInput}
           multiple
+          webkitdirectory="true"
+          directory="true"
           className="hidden"
         />
         <UploadCloud className="h-8 w-8 text-gray-900 mb-3" />
         <p className="text-xs font-mono font-bold text-gray-900 uppercase">
-          Drag and drop ZIP or raw mainframe assets here
+          Click to select folder, or drag and drop a repository here
         </p>
         <p className="text-[10px] text-zinc-500 font-mono mt-1 uppercase">
-          [cbl, cpy, jcl, txt, pli, rpgle]
+          [cbl, cpy, jcl, txt, pli, rpgle, zip]
         </p>
       </div>
 
@@ -103,14 +148,18 @@ const FileDropzone = ({ files, onFilesSelected, onRemoveFile }) => {
         <div className="max-h-60 overflow-y-auto space-y-2 border border-gray-200 rounded p-2 bg-[#f3f4f6]">
           {files.map((file, idx) => {
             const classInfo = classifyFile(file.name);
+            const displayPath = file.webkitRelativePath || file.name;
             return (
               <div
                 key={idx}
                 className="flex items-center justify-between rounded bg-white p-2 border border-gray-200 hover:bg-zinc-50 transition-colors"
+                title={displayPath}
               >
                 <div className="flex items-center gap-2 overflow-hidden">
                   <File size={14} className="text-gray-900 shrink-0" />
-                  <span className="truncate text-[10px] font-mono font-medium text-gray-900">{file.name}</span>
+                  <span className="truncate text-[10px] font-mono font-medium text-gray-900">
+                    {displayPath}
+                  </span>
                   <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase font-mono shrink-0 ${classInfo.color}`}>
                     {classInfo.label}
                   </span>

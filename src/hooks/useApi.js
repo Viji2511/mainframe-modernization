@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useAppStore } from '../store/appStore';
 
 export const useApi = () => {
@@ -34,7 +35,7 @@ export const useApi = () => {
     }
   };
 
-  return {
+  return useMemo(() => ({
     get: (endpoint, options = {}) => request(endpoint, { ...options, method: 'GET' }),
     post: (endpoint, body, options = {}) => {
       const isMultipart = body instanceof FormData;
@@ -46,5 +47,5 @@ export const useApi = () => {
       });
     },
     delete: (endpoint, options = {}) => request(endpoint, { ...options, method: 'DELETE' }),
-  };
+  }), [settings.apiBaseUrl]); // We must include settings.apiBaseUrl in the dependency array
 };

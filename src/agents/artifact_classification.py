@@ -10,7 +10,11 @@ class ArtifactClassificationAgent:
         inventory = Inventory(input_dir=input_dir)
         
         for rel_path, content in raw_files.items():
-            classification = self._sniff_file(rel_path, content)
+            classification, reason = self._classify_file(rel_path, content)
+            inventory.classification_details[rel_path] = {
+                "artifact_type": classification.upper(),
+                "reason": reason,
+            }
             
             if classification == 'cobol':
                 inventory.cobol_files[rel_path] = content
@@ -22,6 +26,8 @@ class ArtifactClassificationAgent:
                 inventory.rpg_files[rel_path] = content
             elif classification == 'jcl':
                 inventory.jcl_files[rel_path] = content
+            elif classification == 'idcams':
+                inventory.idcams_files[rel_path] = content
             elif classification == 'copybook':
                 inventory.copybook_files[rel_path] = content
             elif classification == 'listcat':
@@ -41,27 +47,40 @@ class ArtifactClassificationAgent:
         return inventory
 
     def _sniff_file(self, rel_path: str, content: str) -> str:
+        return self._classify_file(rel_path, content)[0]
+
+    def _classify_file(self, rel_path: str, content: str) -> tuple[str, str]:
         fn = rel_path.lower()
         ext = os.path.splitext(fn)[1]
         
         # CSV/Excel metadata
         if ext in ('.csv', '.xlsx', '.xls'):
-            return 'metadata'
+            return 'metadata', 'Matched metadata extension'
 
         # LISTCAT Sniffing
         if ext in ('.txt', '.lst', '.log', '.out') and any(m in content.upper() for m in ("CLUSTER", "NONVSAM", "IDCAMS", "LISTCAT")):
-            return 'listcat'
+            return 'listcat', 'Matched LISTCAT extension and content signature'
+
+        # IDCAMS must be checked before JCL. IDCAMS is commonly submitted in a
+        # JCL member, so checking its control statements after the extension
+        # would incorrectly classify it as a generic JCL job.
+        if (
+            ext in ('.idcams', '.ams')
+            or 'DEFINE CLUSTER' in content.upper()
+            or ('IDCAMS' in content.upper() and 'DEFINE ' in content.upper())
+        ):
+            return 'idcams', 'Matched IDCAMS extension or DEFINE CLUSTER/IDCAMS signature'
 
         # JCL Sniffing
         if ext in ('.jcl', '.job', '.cntl') or content.startswith("//") or "EXEC PGM=" in content.upper():
-            return 'jcl'
+            return 'jcl', 'Matched JCL extension or JCL control-statement signature'
 
         # COBOL Sniffing
         if ext in ('.cbl', '.cob', '.cobol') or any(m in content.upper() for m in ("IDENTIFICATION DIVISION", "PROCEDURE DIVISION", "DATA DIVISION")):
-            return 'cobol'
+            return 'cobol', 'Matched COBOL extension or division signature'
 
         # Copybook
         if ext in ('.cpy', '.copy', '.h'):
-            return 'copybook'
+            return 'copybook', 'Matched copybook extension'
 
-        return 'other'
+        return 'other', 'No supported artifact rule matched'

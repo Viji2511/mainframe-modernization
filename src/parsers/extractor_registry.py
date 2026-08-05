@@ -17,6 +17,7 @@ class ExtractorRegistry:
         """
         # Import all parser modules to ensure extractors are loaded
         import src.parsers.cobol_parser
+        import src.parsers.cobol_knowledge_extractors
         import src.parsers.jcl_parser
         import src.parsers.catalog_parser
         import src.parsers.idcams_parser

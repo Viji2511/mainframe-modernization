@@ -19,9 +19,15 @@ class EntityMetadata(KnowledgeObject):
 class FieldSchema(BaseModel):
     name: str
     data_type: str
+    level: Optional[int] = None
     length: Optional[int] = None
     offset: Optional[int] = None
     decimals: Optional[int] = None
+    usage: Optional[str] = None
+    occurs: Optional[int] = None
+    redefines: Optional[str] = None
+    initial_value: Optional[str] = None
+    children: List["FieldSchema"] = Field(default_factory=list)
     is_key: bool = False
 
 class DatasetKnowledge(KnowledgeObject):
@@ -55,6 +61,11 @@ class JCLJobKnowledge(KnowledgeObject):
     filepath: str
     executed_programs: List[str] = Field(default_factory=list)
     allocated_datasets: List[str] = Field(default_factory=list)
+    exec_statements: List[Dict[str, Any]] = Field(default_factory=list)
+    dd_statements: List[Dict[str, Any]] = Field(default_factory=list)
+    symbolic_parameters: List[str] = Field(default_factory=list)
+    procedures_used: List[str] = Field(default_factory=list)
+    job_card: Dict[str, Any] = Field(default_factory=dict)
 
 class IDCAMSKnowledge(KnowledgeObject):
     filepath: str
@@ -100,3 +111,4 @@ class RepositoryKnowledge(BaseModel):
     dependencies: List[Dependency] = Field(default_factory=list)
     statistics: Dict[str, Any] = Field(default_factory=dict)
     knowledge_graph_reference: str = ""
+    canonical_structures: Dict[str, Dict[str, Any]] = Field(default_factory=dict)

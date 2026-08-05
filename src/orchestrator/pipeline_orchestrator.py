@@ -9,6 +9,7 @@ from src.orchestrator.stages.parser_execution_stage import ParserExecutionStage
 from src.orchestrator.stages.metadata_normalization_stage import MetadataNormalizationStage
 import os
 import config.settings
+from src.orchestrator.pipeline_debug import log as debug_log
 
 logger = logging.getLogger(__name__)
 
@@ -53,6 +54,7 @@ class PipelineOrchestrator:
         session = DiscoverySession(repository_id=repository_id)
         session.compatibility_mode = True
         session.execution_metadata["input_dir"] = input_dir
+        session.execution_metadata["output_dir"] = output_dir
         context = PipelineContext(session=session)
 
         completed_stages = []
@@ -76,17 +78,15 @@ class PipelineOrchestrator:
         # Run Engines
         try:
             logger.info("Engines Started")
-            self._write_checkpoint(output_dir, "AutoReconciliationEngine", completed_stages, False)
-            from src.metadata.auto_reconciliation_engine import AutoReconciliationEngine
-            engine = AutoReconciliationEngine()
-            engine.reconcile()
-            completed_stages.append("AutoReconciliationEngine")
             
-            self._write_checkpoint(output_dir, "SchemaGenerationEngine", completed_stages, False)
-            from src.metadata.schema_generation_engine import SchemaGenerationEngine
-            schema_engine = SchemaGenerationEngine()
-            schema_engine.generate()
-            completed_stages.append("SchemaGenerationEngine")
+            # Artifact Structure Builder
+            self._write_checkpoint(output_dir, "ArtifactStructureBuilderStage", completed_stages, False)
+            from src.orchestrator.stages.artifact_structure_builder_stage import ArtifactStructureBuilderStage
+            builder = ArtifactStructureBuilderStage()
+            builder.execute(context)
+            completed_stages.append("ArtifactStructureBuilderStage")
+
+            # AutoReconciliationEngine and SchemaGenerationEngine skipped per phase requirements
             
             self._write_checkpoint(output_dir, "Completed", completed_stages, False)
         except Exception as e:
@@ -95,3 +95,4 @@ class PipelineOrchestrator:
             raise
             
         logger.info(f"Pipeline execution completed for {repository_id}")
+        debug_log("Status", f"Pipeline completed successfully for {repository_id}")

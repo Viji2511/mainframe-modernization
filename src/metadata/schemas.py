@@ -144,12 +144,14 @@ class Inventory(BaseModel):
     natural_files: dict[str, str] = Field(default_factory=dict)
     rpg_files: dict[str, str] = Field(default_factory=dict)
     jcl_files: dict[str, str] = Field(default_factory=dict)
+    idcams_files: dict[str, str] = Field(default_factory=dict)
     copybook_files: dict[str, str] = Field(default_factory=dict)
     listcat_files: dict[str, str] = Field(default_factory=dict)
     metadata_files: dict[str, str] = Field(default_factory=dict)
     other_files: dict[str, str] = Field(default_factory=dict)
     detected_language: str = "Mixed"
     vsam_dsn_candidates: list[str] = Field(default_factory=list)
+    classification_details: dict[str, dict[str, str]] = Field(default_factory=dict)
 
 
 class PipelineResult(BaseModel):

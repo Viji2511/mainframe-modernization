@@ -1,6 +1,7 @@
 from src.orchestrator.stages.base_stage import PipelineStage
 from src.orchestrator.context import PipelineContext
 from src.agents.repository_discovery import RepositoryDiscoveryAgent
+from src.orchestrator.pipeline_debug import log as debug_log
 
 import logging
 
@@ -18,6 +19,10 @@ class RepositoryDiscoveryStage(PipelineStage):
             # We store the raw files temporarily in context to pass to the next stage
             context.session._raw_files = raw_files
             context.metrics['files_discovered'] = len(raw_files)
+            debug_log("Repository Upload", f"Repository root: {input_dir}")
+            debug_log("Repository Upload", f"Files discovered: {len(raw_files)}")
+            for path in sorted(raw_files):
+                debug_log("Repository Upload", f"Discovered: {path}")
         except Exception as e:
             logger.exception("Exception occurred in RepositoryDiscoveryStage")
             raise

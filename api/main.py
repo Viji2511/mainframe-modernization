@@ -418,7 +418,10 @@ def run_pipeline_subprocess(job_id: str, db: str, dsn: Optional[str], list_vsam:
 
 # Endpoints
 @app.post("/api/upload")
-async def upload_files(files: List[UploadFile] = File(...)):
+async def upload_files(
+    files: List[UploadFile] = File(...),
+    paths: List[str] = Form(default=[])
+):
     job_id = str(uuid.uuid4())
     job_dir = os.path.join(UPLOAD_BASE_DIR, job_id)
     os.makedirs(job_dir, exist_ok=True)
@@ -426,9 +429,12 @@ async def upload_files(files: List[UploadFile] = File(...)):
     saved_files = []
     
     try:
-        for f in files:
-            file_path = os.path.join(job_dir, f.filename)
-            # Ensure subdirectory paths are created if zip contains subfolders
+        for i, f in enumerate(files):
+            rel_path = paths[i] if i < len(paths) else f.filename
+            # Sanitize to prevent directory traversal
+            rel_path = rel_path.lstrip("/\\")
+            file_path = os.path.join(job_dir, rel_path)
+            # Ensure subdirectory paths are created if zip contains subfolders or if uploaded from folder
             os.makedirs(os.path.dirname(file_path), exist_ok=True)
             
             with open(file_path, "wb") as buffer:
@@ -653,6 +659,10 @@ async def get_job_result(job_id: str):
         return {"status": target_job["status"]}
 
     try:
+        knowledge_path = os.path.join(OUTPUT_BASE_DIR, job_id, "knowledge_store.json")
+        if os.path.isfile(knowledge_path):
+            with open(knowledge_path, "r", encoding="utf-8") as file:
+                return _knowledge_store_to_ui_results(json.load(file))
         return _db_to_ui_results(job_id)
     except Exception as e:
         print(f"Error reading from Supabase for result: {e}")

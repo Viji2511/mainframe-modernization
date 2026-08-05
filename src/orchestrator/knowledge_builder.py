@@ -32,11 +32,11 @@ class RepositoryKnowledgeBuilder:
                 raise ValueError("Invalid evidence input for KnowledgeBuilder")
                 
             # 1. Populate basic counts and items from inventory
-            self.knowledge.summary.total_files = len(inventory.other_files) + len(inventory.cobol_files) + len(inventory.jcl_files) + len(inventory.copybook_files)
+            self.knowledge.summary.total_files = self._inventory_file_count(inventory)
             
             # 2. Add Programs
             for path in inventory.cobol_files.keys():
-                prog_name = os.path.basename(path).split(".")[0].upper()
+                prog_name = self._unique_artifact_key(path, self.knowledge.programs)
                 self.knowledge.programs[prog_name] = ProgramKnowledge(
                     id=prog_name,
                     name=prog_name,
@@ -44,11 +44,14 @@ class RepositoryKnowledgeBuilder:
                     filepath=path,
                     traceability=Traceability(source_file=path, parser="InventoryClassification")
                 )
+                structure = self.session.execution_metadata.get("cobol_structures", {}).get(path, {})
+                self.knowledge.programs[prog_name].properties.update(structure)
+                self.knowledge.programs[prog_name].copybooks_used.extend(structure.get("copybooks", []))
                 self.knowledge.summary.cobol_programs += 1
                 
             # 3. Add Copybooks
             for path, content in inventory.copybook_files.items():
-                cb_name = os.path.basename(path).split(".")[0].upper()
+                cb_name = self._unique_artifact_key(path, self.knowledge.copybooks)
                 self.knowledge.copybooks[cb_name] = CopybookKnowledge(
                     id=cb_name,
                     name=cb_name,
@@ -60,7 +63,7 @@ class RepositoryKnowledgeBuilder:
                 
             # Add JCL Jobs
             for path in inventory.jcl_files.keys():
-                jcl_name = os.path.basename(path).split(".")[0].upper()
+                jcl_name = self._unique_artifact_key(path, self.knowledge.jcl_jobs)
                 self.knowledge.jcl_jobs[jcl_name] = JCLJobKnowledge(
                     id=jcl_name,
                     name=jcl_name,
@@ -68,6 +71,18 @@ class RepositoryKnowledgeBuilder:
                     traceability=Traceability(source_file=path, parser="InventoryClassification")
                 )
                 self.knowledge.summary.jcl_jobs += 1
+
+            # Add IDCAMS control statements even when they do not define a
+            # cluster. Their existence is still part of repository inventory.
+            for path in inventory.idcams_files.keys():
+                idcams_name = self._unique_artifact_key(path, self.knowledge.idcams_definitions)
+                self.knowledge.idcams_definitions[idcams_name] = IDCAMSKnowledge(
+                    id=idcams_name,
+                    name=idcams_name,
+                    filepath=path,
+                    traceability=Traceability(source_file=path, parser="InventoryClassification")
+                )
+                self.knowledge.summary.idcams_scripts += 1
 
             # 4. Add Datasets from JCL and Listcat candidates
             for dsn in inventory.vsam_dsn_candidates:
@@ -93,6 +108,8 @@ class RepositoryKnowledgeBuilder:
             self.knowledge.database_schema = schema_gen.generate(self.knowledge)
             
             self._finalize_summary()
+            from src.orchestrator.canonical_structure import build_all_canonical_structures
+            self.knowledge.canonical_structures = build_all_canonical_structures(self.knowledge)
                 
             return self.knowledge
         except Exception as e:
@@ -102,8 +119,8 @@ class RepositoryKnowledgeBuilder:
     def _process_evidence(self, evidence: Any) -> None:
         """Process a single piece of evidence from the deterministic pipeline."""
         if evidence.artifact_type == "COBOL" and evidence.evidence_type == "SELECT":
-            prog_name = os.path.basename(evidence.source_file).split(".")[0].upper()
-            if prog_name in self.knowledge.programs:
+            prog_name = self._find_key_by_source(self.knowledge.programs, evidence.source_file)
+            if prog_name:
                 # Value typically contains the dataset or logical file mapping
                 self.knowledge.programs[prog_name].datasets_accessed.append(str(evidence.value))
                 
@@ -115,6 +132,23 @@ class RepositoryKnowledgeBuilder:
                     properties={"statement": "SELECT", "evidence_id": evidence.evidence_id}
                 ))
                 self.knowledge.summary.relationships += 1
+
+        elif evidence.artifact_type == "COBOL" and evidence.evidence_type in {"DIVISION", "SECTION", "PARAGRAPH", "OPERATION", "CALL", "COPY"}:
+            prog_name = self._find_key_by_source(self.knowledge.programs, evidence.source_file)
+            if prog_name:
+                properties = self.knowledge.programs[prog_name].properties
+                if evidence.evidence_type == "DIVISION":
+                    properties.setdefault("divisions", []).append(str(evidence.value))
+                elif evidence.evidence_type == "SECTION":
+                    properties.setdefault("sections", []).append(str(evidence.value))
+                elif evidence.evidence_type == "PARAGRAPH":
+                    properties.setdefault("paragraphs", []).append(str(evidence.value))
+                elif evidence.evidence_type == "OPERATION":
+                    properties.setdefault("operations", []).append(str(evidence.value))
+                elif evidence.evidence_type == "CALL":
+                    properties.setdefault("called_programs", []).append(str(evidence.value))
+                elif evidence.evidence_type == "COPY":
+                    self.knowledge.programs[prog_name].copybooks_used.append(str(evidence.value))
                 
         elif evidence.artifact_type == "JCL" and evidence.evidence_type == "DD":
             # Map JCL to Dataset
@@ -129,7 +163,14 @@ class RepositoryKnowledgeBuilder:
                 self.knowledge.summary.datasets += 1
 
             # Create a relationship from JCL file to Dataset
-            jcl_name = os.path.basename(evidence.source_file).split(".")[0].upper()
+            jcl_name = self._find_key_by_source(self.knowledge.jcl_jobs, evidence.source_file)
+            if jcl_name:
+                self.knowledge.jcl_jobs[jcl_name].allocated_datasets.append(dsn)
+                self.knowledge.jcl_jobs[jcl_name].dd_statements.append({
+                    "dd_name": evidence.entity_name,
+                    "dataset": dsn,
+                    **(evidence.properties or {}),
+                })
             self.knowledge.relationships.append(Relationship(
                 source_id=jcl_name,
                 target_id=dsn,
@@ -137,6 +178,26 @@ class RepositoryKnowledgeBuilder:
                 properties={"dd_name": evidence.entity_name, "evidence_id": evidence.evidence_id}
             ))
             self.knowledge.summary.relationships += 1
+
+        elif evidence.artifact_type == "JCL" and evidence.evidence_type == "EXEC":
+            jcl_name = self._find_key_by_source(self.knowledge.jcl_jobs, evidence.source_file)
+            if jcl_name:
+                self.knowledge.jcl_jobs[jcl_name].executed_programs.append(str(evidence.value))
+                self.knowledge.jcl_jobs[jcl_name].exec_statements.append({
+                    "step_name": (evidence.properties or {}).get("step_name"),
+                    "program": str(evidence.value),
+                    "kind": (evidence.properties or {}).get("kind", "PGM"),
+                })
+
+        elif evidence.artifact_type == "JCL" and evidence.evidence_type == "JOB":
+            jcl_name = self._find_key_by_source(self.knowledge.jcl_jobs, evidence.source_file)
+            if jcl_name:
+                self.knowledge.jcl_jobs[jcl_name].job_card = evidence.properties or {}
+
+        elif evidence.artifact_type == "JCL" and evidence.evidence_type == "SYMBOL":
+            jcl_name = self._find_key_by_source(self.knowledge.jcl_jobs, evidence.source_file)
+            if jcl_name:
+                self.knowledge.jcl_jobs[jcl_name].symbolic_parameters.append(str(evidence.value))
 
         elif evidence.artifact_type == "IDCAMS" and evidence.evidence_type == "DEFINE_CLUSTER":
             dsn = evidence.entity_name
@@ -155,19 +216,27 @@ class RepositoryKnowledgeBuilder:
                 )
                 self.knowledge.summary.datasets += 1
 
+            idcams_name = self._find_key_by_source(self.knowledge.idcams_definitions, evidence.source_file)
+            if idcams_name:
+                self.knowledge.idcams_definitions[idcams_name].defined_clusters.append(dsn)
+
     def _parse_copybook_fields(self, content: str) -> List[FieldSchema]:
         import re
         fields = []
-        pattern = re.compile(r"^\s*\d{2}\s+([A-Z0-9_-]+)(?:\s+PIC\s+([A-Z0-9()VXS9+-]+))?", re.IGNORECASE)
+        pattern = re.compile(r"^\s*(\d{2})\s+([A-Z0-9_-]+)(?:\s+REDEFINES\s+([A-Z0-9_-]+))?(?:\s+PIC\s+([A-Z0-9()VXS9+-]+))?(?:\s+VALUE\s+([^\s.]+))?", re.IGNORECASE)
         for line in content.splitlines():
             match = pattern.search(line)
             if not match:
                 continue
-            name = match.group(1).upper()
-            pic = match.group(2)
+            level = int(match.group(1))
+            name = match.group(2).upper()
+            pic = match.group(4)
             fields.append(FieldSchema(
                 name=name,
                 data_type=pic.upper() if pic else "GROUP",
+                level=level,
+                redefines=match.group(3),
+                initial_value=match.group(5),
                 is_key=any(token in name for token in ("ID", "KEY", "NUM", "NO")),
             ))
         return fields
@@ -249,15 +318,11 @@ class RepositoryKnowledgeBuilder:
 
     def _finalize_summary(self) -> None:
         summary = self.knowledge.summary
-        summary.total_files = (
-            len(self.knowledge.programs)
-            + len(self.knowledge.copybooks)
-            + len(self.knowledge.jcl_jobs)
-            + len(self.knowledge.idcams_definitions)
-        )
+        summary.total_files = self._inventory_file_count(self.session.artifact_inventory)
         summary.cobol_programs = len(self.knowledge.programs)
         summary.copybooks = len(self.knowledge.copybooks)
         summary.jcl_jobs = len(self.knowledge.jcl_jobs)
+        summary.idcams_scripts = len(self.knowledge.idcams_definitions)
         summary.datasets = len(self.knowledge.datasets)
         summary.relationships = len(self.knowledge.relationships)
         summary.business_rules = len(self.knowledge.business_rules)
@@ -288,6 +353,38 @@ class RepositoryKnowledgeBuilder:
             summary.migration_readiness = "Inventory complete - more mainframe context needed"
         else:
             summary.migration_readiness = "No repository artifacts found"
+
+    @staticmethod
+    def _inventory_file_count(inventory) -> int:
+        if not inventory:
+            return 0
+        return sum(len(getattr(inventory, name, {})) for name in (
+            "cobol_files", "pli_files", "natural_files", "rpg_files",
+            "jcl_files", "idcams_files", "copybook_files", "listcat_files",
+            "metadata_files", "other_files",
+        ))
+
+    @staticmethod
+    def _unique_artifact_key(path: str, existing: dict) -> str:
+        """Keep same-named files from different directories as separate artifacts."""
+        stem = os.path.basename(path).rsplit(".", 1)[0].upper()
+        key = stem
+        suffix = 2
+        while key in existing:
+            key = f"{stem}__{suffix}"
+            suffix += 1
+        return key
+
+    @staticmethod
+    def _find_key_by_source(items: dict, source_file: str) -> str | None:
+        source_norm = os.path.normcase(os.path.normpath(source_file))
+        for key, item in items.items():
+            filepath = getattr(item, "filepath", "")
+            if os.path.normcase(os.path.normpath(filepath)) == source_norm:
+                return key
+        # Evidence from older parsers may carry only a basename.
+        source_stem = os.path.basename(source_file).rsplit(".", 1)[0].upper()
+        return next((key for key in items if key == source_stem), None)
 
     def save(self, output_dir: str) -> None:
         try:

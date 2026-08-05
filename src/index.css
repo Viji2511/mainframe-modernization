@@ -24,4 +24,10 @@
   ::-webkit-scrollbar-thumb:hover {
     background: #222222;
   }
+
+  /* Every routed tab uses the same constrained scroll surface. */
+  .app-scroll-pane {
+    scrollbar-gutter: stable;
+    overscroll-behavior: contain;
+  }
 }

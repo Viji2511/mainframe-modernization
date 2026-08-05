@@ -38,7 +38,10 @@ class SupabaseStore:
             req = self.client.table(table).select("*")
             if query:
                 for k, v in query.items():
-                    req = req.eq(k, v)
+                    if isinstance(v, dict) and "in" in v:
+                        req = req.in_(k, v["in"])
+                    else:
+                        req = req.eq(k, v)
             response = req.execute()
             return response.data
         except Exception as e:

@@ -51,6 +51,37 @@ class FDExtractor(BaseExtractor):
                 ))
         return evidence_list
 
+
 class COBOLParser(BaseParser):
     artifact_type = "COBOL"
-    # Logic is now entirely handled by BaseParser invoking ExtractorRegistry
+
+    def parse(self, file_path: str, content: str, session) -> List[Evidence]:
+        # Keep the existing evidence contract stable while capturing the
+        # structural facts in the same one-time parser pass.
+        evidence = super().parse(file_path, content, session)
+        structures = session.execution_metadata.setdefault("cobol_structures", {})
+        structures[file_path] = self._extract_structure(content)
+        return evidence
+
+    @staticmethod
+    def _extract_structure(content: str) -> dict:
+        divisions, sections, paragraphs, operations, called_programs = [], [], [], [], []
+        copybooks = []
+        division = re.compile(r'^\s*([A-Z][A-Z-]*)\s+DIVISION\.', re.IGNORECASE)
+        section = re.compile(r'^\s*([A-Z][A-Z0-9-]*)\s+SECTION\.', re.IGNORECASE)
+        paragraph = re.compile(r'^\s{7}([A-Z][A-Z0-9-]*)\.$', re.IGNORECASE)
+        for line in content.splitlines():
+            match = division.search(line)
+            if match: divisions.append(match.group(1).upper())
+            match = section.search(line)
+            if match: sections.append(match.group(1).upper())
+            match = paragraph.match(line)
+            if match and not division.search(line) and not section.search(line): paragraphs.append(match.group(1).upper())
+            operations.extend(token.upper() for token in re.findall(r'\b(OPEN|READ|WRITE|REWRITE|DELETE|START|CLOSE|SORT|MERGE)\b', line, re.IGNORECASE))
+            called_programs.extend(token.upper() for token in re.findall(r"\bCALL\s+['\"]?([A-Z0-9#$@-]+)", line, re.IGNORECASE))
+            copybooks.extend(token.upper() for token in re.findall(r'\bCOPY\s+([A-Z0-9#$@-]+)', line, re.IGNORECASE))
+        return {
+            "divisions": list(dict.fromkeys(divisions)), "sections": list(dict.fromkeys(sections)),
+            "paragraphs": list(dict.fromkeys(paragraphs)), "operations": list(dict.fromkeys(operations)),
+            "called_programs": list(dict.fromkeys(called_programs)), "copybooks": list(dict.fromkeys(copybooks)),
+        }

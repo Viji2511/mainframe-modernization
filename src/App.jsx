@@ -26,12 +26,12 @@ const App = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#f3f4f6] text-gray-900 font-sans selection:bg-blue-100 overflow-hidden">
+    <div className="flex h-screen min-h-0 bg-[#f3f4f6] text-gray-900 font-sans selection:bg-blue-100 overflow-hidden">
       
       {/* Main Container Enclosure */}
-      <div className="flex-1 flex flex-col min-w-0 min-h-screen">
+      <div className="flex-1 flex flex-col min-w-0 min-h-0">
         
-        <div className="flex-1 flex min-w-0 relative">
+        <div className="flex-1 flex min-w-0 min-h-0 relative">
           {/* Collapsible Sidebar inside main content grid */}
           <Sidebar />
 
@@ -54,7 +54,7 @@ const App = () => {
             </header>
 
             {/* Content Body */}
-            <div className="flex-1 overflow-y-auto p-6 bg-[#f3f4f6]">
+            <div className="app-scroll-pane flex-1 min-h-0 overflow-x-hidden overflow-y-scroll p-6 bg-[#f3f4f6]">
               <Suspense
                 fallback={
                   <div className="flex h-full items-center justify-center">
