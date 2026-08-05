@@ -223,23 +223,66 @@ class RepositoryKnowledgeBuilder:
     def _parse_copybook_fields(self, content: str) -> List[FieldSchema]:
         import re
         fields = []
-        pattern = re.compile(r"^\s*(\d{2})\s+([A-Z0-9_-]+)(?:\s+REDEFINES\s+([A-Z0-9_-]+))?(?:\s+PIC\s+([A-Z0-9()VXS9+-]+))?(?:\s+VALUE\s+([^\s.]+))?", re.IGNORECASE)
         for line in content.splitlines():
-            match = pattern.search(line)
-            if not match:
+            line_clean = line.strip()
+            if not line_clean or line_clean.startswith("*"):
                 continue
-            level = int(match.group(1))
-            name = match.group(2).upper()
-            pic = match.group(4)
-            fields.append(FieldSchema(
+            
+            match_level_name = re.match(r"^\s*(\d{1,2})\s+([A-Z0-9_-]+)", line, re.IGNORECASE)
+            if not match_level_name:
+                continue
+                
+            level = int(match_level_name.group(1))
+            name = match_level_name.group(2).upper()
+            
+            pic_match = re.search(r"\bPIC(?:TURE)?\s+(?:IS\s+)?([A-Z0-9()VXS9+-]+)", line, re.IGNORECASE)
+            pic = pic_match.group(1).upper() if pic_match else None
+            
+            usage_match = re.search(r"\bUSAGE\s+(?:IS\s+)?(COMP(?:-[12345])?|BINARY|DISPLAY|PACKED-DECIMAL|INDEX)\b", line, re.IGNORECASE)
+            if not usage_match:
+                usage_match = re.search(r"\b(COMP(?:-[12345])?|BINARY|DISPLAY|PACKED-DECIMAL|INDEX)\b", line, re.IGNORECASE)
+            usage = usage_match.group(1).upper() if usage_match else None
+            
+            occurs_match = re.search(r"\bOCCURS\s+(\d+)\b", line, re.IGNORECASE)
+            occurs = int(occurs_match.group(1)) if occurs_match else None
+            
+            redefines_match = re.search(r"\bREDEFINES\s+([A-Z0-9_-]+)", line, re.IGNORECASE)
+            redefines = redefines_match.group(1).upper() if redefines_match else None
+            
+            value_match = re.search(r"\bVALUE\s+(?:IS\s+)?('[^']*'|\"[^\"]*\"|[A-Z0-9.+-]+)", line, re.IGNORECASE)
+            val = value_match.group(1) if value_match else None
+            if val and val.endswith(".") and not val.startswith(("'", '"')):
+                val = val[:-1]
+                
+            data_type = pic if pic else "GROUP"
+            length = self._compute_pic_length(pic)
+            
+            field_obj = FieldSchema(
                 name=name,
-                data_type=pic.upper() if pic else "GROUP",
+                data_type=data_type,
                 level=level,
-                redefines=match.group(3),
-                initial_value=match.group(5),
-                is_key=any(token in name for token in ("ID", "KEY", "NUM", "NO")),
-            ))
+                length=length,
+                usage=usage,
+                occurs=occurs,
+                redefines=redefines,
+                initial_value=val,
+                is_key=any(token in name for token in ("ID", "KEY", "NUM", "NO"))
+            )
+            field_obj.derived_sql_type = self._field_to_sql_type(field_obj)
+            fields.append(field_obj)
+            
         return fields
+
+    def _compute_pic_length(self, pic: str) -> int | None:
+        if not pic:
+            return None
+        import re
+        total = 0
+        pic_clean = re.sub(r"(V|S|CR|DB)", "", pic.upper())
+        tokens = re.findall(r"([X9AZB0*/+-])(?:\((\d+)\))?", pic_clean)
+        for char, count in tokens:
+            total += int(count) if count else 1
+        return total if total > 0 else None
 
     def _field_to_sql_type(self, field: FieldSchema) -> str:
         data_type = (field.data_type or "").upper().rstrip(".")

@@ -29,6 +29,7 @@ class FieldSchema(BaseModel):
     initial_value: Optional[str] = None
     children: List["FieldSchema"] = Field(default_factory=list)
     is_key: bool = False
+    derived_sql_type: Optional[str] = None
 
 class DatasetKnowledge(KnowledgeObject):
     dsn: str

@@ -42,8 +42,8 @@ import { createPortal } from 'react-dom';
 
 const Modal = ({ title, data, onClose }) => {
   const modalContent = (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
-      <div className="flex h-full max-h-[80vh] w-full max-w-3xl flex-col rounded-lg bg-white shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+    <div className="fixed top-0 left-0 w-screen h-screen z-[9999] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+      <div className="flex max-h-[80vh] w-full max-w-3xl flex-col rounded-lg bg-white shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 m-auto relative">
         <div className="flex items-center justify-between border-b border-zinc-200 px-4 py-3 bg-zinc-50">
           <h3 className="font-mono text-sm font-bold text-gray-800">{title}</h3>
           <button onClick={onClose} className="rounded-md p-1 hover:bg-zinc-200 transition-colors">
