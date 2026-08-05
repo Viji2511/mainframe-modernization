@@ -38,9 +38,11 @@ const ObjectViewer = ({ data, depth = 0 }) => {
   );
 };
 
+import { createPortal } from 'react-dom';
+
 const Modal = ({ title, data, onClose }) => {
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+  const modalContent = (
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
       <div className="flex h-full max-h-[80vh] w-full max-w-3xl flex-col rounded-lg bg-white shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
         <div className="flex items-center justify-between border-b border-zinc-200 px-4 py-3 bg-zinc-50">
           <h3 className="font-mono text-sm font-bold text-gray-800">{title}</h3>
@@ -54,6 +56,8 @@ const Modal = ({ title, data, onClose }) => {
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 };
 
 const CardSection = ({ title, data, onOpen }) => {
