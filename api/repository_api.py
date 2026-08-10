@@ -4,6 +4,241 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from src.agents.modernization_assistant import ModernizationAssistant
 from src.store.supabase_client import supabase_db
+import re
+
+def _calculate_pic_length(pic_str):
+    if not pic_str or pic_str == "GROUP":
+        return 0
+    pic_str = pic_str.upper().strip()
+    digits = 0
+    if "V" in pic_str:
+        p1, p2 = pic_str.split("V", 1)
+        m1 = re.search(r'9\((\d+)\)', p1)
+        d1 = int(m1.group(1)) if m1 else p1.count('9')
+        m2 = re.search(r'9\((\d+)\)', p2)
+        d2 = int(m2.group(1)) if m2 else p2.count('9')
+        digits = d1 + d2
+    elif "9" in pic_str:
+        m = re.search(r'9\((\d+)\)', pic_str)
+        digits = int(m.group(1)) if m else pic_str.count('9')
+        
+    if "COMP-3" in pic_str or "PACKED-DECIMAL" in pic_str:
+        import math
+        return math.ceil((digits + 1) / 2)
+    elif "COMP-1" in pic_str:
+        return 4
+    elif "COMP-2" in pic_str:
+        return 8
+    elif "COMP" in pic_str or "BINARY" in pic_str:
+        if digits <= 4: return 2
+        if digits <= 9: return 4
+        return 8
+        
+    if "X" in pic_str or "A" in pic_str:
+        m = re.search(r'[XA]\((\d+)\)', pic_str)
+        return int(m.group(1)) if m else pic_str.count('X') or pic_str.count('A') or 1
+        
+    if digits > 0:
+        return digits
+    return 0
+
+def _parse_pic_to_sql(pic_str):
+    if not pic_str or pic_str == "GROUP":
+        return None
+    pic_str = pic_str.upper().strip()
+    
+    if pic_str.startswith("X") or "X(" in pic_str or pic_str.startswith("A") or "A(" in pic_str:
+        m = re.search(r'[XA]\((\d+)\)', pic_str)
+        if m:
+            return f"VARCHAR({m.group(1)})"
+        return "VARCHAR(1)"
+        
+    elif "9" in pic_str or "S9" in pic_str or "V" in pic_str or "COMP" in pic_str or "BINARY" in pic_str:
+        if "V" in pic_str:
+            parts = pic_str.split("V")
+            p1, p2 = parts[0], parts[1]
+            m1 = re.search(r'9\((\d+)\)', p1)
+            l1 = int(m1.group(1)) if m1 else p1.count('9')
+            m2 = re.search(r'9\((\d+)\)', p2)
+            l2 = int(m2.group(1)) if m2 else p2.count('9')
+            total = l1 + l2
+            return f"DECIMAL({total}, {l2})"
+        else:
+            m = re.search(r'9\((\d+)\)', pic_str)
+            l = int(m.group(1)) if m else pic_str.count('9')
+            if l == 0:
+                l = 4
+            if l <= 4:
+                return "SMALLINT"
+            elif l <= 9:
+                return "INTEGER"
+            else:
+                return "BIGINT"
+    
+    return "VARCHAR(255)"
+
+def _flatten_records(records, prefix="", current_offset=0, hierarchy=None, parent_occurs=None, parent_redefines=None):
+    if hierarchy is None:
+        hierarchy = []
+    columns = []
+    start_offset_ref = current_offset
+    
+    for r in records:
+        name = r.get("name", "").replace("-", "_")
+        col_name = f"{prefix}_{name}" if prefix else name
+        pic = r.get("pic")
+        children = r.get("children", [])
+        redefines = r.get("redefines") or parent_redefines
+        occurs = r.get("occurs") or parent_occurs
+        
+        length = r.get("length")
+        if not length:
+            length = _calculate_pic_length(pic)
+            
+        status = "OK"
+        if redefines:
+            status = "REVIEW_REQUIRED: REDEFINES"
+        if occurs:
+            status = "TRANSFORMATION_REQUIRED: OCCURS"
+            
+        if not children and pic and pic != "GROUP" and name != "FILLER":
+            sql_type = _parse_pic_to_sql(pic)
+            cols = {
+                "name": col_name,
+                "sql_type": sql_type,
+                "source_field": r.get("name"),
+                "primary_key": False,
+                "offset": current_offset,
+                "length": length,
+                "source_hierarchy": ".".join(hierarchy),
+                "schema_status": status,
+                "pic": pic
+            }
+            if redefines:
+                cols["redefines_target"] = redefines
+            if occurs:
+                cols["occurs"] = occurs
+            columns.append(cols)
+        
+        child_len = 0
+        if children:
+            child_cols, child_len = _flatten_records(children, prefix=col_name, current_offset=current_offset, hierarchy=hierarchy + [r.get("name", "")], parent_occurs=occurs, parent_redefines=redefines)
+            columns.extend(child_cols)
+            if not length:
+                length = child_len
+                
+        if not redefines:
+            if occurs:
+                m = re.search(r'\d+', str(occurs))
+                if m:
+                    length = length * int(m.group(0))
+            current_offset += length
+            
+    return columns, current_offset - start_offset_ref
+
+def _generate_schema_from_structure(artifact_id, artifact_struct, artifact_datasets=None):
+    records = []
+    if "structure" in artifact_struct and isinstance(artifact_struct["structure"], dict):
+        records = artifact_struct["structure"].get("records", [])
+    elif "records" in artifact_struct:
+        records = artifact_struct.get("records", [])
+        
+    if not records:
+        return None
+        
+    columns, _ = _flatten_records(records)
+    if not columns:
+        return None
+        
+    # PK Resolution via VSAM datasets
+    if artifact_datasets:
+        for ds in artifact_datasets:
+            key_offset = ds.get("key_offset")
+            key_length = ds.get("key_length")
+            if key_offset is not None and key_length is not None:
+                matched_cols = [c for c in columns if c["offset"] == key_offset and c["length"] == key_length]
+                if len(matched_cols) == 1:
+                    matched_cols[0]["primary_key"] = True
+                    matched_cols[0]["key_evidence"] = {
+                        "source_dataset": ds.get("dataset_name"),
+                        "source_type": "VSAM_CATALOG",
+                        "reason": f"Matched by offset {key_offset} and length {key_length}"
+                    }
+                elif len(matched_cols) > 1:
+                    for c in matched_cols:
+                        c["key_status"] = "AMBIGUOUS"
+                else:
+                    for c in columns:
+                        if c["offset"] == key_offset:
+                            c["key_status"] = "UNRESOLVED_LENGTH_MISMATCH"
+        
+    return {
+        "schema_type": "RECORD_SCHEMA",
+        "table_name": artifact_id.upper(),
+        "columns": columns
+    }
+
+def _generate_cobol_schema(artifact_id, artifact_struct, deps):
+    info = artifact_struct.get("general_information", {})
+    meta = artifact_struct.get("metadata", {})
+    comp = artifact_struct.get("components", {})
+    struct = artifact_struct.get("structure", {})
+    
+    # Try multiple places for lists depending on parser version
+    data_structs = struct.get("data_structures", [])
+    if not data_structs and struct.get("program"):
+        pass # Handle if needed
+        
+    ds = deps.get("datasets", [])
+    if not ds:
+        ds = info.get("datasets_accessed", []) or meta.get("datasets_accessed", []) or []
+        
+    cbs = deps.get("copybooks", [])
+    if not cbs:
+        cbs = info.get("copybooks", []) or meta.get("copybooks", []) or comp.get("copybooks", []) or []
+        
+    calls = deps.get("calledPrograms", [])
+    if not calls:
+        calls = info.get("called_programs", []) or meta.get("called_programs", []) or []
+
+    return {
+        "schema_type": "PROGRAM_SCHEMA",
+        "program_name": info.get("program_name") or artifact_id.upper(),
+        "data_structures": data_structs,
+        "datasets": ds,
+        "copybooks": cbs,
+        "called_programs": calls
+    }
+
+def _generate_jcl_schema(artifact_id, artifact_struct):
+    job_struct = artifact_struct.get("structure", {}).get("job", {})
+    return {
+        "schema_type": "JOB_SCHEMA",
+        "job_name": artifact_id.upper(),
+        "steps": job_struct.get("steps", [])
+    }
+
+def _generate_idcams_schema(artifact_id, artifact_struct):
+    info = artifact_struct.get("general_information", {}) or artifact_struct.get("metadata", {}) or artifact_struct
+    return {
+        "schema_type": "DATASET_SCHEMA",
+        "dataset_name": info.get("dataset_name") or artifact_struct.get("dataset_name", artifact_id),
+        "organization": info.get("organization") or artifact_struct.get("organization"),
+        "key_length": info.get("key_length") or artifact_struct.get("key_length"),
+        "key_offset": info.get("key_offset") or artifact_struct.get("key_offset"),
+        "record_length": info.get("record_length") or artifact_struct.get("record_length")
+    }
+
+def _generate_dataset_schema(artifact_id, ds_row):
+    info = ds_row.get("general_information", {}) or ds_row.get("metadata", {}) or ds_row
+    return {
+        "schema_type": "DATASET_SCHEMA",
+        "dataset_name": info.get("dataset_name") or ds_row.get("dataset_name", artifact_id),
+        "organization": info.get("organization") or ds_row.get("organization"),
+        "key_length": info.get("key_length") or ds_row.get("key_length"),
+        "key_offset": info.get("key_offset") or ds_row.get("key_offset"),
+        "record_length": info.get("record_length") or ds_row.get("record_length")
+    }
 
 router = APIRouter(prefix="/api/repository", tags=["Repository"])
 
@@ -394,10 +629,77 @@ async def get_artifact_details(id: str, artifact_id: str):
     for k in deps:
         deps[k] = list(set(deps[k]))
 
+    # 4. Detailed Data for UI Tabs
+    artifact_rels = []
+    if knowledge:
+        for r in relationships:
+            s_id = str(r.get("source_id", "")).upper()
+            t_id = str(r.get("target_id", "")).upper()
+            if s_id == a_id_upper or t_id == a_id_upper:
+                artifact_rels.append(r)
+        
+        evidence = []
+        evidence_list = knowledge.get("evidence", [])
+        if evidence_list:
+            evidence = [e for e in evidence_list if os.path.basename(e.get("source_file", "")).upper() == os.path.basename(p_file or "").upper()]
+            
+        artifact_datasets = []
+        for r in artifact_rels:
+            ds_id = r.get("target_id") if str(r.get("source_id", "")).upper() == a_id_upper else r.get("source_id")
+            ds = knowledge.get("datasets", {}).get(ds_id)
+            if ds:
+                artifact_datasets.append(ds)
+                
+        schema = {}
+        schema = {}
+    else:
+        for r in relationships:
+            if str(r.get("source_id")).upper() == a_id_upper or str(r.get("target_id")).upper() == a_id_upper:
+                artifact_rels.append(r)
+                
+        # Datasets
+        artifact_datasets = []
+        for r in artifact_rels:
+            if str(r.get("source_id")).upper() == a_id_upper:
+                ds = supabase_db.select("Datasets", {"dataset_id": r.get("target_id")})
+                if ds:
+                    artifact_datasets.append(ds[0])
+            elif str(r.get("target_id")).upper() == a_id_upper:
+                ds = supabase_db.select("Datasets", {"dataset_id": r.get("source_id")})
+                if ds:
+                    artifact_datasets.append(ds[0])
+                    
+        # Evidence
+        evidence = supabase_db.select("Evidence", {"source_file": p_file}) if p_file else []
+        if not evidence and file_row:
+             evidence = supabase_db.select("Evidence", {"file_id": file_row.get("file_id")})
+             
+        schema = None
+        generated = supabase_db.select("GeneratedSchema", {"schema_id": artifact_id})
+        if generated:
+            schema = generated[0]
+            
+    if not schema and artifact_struct:
+        atype = str(a_type).upper()
+        if atype == "COPYBOOK":
+            schema = _generate_schema_from_structure(a_id_upper, artifact_struct, artifact_datasets)
+        elif atype in ["COBOL", "CBL"]:
+            schema = _generate_cobol_schema(a_id_upper, artifact_struct, deps)
+        elif atype == "JCL":
+            schema = _generate_jcl_schema(a_id_upper, artifact_struct)
+        elif atype == "IDCAMS":
+            schema = _generate_idcams_schema(a_id_upper, artifact_struct)
+        elif atype == "DATASET":
+            schema = _generate_dataset_schema(a_id_upper, artifact_struct)
+
     return {
         "artifact": artifact,
         "dependencies": deps,
-        "structure": artifact_struct
+        "structure": artifact_struct,
+        "detailed_relationships": artifact_rels,
+        "detailed_datasets": artifact_datasets,
+        "detailed_evidence": evidence,
+        "detailed_schema": schema
     }
 
 class ChatRequest(BaseModel):

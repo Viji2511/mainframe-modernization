@@ -86,7 +86,19 @@ class PipelineOrchestrator:
             builder.execute(context)
             completed_stages.append("ArtifactStructureBuilderStage")
 
-            # AutoReconciliationEngine and SchemaGenerationEngine skipped per phase requirements
+            # AutoReconciliation Engine
+            self._write_checkpoint(output_dir, "AutoReconciliationEngine", completed_stages, False)
+            from src.metadata.auto_reconciliation_engine import AutoReconciliationEngine
+            recon = AutoReconciliationEngine()
+            recon.reconcile()
+            completed_stages.append("AutoReconciliationEngine")
+
+            # Schema Generation Engine
+            self._write_checkpoint(output_dir, "SchemaGenerationEngine", completed_stages, False)
+            from src.metadata.schema_generation_engine import SchemaGenerationEngine
+            schema_gen = SchemaGenerationEngine()
+            schema_gen.generate()
+            completed_stages.append("SchemaGenerationEngine")
             
             self._write_checkpoint(output_dir, "Completed", completed_stages, False)
         except Exception as e:

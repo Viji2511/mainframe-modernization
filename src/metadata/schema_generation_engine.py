@@ -1,5 +1,7 @@
 import logging
+import json
 import re
+from typing import Dict, List, Any
 from src.store.supabase_client import supabase_db
 
 logger = logging.getLogger(__name__)
@@ -9,102 +11,145 @@ class SchemaGenerationEngine:
         try:
             logger.info("Schema Generation Engine: Starting")
             
-            # Since this is a prototype, we'll fetch all fields and copybooks
-            # but wait, the fields aren't populated anywhere yet.
-            # We need to ensure that fields are parsed from copybooks and inserted into Supabase.
-            # But the prompt said: "Keep the existing deterministic parsers. Do NOT rewrite parser logic."
-            # Our existing parsers don't parse fields in base_parser, they did it in knowledge_builder!
-            # Let's add that logic here as part of schema generation or just parse it here directly.
+            # Fetch inputs
+            artifacts = supabase_db.select("ArtifactMetadata")
+            relationships = supabase_db.select("Relationships")
             
-            # Fetch copybooks from Supabase
-            copybooks = supabase_db.select("Copybooks")
-            files = {f["file_id"]: f for f in supabase_db.select("Files", {"artifact_type": "COPYBOOK"})}
-            
-            for cb in copybooks:
-                file_id = cb["file_id"]
-                file_info = files.get(file_id)
-                if not file_info:
+            # Build dataset mapping: copybook_id -> list of dataset_ids
+            cb_to_datasets = {}
+            for rel in relationships:
+                if rel.get("rel_type") == "USES_RECORD_LAYOUT":
+                    cb_id = rel.get("target_id")
+                    ds_id = rel.get("source_id")
+                    if cb_id and ds_id:
+                        if cb_id not in cb_to_datasets:
+                            cb_to_datasets[cb_id] = []
+                        cb_to_datasets[cb_id].append(ds_id)
+
+            # Process COPYBOOK structures
+            for artifact in artifacts:
+                artifact_id = artifact.get("artifact_id", "")
+                if not artifact_id.startswith("COPYBOOK:"):
                     continue
                 
-                path = file_info["path"]
                 try:
-                    with open(path, "r", encoding="utf-8") as f:
-                        content = f.read()
-                        
-                    fields = self._parse_copybook_fields(content)
+                    structure = json.loads(artifact.get("structure", "{}"))
+                    records = structure.get("records", [])
                     
-                    columns = []
-                    for field in fields:
-                        # Insert field into Supabase
-                        supabase_db.insert("Fields", {
-                            "field_id": f"{cb['copybook_id']}_{field['name']}",
-                            "dataset_id": cb['copybook_id'], # Using copybook as dataset for schema gen
-                            "field_name": field["name"],
-                            "picture_clause": field["data_type"],
-                            "sql_type": self._field_to_sql_type(field),
-                            "length": 0,
-                            "nullable": not field["is_key"]
-                        })
+                    if not records:
+                        logger.warning(f"No records found in structure for {artifact_id}")
+                        continue
                         
-                        if field["data_type"] != "GROUP":
-                            sql_type = self._field_to_sql_type(field)
-                            col_def = f"  {field['name'].lower().replace('-', '_')} {sql_type}"
-                            if field["is_key"]:
-                                col_def += " PRIMARY KEY"
-                            columns.append(col_def)
-                            
-                    table_name = cb["copybook_name"].lower()
+                    datasets = cb_to_datasets.get(artifact_id, [])
+                    readiness = "READY"
+                    
+                    if not datasets:
+                        readiness = "INSUFFICIENT_EVIDENCE"
+                    
+                    schema_status = self._derive_schema(records)
+                    columns = schema_status["columns"]
+                    
+                    if schema_status["needs_review"] and readiness == "READY":
+                        readiness = "REVIEW_REQUIRED"
+                        
+                    if not columns:
+                        readiness = "NOT_MIGRATABLE"
+                    
+                    # Generate DDL
+                    table_name = artifact_id.split(":")[-1].replace("-", "_").lower()
+                    
                     if columns:
-                        ddl = f"CREATE TABLE {table_name} (\n" + ",\n".join(columns) + "\n);"
+                        col_defs = []
+                        for col in columns:
+                            col_def = f"  {col['name'].lower().replace('-', '_')} {col['sql_type']}"
+                            if any(token in col['name'].upper() for token in ("ID", "KEY", "NUM", "NO")):
+                                col_def += " PRIMARY KEY"
+                            col_defs.append(col_def)
+                        ddl = f"CREATE TABLE {table_name} (\n" + ",\n".join(col_defs) + "\n);"
                     else:
                         ddl = f"CREATE TABLE {table_name} (\n  id BIGSERIAL PRIMARY KEY\n);"
                         
                     supabase_db.insert("GeneratedSchema", {
-                        "schema_id": cb["copybook_id"],
-                        "file_id": file_id,
-                        "ddl": ddl
+                        "schema_id": artifact_id,
+                        "file_id": artifact.get("file_id"),
+                        "ddl": ddl,
+                        "readiness_status": readiness,
+                        "mapped_dataset": datasets[0] if datasets else None
                     })
                     
                 except Exception as e:
-                    logger.error(f"Error parsing copybook {path}: {e}")
+                    logger.error(f"Error generating schema for {artifact_id}: {e}")
                     
             logger.info("Schema Generation Engine: Finished")
         except Exception as e:
             logger.exception(f"Error in SchemaGenerationEngine: {e}")
             raise
 
-    def _parse_copybook_fields(self, content: str) -> list:
-        fields = []
-        pattern = re.compile(r"^\s*\d{2}\s+([A-Z0-9_-]+)(?:\s+PIC\s+([A-Z0-9()VXS9+-]+))?", re.IGNORECASE)
-        for line in content.splitlines():
-            match = pattern.search(line)
-            if not match:
-                continue
-            name = match.group(1).upper()
-            pic = match.group(2)
-            fields.append({
-                "name": name,
-                "data_type": pic.upper() if pic else "GROUP",
-                "is_key": any(token in name for token in ("ID", "KEY", "NUM", "NO"))
-            })
-        return fields
+    def _derive_schema(self, records: List[Dict[str, Any]]) -> Dict[str, Any]:
+        columns = []
+        needs_review = False
+        
+        def traverse(fields: List[Dict[str, Any]]):
+            nonlocal needs_review
+            for field in fields:
+                has_children = bool(field.get("children"))
+                
+                if field.get("occurs") or field.get("redefines"):
+                    needs_review = True
+                    
+                if has_children:
+                    traverse(field["children"])
+                else:
+                    if field.get("name"):
+                        sql_type = self._pic_to_sql_type(field.get("pic", ""))
+                        columns.append({
+                            "name": field["name"],
+                            "sql_type": sql_type,
+                            "level": field.get("level"),
+                            "pic": field.get("pic"),
+                            "length": field.get("length")
+                        })
+        
+        traverse(records)
+        return {"columns": columns, "needs_review": needs_review}
 
-    def _field_to_sql_type(self, field: dict) -> str:
-        data_type = (field.get("data_type") or "").upper().rstrip(".")
-        if data_type == "GROUP":
+    def _pic_to_sql_type(self, pic: str) -> str:
+        if not pic:
             return "TEXT"
-        if data_type.startswith("X"):
-            match = re.search(r"X\((\d+)\)", data_type)
+        
+        pic = pic.upper().replace(" ", "")
+        
+        if pic.startswith("X") or pic.startswith("A"):
+            match = re.search(r"[XA]\((\d+)\)", pic)
             return f"VARCHAR({match.group(1)})" if match else "TEXT"
-        if data_type.startswith("S9") or data_type.startswith("9"):
-            match = re.search(r"9\((\d+)\)(?:V9\((\d+)\)|V(9+))?", data_type)
+            
+        if "9" in pic or "S9" in pic or "Z" in pic or "V" in pic:
+            if "V" in pic:
+                match = re.search(r"9\((\d+)\)V9\((\d+)\)", pic)
+                if match:
+                    p = int(match.group(1))
+                    s = int(match.group(2))
+                    return f"NUMERIC({p+s},{s})"
+                parts = pic.split("V")
+                if len(parts) == 2:
+                    p = parts[0].count("9") + parts[0].count("Z")
+                    s = parts[1].count("9")
+                    if p > 0 or s > 0:
+                        return f"NUMERIC({p+s},{s})"
+                        
+            match = re.search(r"9\((\d+)\)", pic)
             if match:
                 precision = int(match.group(1))
-                scale = int(match.group(2) or len(match.group(3) or ""))
-                if scale:
-                    return f"NUMERIC({precision + scale},{scale})"
-                if precision <= 9:
-                    return "INTEGER"
-                return "BIGINT"
-            return "NUMERIC"
+                if precision <= 4: return "SMALLINT"
+                if precision <= 9: return "INTEGER"
+                if precision <= 18: return "BIGINT"
+                return f"NUMERIC({precision},0)"
+                
+            count = pic.count("9") + pic.count("Z")
+            if count > 0:
+                if count <= 4: return "SMALLINT"
+                if count <= 9: return "INTEGER"
+                if count <= 18: return "BIGINT"
+                return f"NUMERIC({count},0)"
+                
         return "TEXT"
