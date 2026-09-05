@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import Any, List, Dict, Optional
 from pydantic import BaseModel, Field
 from src.metadata.schemas import Inventory
+from src.metadata.audit import AuditEvent, AUDIT_MODEL_VERSION
 
 class Evidence(BaseModel):
     evidence_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
@@ -48,3 +49,5 @@ class DiscoverySession(BaseModel):
     execution_metadata: Dict[str, Any] = Field(default_factory=dict)
     normalized_metadata: Any = None
     repository_knowledge: Any = None
+    audit_events: List[AuditEvent] = Field(default_factory=list)
+    audit_model_version: str = AUDIT_MODEL_VERSION

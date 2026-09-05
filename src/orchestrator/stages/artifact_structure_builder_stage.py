@@ -5,6 +5,7 @@ from src.orchestrator.stages.base_stage import PipelineStage
 from src.orchestrator.context import PipelineContext
 from src.store.supabase_client import supabase_db
 from src.orchestrator.pipeline_debug import log as debug_log
+from src.metadata.audit import AuditTrail, summarize_audit_events
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +27,28 @@ class ArtifactStructureBuilderStage(PipelineStage):
             builder = RepositoryKnowledgeBuilder(context.session)
             knowledge = builder.build()
             context.session.repository_knowledge = knowledge
+            context.knowledge_builder = builder
+            audit = AuditTrail(context.session)
+            audit.record(stage="NORMALIZATION", component="RepositoryKnowledgeBuilder", action="build_repository_knowledge",
+                         event_type="metadata_normalized", summary="Evidence was materialised into repository knowledge.",
+                         details={"evidence_count": len(evidence_list), "artifacts": knowledge.summary.total_files})
+            if knowledge.relationships:
+                audit.record(stage="RELATIONSHIP", component="RelationshipEngine", action="build_relationships",
+                             event_type="relationship_created", summary=f"Created {len(knowledge.relationships)} repository relationship(s).",
+                             details={"relationship_count": len(knowledge.relationships),
+                                      "relationship_types": sorted({rel.rel_type for rel in knowledge.relationships})},
+                             evidence_ids=[rel.properties.get("evidence_id") for rel in knowledge.relationships if rel.properties.get("evidence_id")])
+            audit.record_schema_decisions(knowledge)
+            from src.metadata.postgres_ddl_validator import PostgresDDLValidator
+            validation_results = PostgresDDLValidator().validate_all(
+                knowledge.database_schema.get("generated_schemas", []), audit=audit
+            )
+            knowledge.database_schema["validation_results"] = validation_results
+            by_schema = {item.get("schema_id"): item for item in validation_results}
+            for generated in knowledge.database_schema.get("generated_schemas", []):
+                generated["validation"] = by_schema.get(generated.get("schema_id"))
+            knowledge.audit_events = list(context.session.audit_events)
+            knowledge.audit_summary = summarize_audit_events(knowledge.audit_events)
 
             output_dir = context.session.execution_metadata.get("output_dir")
             if output_dir:
@@ -85,6 +108,8 @@ class ArtifactStructureBuilderStage(PipelineStage):
             insert_artifacts(knowledge.copybooks, "COPYBOOK")
             insert_artifacts(knowledge.jcl_jobs, "JCL")
             insert_artifacts(knowledge.idcams_definitions, "IDCAMS")
+            insert_artifacts(knowledge.catalogs, "CATALOG")
+            insert_artifacts(knowledge.other_artifacts, "OTHER")
             insert_artifacts(knowledge.datasets, "DATASET")
             
         except Exception as e:

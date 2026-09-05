@@ -19,15 +19,36 @@ def _dump(value: Any) -> Any:
 def _field(field: Any) -> dict:
     raw = _dump(field) or {}
     return {
+        "node_id": raw.get("node_id"),
         "level": raw.get("level"),
         "name": raw.get("name", "UNKNOWN"),
         "pic": raw.get("data_type") or raw.get("pic"),
-        "length": raw.get("length"),
+        "node_type": raw.get("node_type"),
+        "parent_id": raw.get("parent_id"),
+        "length": raw.get("byte_length") if raw.get("byte_length") is not None else raw.get("length"),
+        "logical_length": raw.get("logical_length"),
+        "byte_length": raw.get("byte_length"),
+        "physical_span_min": raw.get("physical_span_min"),
+        "physical_span_max": raw.get("physical_span_max"),
+        "relative_offset": raw.get("relative_offset"),
+        "absolute_offset": raw.get("absolute_offset"),
         "usage": raw.get("usage"),
+        "signed": raw.get("signed"),
+        "precision": raw.get("precision"),
+        "scale": raw.get("scale"),
         "occurs": raw.get("occurs"),
+        "occurs_min": raw.get("occurs_min"),
+        "occurs_max": raw.get("occurs_max"),
+        "occurs_depending_on": raw.get("occurs_depending_on"),
         "redefines": raw.get("redefines"),
+        "redefines_target": raw.get("redefines_target"),
+        "is_filler": raw.get("is_filler"),
+        "source_file": raw.get("source_file"),
+        "source_line": raw.get("source_line"),
+        "source_end_line": raw.get("source_end_line"),
+        "evidence_ids": raw.get("evidence_ids", []),
         "initial_value": raw.get("initial_value"),
-        "children": raw.get("children", []),
+        "children": [_field(child) for child in raw.get("children", [])],
         "derived_sql_type": raw.get("derived_sql_type"),
     }
 
@@ -35,6 +56,8 @@ def _field(field: Any) -> dict:
 def build_canonical_structure(artifact_id: str, artifact_type: str, item: Any, knowledge: Any) -> dict:
     raw = _dump(item) or {}
     artifact_type = artifact_type.upper()
+    if artifact_type == "OTHER" and raw.get("artifact_type"):
+        artifact_type = str(raw["artifact_type"]).upper()
     source_file = raw.get("filepath") or (raw.get("traceability") or {}).get("source_file")
     
     identity = Identity(
@@ -117,18 +140,23 @@ def build_canonical_structure(artifact_id: str, artifact_type: str, item: Any, k
         
     elif artifact_type == "COPYBOOK":
         fields = [_field(field) for field in raw.get("fields", [])]
-        roots = []
-        stack = []
-        for field in fields:
-            level = field.get("level") or 0
-            field["children"] = []
-            while stack and (stack[-1].get("level") or 0) >= level:
-                stack.pop()
-            if stack:
-                stack[-1].setdefault("children", []).append(field)
-            else:
-                roots.append(field)
-            stack.append(field)
+        if (raw.get("properties") or {}).get("copybook_model_version"):
+            # The parser already supplied an authoritative tree. Rebuilding it
+            # from levels would destroy child structure and provenance.
+            roots = fields
+        else:
+            roots = []
+            stack = []
+            for field in fields:
+                level = field.get("level") or 0
+                field["children"] = []
+                while stack and (stack[-1].get("level") or 0) >= level:
+                    stack.pop()
+                if stack:
+                    stack[-1].setdefault("children", []).append(field)
+                else:
+                    roots.append(field)
+                stack.append(field)
             
         structure.fields = fields
         structure.hierarchy = {
@@ -141,7 +169,10 @@ def build_canonical_structure(artifact_id: str, artifact_type: str, item: Any, k
             semantics.entities.append({"id": f"{artifact_id}_RECORD", "type": "Record", "name": (raw.get("properties") or {}).get("record_name")})
 
     elif artifact_type == "JCL":
-        structure.extra_definitions.append({"job_card": raw.get("job_card") or {}})
+        structure.extra_definitions.append({
+            "job_card": raw.get("job_card") or {},
+            "jcl_hierarchy": (raw.get("properties") or {}).get("jcl_hierarchy") or {},
+        })
         
         for statement in raw.get("exec_statements") or []:
             structure.exec_statements.append(statement)
@@ -165,17 +196,29 @@ def build_canonical_structure(artifact_id: str, artifact_type: str, item: Any, k
     elif artifact_type == "IDCAMS":
         clusters = raw.get("defined_clusters") or []
         datasets_model.referenced.extend(clusters)
+
+        definitions = (raw.get("properties") or {}).get("definitions", [])
         
         structure.extra_definitions.append({
-            "organization": (raw.get("properties") or {}).get("organization", "UNKNOWN"),
+            "definitions": definitions,
+            "organization": (raw.get("properties") or {}).get("organization"),
             "data_component": (raw.get("properties") or {}).get("data_component", {}),
             "index_component": (raw.get("properties") or {}).get("index_component", {}),
             "key_definition": (raw.get("properties") or {}).get("key_definition", {}),
             "storage_allocation": (raw.get("properties") or {}).get("storage_properties", {}),
         })
-        structure.exec_statements = (raw.get("properties") or {}).get("definitions", ["DEFINE CLUSTER"])
+        structure.exec_statements = definitions or (["DEFINE CLUSTER"] if clusters else [])
         
         semantics.entities.append({"id": artifact_id, "type": "VSAMDefinition", "name": identity.name})
+
+    elif artifact_type == "CATALOG":
+        entries = raw.get("entries") or []
+        structure.extra_definitions.append({"entries": entries})
+        semantics.entities.extend({
+            "id": f"{artifact_id}:{entry.get('name', index)}",
+            "type": entry.get("entry_type", "CATALOG_ENTRY"),
+            "name": entry.get("name", "UNKNOWN"),
+        } for index, entry in enumerate(entries))
 
     elif artifact_type == "DATASET":
         ds_name = raw.get("dsn") or raw.get("name") or artifact_id
@@ -199,6 +242,15 @@ def build_canonical_structure(artifact_id: str, artifact_type: str, item: Any, k
         dependencies.copybooks.extend((raw.get("properties") or {}).get("copybooks", []))
         
         semantics.entities.append({"id": artifact_id, "type": "Dataset", "name": ds_name})
+
+    else:
+        # Inventory-only artifacts retain their classification and provenance.
+        # They deliberately have no synthetic parser-specific structure.
+        metadata.properties = {
+            **metadata.properties,
+            "artifact_type": raw.get("artifact_type", artifact_type),
+            "classification_reason": raw.get("classification_reason"),
+        }
 
     # Final Dedup for datasets and dependencies
     dependencies.copybooks = list(dict.fromkeys(dependencies.copybooks))
@@ -225,6 +277,7 @@ def build_all_canonical_structures(knowledge: Any) -> dict[str, dict]:
     for artifact_type, items in (
         ("COBOL", knowledge.programs), ("COPYBOOK", knowledge.copybooks),
         ("JCL", knowledge.jcl_jobs), ("IDCAMS", knowledge.idcams_definitions),
+        ("CATALOG", knowledge.catalogs), ("OTHER", knowledge.other_artifacts),
         ("DATASET", knowledge.datasets),
     ):
         for artifact_id, item in items.items():

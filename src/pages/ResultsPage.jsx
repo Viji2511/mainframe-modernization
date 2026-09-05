@@ -284,6 +284,8 @@ const ResultsPage = () => {
             <div className="lg:col-span-5 space-y-3">
               <h3 className="font-mono text-[10px] font-bold text-gray-900 uppercase tracking-widest">Target DDL Preview</h3>
               <DDLPreview 
+                jobId={currentJobId}
+                artifactId={currentResult.copybook?.filename}
                 dsn={currentResult.vsam_dataset.dsn} 
                 fields={currentResult.copybook?.fields || []} 
                 dialect={settings.db || 'postgresql'} 

@@ -64,6 +64,184 @@ const RelationshipsViewer = ({ data }) => {
 
 
 
+const RecursivePropRenderer = ({ obj }) => {
+  if (!obj) return null;
+  if (typeof obj !== 'object') {
+    return <span className="text-blue-700 font-mono">{String(obj)}</span>;
+  }
+  if (Array.isArray(obj)) {
+    return (
+      <ul className="list-disc pl-4 mt-1">
+        {obj.map((item, i) => (
+          <li key={i}>{typeof item === 'object' ? <RecursivePropRenderer obj={item} /> : <span className="text-blue-700 font-mono">{String(item)}</span>}</li>
+        ))}
+      </ul>
+    );
+  }
+  
+  return (
+    <div className="flex flex-col gap-1 mt-1 pl-3 border-l border-zinc-200">
+      {Object.entries(obj).map(([k, v], i) => {
+        if (v === null || v === undefined || v === '' || (Array.isArray(v) && v.length === 0)) return null;
+        return (
+          <div key={i} className="text-xs font-mono">
+            <span className="font-semibold text-zinc-600 mr-2">{k.replace(/_/g, ' ').toUpperCase()}:</span>
+            <RecursivePropRenderer obj={v} />
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+const ProgramSchemaViewer = ({ data }) => {
+  return (
+    <div className="flex flex-col gap-4 p-2 text-sm">
+      <div className="text-lg font-bold border-b pb-1">PROGRAM: {data.program_name}</div>
+      
+      {data.data_structures && data.data_structures.length > 0 && (
+        <div className="pl-2 border-l-2 border-blue-400">
+          <div className="font-bold text-xs uppercase text-zinc-500 mb-1">DATA STRUCTURES</div>
+          <div className="pl-2">
+            <RecursivePropRenderer obj={data.data_structures} />
+          </div>
+        </div>
+      )}
+
+      {data.copybooks && data.copybooks.length > 0 && (
+        <div className="pl-2 border-l-2 border-indigo-400">
+          <div className="font-bold text-xs uppercase text-zinc-500 mb-1">COPYBOOKS</div>
+          <div className="pl-2">
+            <RecursivePropRenderer obj={data.copybooks} />
+          </div>
+        </div>
+      )}
+
+      {data.datasets && data.datasets.length > 0 && (
+        <div className="pl-2 border-l-2 border-emerald-400">
+          <div className="font-bold text-xs uppercase text-zinc-500 mb-1">DATASETS</div>
+          <div className="pl-2">
+            <RecursivePropRenderer obj={data.datasets} />
+          </div>
+        </div>
+      )}
+
+      {data.files && Object.keys(data.files).length > 0 && (
+        <div className="pl-2 border-l-2 border-cyan-400">
+          <div className="font-bold text-xs uppercase text-zinc-500 mb-1">FILE REFERENCES</div>
+          <div className="pl-2">
+            <RecursivePropRenderer obj={data.files} />
+          </div>
+        </div>
+      )}
+
+      {data.operations && data.operations.length > 0 && (
+        <div className="pl-2 border-l-2 border-amber-400">
+          <div className="font-bold text-xs uppercase text-zinc-500 mb-1">OPERATIONS</div>
+          <div className="pl-2">
+            <RecursivePropRenderer obj={data.operations} />
+          </div>
+        </div>
+      )}
+
+      {data.called_programs && data.called_programs.length > 0 && (
+        <div className="pl-2 border-l-2 border-rose-400">
+          <div className="font-bold text-xs uppercase text-zinc-500 mb-1">CALLED PROGRAMS</div>
+          <div className="pl-2">
+            <RecursivePropRenderer obj={data.called_programs} />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const JobSchemaViewer = ({ data }) => {
+  return (
+    <div className="flex flex-col gap-4 p-2 text-sm">
+      <div className="text-lg font-bold border-b pb-1">JOB: {data.job_name}</div>
+      
+      {data.job_card && Object.keys(data.job_card).length > 0 && (
+        <div className="pl-2 border-l-2 border-amber-400">
+          <div className="font-bold text-xs uppercase text-zinc-500 mb-1">JOB PARAMETERS</div>
+          <div className="pl-2">
+            <RecursivePropRenderer obj={data.job_card} />
+          </div>
+        </div>
+      )}
+
+      {data.steps && data.steps.length > 0 && (
+        <div>
+          <div className="font-bold text-sm uppercase text-zinc-700 mb-2">STEPS</div>
+          <div className="flex flex-col gap-4 pl-4">
+            {data.steps.map((step, i) => (
+              <div key={i} className="pl-2 border-l-2 border-zinc-300">
+                <div className="font-bold text-blue-700 mb-2">STEP: {step.step_name}</div>
+                
+                {step.exec && step.exec.length > 0 && (
+                  <div className="pl-4 mb-3 border-l-2 border-indigo-200">
+                    <div className="font-bold text-xs uppercase text-zinc-500 mb-1">PROGRAM EXECUTIONS</div>
+                    <RecursivePropRenderer obj={step.exec} />
+                  </div>
+                )}
+                
+                {step.dd && step.dd.length > 0 && (
+                  <div className="pl-4 border-l-2 border-emerald-200">
+                    <div className="font-bold text-xs uppercase text-zinc-500 mb-1">DD STATEMENTS</div>
+                    <div className="flex flex-col gap-2">
+                      {step.dd.map((dd, j) => (
+                        <div key={j} className="pl-2">
+                          <div className="font-bold font-mono text-xs text-zinc-800 mb-1">{dd.dd_name}</div>
+                          <div className="pl-4">
+                            {Object.entries(dd).map(([k, v]) => {
+                              if (k === 'dd_name' || v === null || v === undefined || v === '') return null;
+                              return (
+                                <div key={k} className="flex gap-2 font-mono text-xs">
+                                  <span className="font-semibold text-zinc-500 w-20">{k.toUpperCase()}:</span>
+                                  <span className="text-emerald-700">{v}</span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const DatasetSchemaViewer = ({ data }) => {
+  const skipKeys = ['schema_type', 'dataset_name'];
+  return (
+    <div className="flex flex-col gap-4 p-2 text-sm">
+      <div className="text-lg font-bold border-b pb-1">DATASET: {data.dataset_name}</div>
+      <div className="pl-2 border-l-2 border-blue-400">
+        <div className="font-bold text-xs uppercase text-zinc-500 mb-1">PROPERTIES</div>
+        <div className="pl-2 flex flex-col gap-2">
+          {Object.entries(data).map(([k, v]) => {
+            if (skipKeys.includes(k) || v === null || v === undefined || v === '' || (Array.isArray(v) && v.length === 0)) return null;
+            return (
+              <div key={k} className="flex flex-col font-mono text-xs bg-zinc-50 p-2 rounded">
+                <span className="font-bold text-zinc-600 mb-1">{k.replace(/_/g, ' ').toUpperCase()}:</span>
+                <div className="pl-2 border-l border-zinc-200">
+                  <RecursivePropRenderer obj={v} />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const SchemaViewer = ({ data }) => {
   if (!data || (!data.ddl && !data.columns && !data.schema_type)) return <div className="text-zinc-400 italic font-sans text-sm p-2">No schema available.</div>;
   
@@ -80,130 +258,61 @@ const SchemaViewer = ({ data }) => {
     );
   }
 
-  if (data.schema_type === 'PROGRAM_SCHEMA') {
-    return (
-      <div className="flex flex-col gap-4 p-2 text-sm">
-        <div><span className="font-bold text-lg">PROGRAM:</span> {data.program_name}</div>
-        
-        {data.data_structures && data.data_structures.length > 0 && (
-          <div>
-            <div className="font-bold mb-1 border-b pb-1">Data Structures</div>
-            <ul className="list-disc pl-5 font-mono text-xs text-blue-700">
-              {data.data_structures.map((s, i) => <li key={i}>{s}</li>)}
-            </ul>
-          </div>
-        )}
-        
-        {data.datasets && data.datasets.length > 0 && (
-          <div>
-            <div className="font-bold mb-1 border-b pb-1">Datasets Accessed</div>
-            <ul className="list-disc pl-5 font-mono text-xs text-emerald-600">
-              {data.datasets.map((s, i) => <li key={i}>{s}</li>)}
-            </ul>
-          </div>
-        )}
-        
-        {data.copybooks && data.copybooks.length > 0 && (
-          <div>
-            <div className="font-bold mb-1 border-b pb-1">Copybooks</div>
-            <ul className="list-disc pl-5 font-mono text-xs text-zinc-600">
-              {data.copybooks.map((s, i) => <li key={i}>{s}</li>)}
-            </ul>
-          </div>
-        )}
-        
-        {data.called_programs && data.called_programs.length > 0 && (
-          <div>
-            <div className="font-bold mb-1 border-b pb-1">Calls</div>
-            <ul className="list-disc pl-5 font-mono text-xs text-amber-600">
-              {data.called_programs.map((s, i) => <li key={i}>{s}</li>)}
-            </ul>
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  if (data.schema_type === 'JOB_SCHEMA') {
-    return (
-      <div className="flex flex-col gap-4 p-2 text-sm">
-        <div><span className="font-bold text-lg">JOB:</span> {data.job_name}</div>
-        {data.steps && data.steps.map((step, i) => (
-          <div key={i} className="pl-2 border-l-2 border-zinc-200">
-            <div className="font-bold text-blue-600 mb-2">STEP: {step.step_name}</div>
-            
-            {step.exec && step.exec.length > 0 && (
-              <div className="pl-4 mb-2">
-                <span className="font-semibold text-xs text-zinc-500">PROGRAM:</span>
-                <span className="ml-2 font-mono text-xs font-bold">{step.exec[0].program}</span>
-              </div>
-            )}
-            
-            {step.dd && step.dd.length > 0 && (
-              <div className="pl-4">
-                <span className="font-semibold text-xs text-zinc-500 block mb-1">DD Allocations:</span>
-                <ul className="list-none space-y-1">
-                  {step.dd.map((dd, j) => (
-                    <li key={j} className="font-mono text-xs flex gap-2">
-                      <span className="text-zinc-600 w-24">{dd.dd_name}:</span>
-                      <span className="text-emerald-600">{dd.dataset || dd.sysout || dd.dummy || '...'}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-    );
-  }
-  
-  if (data.schema_type === 'DATASET_SCHEMA') {
-    return (
-      <div className="flex flex-col gap-3 p-2 text-sm">
-        <div><span className="font-bold text-lg border-b pb-1 block">Dataset: {data.dataset_name}</span></div>
-        <div className="flex gap-4 font-mono text-xs bg-zinc-50 p-2 rounded">
-          <span className="font-bold">Organization:</span> 
-          <span className="text-blue-700">{data.organization}</span>
-        </div>
-        <div className="flex gap-4 font-mono text-xs bg-zinc-50 p-2 rounded">
-          <span className="font-bold">Primary Key Length:</span> 
-          <span className="text-blue-700">{data.key_length !== null ? data.key_length : '-'}</span>
-        </div>
-        <div className="flex gap-4 font-mono text-xs bg-zinc-50 p-2 rounded">
-          <span className="font-bold">Primary Key Offset:</span> 
-          <span className="text-blue-700">{data.key_offset !== null ? data.key_offset : '-'}</span>
-        </div>
-        <div className="flex gap-4 font-mono text-xs bg-zinc-50 p-2 rounded">
-          <span className="font-bold">Record Length:</span> 
-          <span className="text-blue-700">{data.record_length !== null ? data.record_length : '-'}</span>
-        </div>
-      </div>
-    );
-  }
+  if (data.schema_type === 'PROGRAM_SCHEMA') return <ProgramSchemaViewer data={data} />;
+  if (data.schema_type === 'JOB_SCHEMA') return <JobSchemaViewer data={data} />;
+  if (data.schema_type === 'DATASET_SCHEMA') return <DatasetSchemaViewer data={data} />;
   
   if (data.columns || data.schema_type === 'RECORD_SCHEMA') {
     return (
       <div className="flex flex-col gap-2">
         <div className="font-bold text-lg mb-2">Table: {data.table_name}</div>
+        
+        {data.validation_summary && (
+          <div className="mb-4 p-3 bg-zinc-50 border border-zinc-200 rounded-md text-xs font-mono grid grid-cols-2 gap-2">
+            <div className="font-semibold text-zinc-700 col-span-2 border-b pb-1 mb-1">Validation Summary</div>
+            <div className="flex justify-between"><span>Total fields:</span> <span className="font-bold">{data.validation_summary.total_fields}</span></div>
+            <div className="flex justify-between"><span>PostgreSQL-compatible:</span> <span className="font-bold text-green-600">{data.validation_summary.postgres_compatible}</span></div>
+            <div className="flex justify-between"><span>Requires review:</span> <span className="font-bold text-yellow-600">{data.validation_summary.requires_review}</span></div>
+            <div className="flex justify-between"><span>Unsupported/Invalid:</span> <span className="font-bold text-red-600">{data.validation_summary.unsupported}</span></div>
+            <div className="flex justify-between"><span>Numeric conversions:</span> <span className="font-bold">{data.validation_summary.numeric_conversions}</span></div>
+            <div className="flex justify-between"><span>Character conversions:</span> <span className="font-bold">{data.validation_summary.character_conversions}</span></div>
+            <div className="flex justify-between"><span>Date/time conversions:</span> <span className="font-bold">{data.validation_summary.date_conversions}</span></div>
+            <div className="flex justify-between"><span>Redefines handled (Excluded):</span> <span className="font-bold text-blue-600">{data.validation_summary.redefines_handled}</span></div>
+          </div>
+        )}
+
         <table className="w-full text-left text-xs font-mono border-collapse">
           <thead>
             <tr className="bg-zinc-100 border-b border-zinc-200">
               <th className="p-2">Column Name</th>
-              <th className="p-2">SQL Type</th>
               <th className="p-2">Source Field</th>
+              <th className="p-2">COBOL PIC</th>
+              <th className="p-2">PostgreSQL Type</th>
               <th className="p-2 text-center">Key</th>
+              <th className="p-2 text-center">Confidence</th>
             </tr>
           </thead>
           <tbody>
-            {data.columns && data.columns.map((col, i) => (
-              <tr key={i} className="border-b border-zinc-100">
-                <td className="p-2 font-semibold text-blue-700">{col.name}</td>
-                <td className="p-2 text-emerald-600">{col.sql_type}</td>
-                <td className="p-2 text-zinc-500">{col.source_field || col.source_pic}</td>
-                <td className="p-2 text-center text-zinc-400">{col.primary_key ? 'PK' : ''}</td>
-              </tr>
-            ))}
+            {data.columns && data.columns.map((col, i) => {
+              const isReviewRequired = col.schema_status && col.schema_status.includes("REVIEW_REQUIRED");
+              const isExcludedPhysical = col.is_excluded && !isReviewRequired;
+              
+              return (
+                <tr key={i} className={`border-b border-zinc-100 ${isExcludedPhysical ? 'opacity-50 line-through' : ''}`}>
+                  <td className="p-2 font-semibold text-blue-700" title={col.conversion_reason || ""}>
+                    {isReviewRequired && <span className="text-amber-500 mr-1" title="REVIEW_REQUIRED">⚠</span>}
+                    {col.name}
+                  </td>
+                  <td className="p-2 text-zinc-500">{col.source_field || "-"}</td>
+                  <td className="p-2 text-zinc-500">{col.source_pic || col.pic || col.original_pic || "-"}</td>
+                  <td className="p-2 text-emerald-600 font-bold">{col.postgres_type || col.sql_type || col.type || "-"}</td>
+                  <td className="p-2 text-center text-zinc-400 font-bold">{col.primary_key || col.is_primary ? 'PK' : ''}</td>
+                  <td className={`p-2 text-center font-bold ${isExcludedPhysical ? 'text-zinc-500' : col.confidence === 'HIGH' ? 'text-green-600' : col.confidence === 'MEDIUM' ? 'text-yellow-600' : col.confidence === 'LOW' ? 'text-red-600' : 'text-zinc-400'}`}>
+                    {col.confidence || "-"}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -355,7 +464,10 @@ const ArtifactKnowledgeViewer = ({ jobId, artifactId, onSelectDependency }) => {
             {data.structure && (
               <>
                 <CardSection title="Identity" data={data.structure.identity} onOpen={handleOpenModal} />
-                <CardSection title="Structure" data={data.structure.structure || data.structure} onOpen={handleOpenModal} />
+                <CardSection title="Structure" data={{
+                  raw_structure: data.structure,
+                  structure_view: data.structure_view,
+                }} onOpen={handleOpenModal} />
                 <CardSection title="Relationships" data={data.detailed_relationships} onOpen={handleOpenModal} />
                 <CardSection 
                   title={
@@ -384,7 +496,7 @@ const ArtifactKnowledgeViewer = ({ jobId, artifactId, onSelectDependency }) => {
         <Modal 
           title={modalState.title} 
           data={modalState.data} 
-          artifactType={data?.structure?.identity?.artifact_type}
+          artifactType={data?.structure?.identity?.artifact_type || data?.structure?.artifact_type || data?.artifact?.type}
           onClose={() => setModalState({ isOpen: false, title: '', data: null })} 
         />
       )}

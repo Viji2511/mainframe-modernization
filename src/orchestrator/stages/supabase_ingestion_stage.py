@@ -3,6 +3,7 @@ import logging
 from src.orchestrator.stages.base_stage import PipelineStage
 from src.orchestrator.context import PipelineContext
 from src.store.supabase_client import supabase_db
+from src.metadata.audit import AuditTrail
 
 logger = logging.getLogger(__name__)
 
@@ -14,6 +15,7 @@ class SupabaseIngestionStage(PipelineStage):
                 return
             
             repo_id = context.session.repository_id
+            supabase_db.clear_errors()
             repo_name = os.path.basename(repo_id) if repo_id else "default_repo"
             
             # Insert Repository
@@ -66,6 +68,15 @@ class SupabaseIngestionStage(PipelineStage):
                     "dataset_name": dsn,
                     "dataset_type": "UNKNOWN"
                 })
+
+            if supabase_db.errors:
+                AuditTrail(context.session).record(
+                    stage="VALIDATION", component="SupabaseIngestionStage", action="persist_metadata",
+                    event_type="validation_warning", status="REVIEW_REQUIRED", severity="WARNING",
+                    summary="Remote metadata persistence reported errors; repository-scoped local knowledge remains the audit source of record.",
+                    details={"error_count": len(supabase_db.errors), "operations": supabase_db.errors[:20]},
+                    metadata={"recommended_next_action": "Restore Supabase connectivity and re-run persistence validation."},
+                )
 
         except Exception as e:
             logger.exception("Exception occurred in SupabaseIngestionStage")

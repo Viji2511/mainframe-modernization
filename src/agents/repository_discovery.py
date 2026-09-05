@@ -1,6 +1,7 @@
 import os
 import zipfile
 import tempfile
+from src.security.safety import SecurityValidationError, safe_extract_zip
 
 class RepositoryDiscoveryAgent:
     """
@@ -18,8 +19,13 @@ class RepositoryDiscoveryAgent:
         # Unzip if necessary
         if os.path.isfile(input_path) and zipfile.is_zipfile(input_path):
             temp_dir = tempfile.mkdtemp()
-            with zipfile.ZipFile(input_path, 'r') as zip_ref:
-                zip_ref.extractall(temp_dir)
+            try:
+                safe_extract_zip(input_path, temp_dir)
+            except SecurityValidationError:
+                # Do not leave partial untrusted extraction behind.
+                import shutil
+                shutil.rmtree(temp_dir, ignore_errors=True)
+                raise
             target_dir = temp_dir
             
         raw_files = {}

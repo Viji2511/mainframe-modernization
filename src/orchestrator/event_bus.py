@@ -23,10 +23,14 @@ class EventBus:
         """
         Publish an event to all registered subscribers.
         """
-        logger.info(f"Published:\n{event_type}")
+        # Audit events can be numerous during a real repository run. They are
+        # persisted by AuditTrail; keep the compatibility notification without
+        # turning it into a high-volume application log.
+        log = logger.debug if event_type == "AuditEventRecorded" else logger.info
+        log(f"Published:\n{event_type}")
         
         if event_type not in self._subscribers:
-            logger.info(f"Subscribers:\nNone")
+            log(f"Subscribers:\nNone")
             return
             
         subscribers = self._subscribers[event_type]

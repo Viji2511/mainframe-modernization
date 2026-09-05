@@ -1,7 +1,11 @@
 import os
 import logging
 from dotenv import load_dotenv
-from supabase import create_client, Client
+try:
+    from supabase import create_client, Client
+except ImportError:  # Local/offline analysis does not require remote persistence.
+    create_client = None
+    Client = object
 
 load_dotenv()
 logger = logging.getLogger(__name__)
@@ -14,8 +18,18 @@ class SupabaseStore:
         if not url or not key:
             logger.warning("SUPABASE_URL or SUPABASE_KEY not found in environment variables. Database interactions will fail.")
             self.client = None
-        else:
+        elif create_client is not None:
             self.client: Client = create_client(url, key)
+        else:
+            logger.warning("supabase package is unavailable; continuing with local persisted analysis output.")
+            self.client = None
+        self.errors = []
+
+    def clear_errors(self) -> None:
+        self.errors = []
+
+    def _record_error(self, operation: str, table: str, error: Exception) -> None:
+        self.errors.append({"operation": operation, "table": table, "reason": str(error)})
 
     def insert(self, table: str, data: dict) -> dict:
         table = table.lower()
@@ -27,6 +41,7 @@ class SupabaseStore:
             return response.data
         except Exception as e:
             logger.error(f"Error inserting into {table}: {e}")
+            self._record_error("insert", table, e)
             return {}
 
     def select(self, table: str, query: dict = None) -> list:
@@ -46,6 +61,7 @@ class SupabaseStore:
             return response.data
         except Exception as e:
             logger.error(f"Error selecting from {table}: {e}")
+            self._record_error("select", table, e)
             return []
 
     def update(self, table: str, match: dict, data: dict) -> dict:
@@ -61,6 +77,7 @@ class SupabaseStore:
             return response.data
         except Exception as e:
             logger.error(f"Error updating {table}: {e}")
+            self._record_error("update", table, e)
             return {}
 
 supabase_db = SupabaseStore()

@@ -26,47 +26,78 @@ const TreeNode = ({ label, children, defaultOpen = true }) => {
   );
 };
 
-const CopybookViewer = ({ data }) => {
-  let roots = data.records || [];
-  
-  if (roots.length === 0 && data.fields && data.fields.length > 0) {
-    const stack = [];
-    const newRoots = [];
-    
-    // Create deep copies to avoid mutating original data
-    const fields = JSON.parse(JSON.stringify(data.fields));
-    
-    fields.forEach(f => {
-      if (!f.children) f.children = [];
-      const level = parseInt(f.level, 10) || 0;
-      f.level = level;
-      
-      while(stack.length > 0 && stack[stack.length - 1].level >= level) {
-        stack.pop();
-      }
-      
-      if (stack.length > 0) {
-        stack[stack.length - 1].children.push(f);
-      } else {
-        newRoots.push(f);
-      }
-      
-      stack.push(f);
-    });
-    
-    roots = newRoots;
+const asArray = (value) => (Array.isArray(value) ? value : []);
+
+const copybookPayload = (data) => {
+  const raw = data?.raw_structure || data;
+  // Artifact details can contain the complete canonical artifact, while older
+  // repositories return the copybook structure directly. Support both shapes.
+  if (raw?.structure && (raw.structure.fields || raw.structure.records || raw.structure.hierarchy)) {
+    return raw.structure;
   }
+  return raw || {};
+};
+
+const fieldLengthFromPicture = (picture) => {
+  if (!picture) return null;
+  const value = String(picture)
+    .replace(/^\s*PIC(?:TURE)?\s+/i, '')
+    .replace(/\s+(?:COMP(?:-[1235])?|BINARY|DISPLAY|PACKED-DECIMAL).*$/i, '');
+  let length = 0;
+  let match;
+  const characterPattern = /[AX9Z*](?:\((\d+)\))?/gi;
+  while ((match = characterPattern.exec(value))) length += Number(match[1] || 1);
+  // A leading plus is represented as a physical sign character in legacy layouts.
+  if (value.includes('+')) length += 1;
+  return length || null;
+};
+
+const pictureLabel = (picture) => String(picture || '')
+  .replace(/^\s*PIC(?:TURE)?\s+/i, '')
+  .trim();
+
+const buildFieldHierarchy = (fields) => {
+  const flatFields = asArray(fields);
+  if (!flatFields.length) return [];
+
+  // Most parsers return a flat level-number sequence. Rebuild its hierarchy so
+  // each copybook has the same expandable view, even if it was parsed before
+  // canonical structures were introduced.
+  const hasLevelNumbers = flatFields.every((field) => Number.isFinite(Number(field?.level)));
+  if (!hasLevelNumbers) return flatFields;
+
+  const roots = [];
+  const stack = [];
+  flatFields.forEach((source) => {
+    const field = { ...source, level: Number(source.level), children: [] };
+    while (stack.length && stack[stack.length - 1].level >= field.level) stack.pop();
+    if (stack.length) stack[stack.length - 1].children.push(field);
+    else roots.push(field);
+    stack.push(field);
+  });
+  return roots;
+};
+
+const CopybookViewer = ({ data }) => {
+  const payload = copybookPayload(data);
+  const hierarchy = payload.hierarchy || payload.semantic_structure?.record_definition || {};
+  const nestedRecords = asArray(payload.records).length
+    ? payload.records
+    : asArray(hierarchy.records || hierarchy.field_hierarchy);
+  const roots = nestedRecords.length ? nestedRecords : buildFieldHierarchy(payload.fields);
   
   const renderField = (field, idx) => {
     const { name, level, pic, length, usage, occurs, redefines, children } = field;
     const hasChildren = children && children.length > 0;
+    const resolvedLength = length ?? fieldLengthFromPicture(pic);
+    const normalizedPicture = pictureLabel(pic);
     
     const label = (
       <div className="flex flex-wrap items-center gap-2 font-mono text-[12px]">
         {level != null && <span className="text-blue-600 font-bold">{String(level).padStart(2, '0')}</span>}
         <span className="text-zinc-900 font-semibold">{name}</span>
-        {pic && <span className="text-emerald-600">PIC {pic}</span>}
-        {length != null && <span className="text-zinc-500">({length})</span>}
+        {normalizedPicture && <span className="text-emerald-600">PIC {normalizedPicture}</span>}
+        {resolvedLength != null && <span className="text-zinc-500">({resolvedLength})</span>}
         {usage && <span className="text-indigo-600">USAGE {usage}</span>}
         {occurs && <span className="text-amber-600">OCCURS {occurs}</span>}
         {redefines && <span className="text-purple-600">REDEFINES {redefines}</span>}
@@ -237,10 +268,82 @@ const GenericTree = ({ data }) => {
   );
 };
 
+const formatProperty = (value) => {
+  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') return String(value);
+  return JSON.stringify(value);
+};
+
+const ArtifactStructureNode = ({ node, path }) => {
+  const children = asArray(node.children);
+  const properties = node.properties || {};
+  const label = (
+    <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 font-mono text-[12px]">
+      <span className="font-semibold text-zinc-900">{node.name}</span>
+      <span className="text-[10px] uppercase tracking-wide text-blue-600">{String(node.type || 'node').replace(/_/g, ' ')}</span>
+      {Object.entries(properties).map(([key, value]) => (
+        <span key={key} className="text-zinc-500">
+          <span className="text-zinc-400">{key.replace(/_/g, ' ')}:</span> {formatProperty(value)}
+        </span>
+      ))}
+    </div>
+  );
+
+  if (!children.length) return <div className="pl-4 py-1">{label}</div>;
+  return (
+    <TreeNode label={label} key={path}>
+      {children.map((child, index) => <ArtifactStructureNode key={`${path}-${index}`} node={child} path={`${path}-${index}`} />)}
+    </TreeNode>
+  );
+};
+
+const ArtifactTreeView = ({ structure }) => {
+  const nodes = asArray(structure.nodes);
+  if (!structure.available || !nodes.length) {
+    return (
+      <div className="space-y-3">
+        <p className="text-zinc-500 italic">{structure.message || 'No parsed structure is available.'}</p>
+        {structure.metadata && Object.keys(structure.metadata).length > 0 && <GenericTree data={structure.metadata} />}
+      </div>
+    );
+  }
+  return <div className="flex flex-col gap-1">{nodes.map((node, index) => <ArtifactStructureNode key={index} node={node} path={String(index)} />)}</div>;
+};
+
+const JclStructureView = ({ structure }) => <ArtifactTreeView structure={structure} />;
+const CobolProgramStructureView = ({ structure }) => <ArtifactTreeView structure={structure} />;
+const IdcamsStructureView = ({ structure }) => <ArtifactTreeView structure={structure} />;
+const CatalogStructureView = ({ structure }) => <ArtifactTreeView structure={structure} />;
+const GenericStructureView = ({ structure }) => <ArtifactTreeView structure={structure} />;
+
 const StructureViewer = ({ data, artifactType }) => {
   if (!data) return <div className="text-zinc-400">No structure data available.</div>;
-  
-  switch (artifactType?.toUpperCase()) {
+
+  const normalizedStructure = data?.structure_view || data?.structureView;
+  if (normalizedStructure) {
+    switch (String(normalizedStructure.artifact_type || artifactType).toUpperCase()) {
+      case 'COPYBOOK':
+        return <CopybookViewer data={data} />;
+      case 'JCL':
+        return <JclStructureView structure={normalizedStructure} />;
+      case 'COBOL':
+      case 'CBL':
+        return <CobolProgramStructureView structure={normalizedStructure} />;
+      case 'IDCAMS':
+        return <IdcamsStructureView structure={normalizedStructure} />;
+      case 'CATALOG':
+        return <CatalogStructureView structure={normalizedStructure} />;
+      default:
+        return <GenericStructureView structure={normalizedStructure} />;
+    }
+  }
+
+  const inferredType = artifactType
+    || data?.identity?.artifact_type
+    || data?.artifact_type
+    || data?.type
+    || (data?.fields || data?.structure?.fields ? 'COPYBOOK' : '');
+
+  switch (String(inferredType).toUpperCase()) {
     case 'COPYBOOK':
       return <CopybookViewer data={data} />;
     case 'COBOL':

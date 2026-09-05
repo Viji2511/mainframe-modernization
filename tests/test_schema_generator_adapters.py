@@ -5,6 +5,16 @@ def test_cobol_schema():
     struct = {
         "structure": {
             "data_structures": ["TRANSACTION-RECORD"]
+        },
+        "semantic_structure": {
+            "program": {
+                "execution_flow": ["OPEN", "READ"]
+            }
+        },
+        "components": {
+            "files": {
+                "read": ["CUSTOMER.KSDS"]
+            }
         }
     }
     deps = {
@@ -19,16 +29,22 @@ def test_cobol_schema():
     assert "CUSTOMER.KSDS" in schema["datasets"]
     assert "COTTL01Y" in schema["copybooks"]
     assert "CUST01C" in schema["called_programs"]
+    assert "OPEN" in schema["operations"]
+    assert "CUSTOMER.KSDS" in schema["files"]["read"]
 
 def test_jcl_schema():
     struct = {
-        "structure": {
-            "job": {
+        "semantic_structure": {
+            "workflow": {
+                "job": {
+                    "job_name": "DBPAUTP0",
+                    "job_card": {"class": "A"}
+                },
                 "steps": [
                     {
                         "step_name": "STEP01",
                         "exec": [{"program": "DBPAUTP0"}],
-                        "dd": [{"dd_name": "INPUT", "dataset": "CUSTOMER.KSDS"}]
+                        "dd": [{"dd_name": "INPUT", "dataset": "CUSTOMER.KSDS", "disp": "SHR"}]
                     }
                 ]
             }
@@ -37,9 +53,11 @@ def test_jcl_schema():
     schema = _generate_jcl_schema("DBPAUTP0", struct)
     assert schema["schema_type"] == "JOB_SCHEMA"
     assert schema["job_name"] == "DBPAUTP0"
+    assert schema["job_card"]["class"] == "A"
     assert schema["steps"][0]["step_name"] == "STEP01"
     assert schema["steps"][0]["exec"][0]["program"] == "DBPAUTP0"
     assert schema["steps"][0]["dd"][0]["dataset"] == "CUSTOMER.KSDS"
+    assert schema["steps"][0]["dd"][0]["disp"] == "SHR"
 
 def test_idcams_schema():
     struct = {

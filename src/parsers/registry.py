@@ -22,6 +22,7 @@ class ParserRegistry:
         import src.parsers.jcl_parser
         import src.parsers.idcams_parser
         import src.parsers.catalog_parser
+        import src.parsers.copybook_parser
         
         self._parsers.clear()
         

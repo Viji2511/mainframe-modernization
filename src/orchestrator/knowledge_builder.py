@@ -1,12 +1,13 @@
 import os
 import json
 import logging
+import uuid
 from typing import Dict, Any, List
 from src.metadata.session import DiscoverySession
 from src.models.knowledge_store import (
     RepositoryKnowledge, ProgramKnowledge, CopybookKnowledge, DatasetKnowledge, 
     Relationship, RepositorySummary, Traceability, JCLJobKnowledge, IDCAMSKnowledge,
-    FieldSchema
+    CatalogKnowledge, DiscoveredArtifactKnowledge, FieldSchema
 )
 from src.relationships.relationship_engine import RelationshipEngine
 
@@ -49,15 +50,32 @@ class RepositoryKnowledgeBuilder:
                 self.knowledge.programs[prog_name].copybooks_used.extend(structure.get("copybooks", []))
                 self.knowledge.summary.cobol_programs += 1
                 
-            # 3. Add Copybooks
+            # 3. Add Copybooks. New runs use the parser-produced tree; the
+            # old regex method is compatibility-only for legacy/direct callers.
+            parsed_copybooks = self.session.execution_metadata.get("copybook_structures", {})
             for path, content in inventory.copybook_files.items():
                 cb_name = self._unique_artifact_key(path, self.knowledge.copybooks)
+                parsed = parsed_copybooks.get(path)
+                if parsed:
+                    fields = [FieldSchema.model_validate(item) for item in parsed.get("records", [])]
+                    properties = {
+                        "copybook_model_version": parsed.get("copybook_model_version"),
+                        "parser_version": parsed.get("parser_version"),
+                        "record_length_min": parsed.get("record_length_min"),
+                        "record_length_max": parsed.get("record_length_max"),
+                    }
+                    parser_name = "CopybookParser"
+                else:
+                    fields = self._parse_copybook_fields(content)
+                    properties = {"legacy_flat_fallback": True, "stale_copybook_model": True}
+                    parser_name = "LegacyFlatCopybookFallback"
                 self.knowledge.copybooks[cb_name] = CopybookKnowledge(
                     id=cb_name,
                     name=cb_name,
                     filepath=path,
-                    fields=self._parse_copybook_fields(content),
-                    traceability=Traceability(source_file=path, parser="InventoryClassification")
+                    fields=fields,
+                    properties=properties,
+                    traceability=Traceability(source_file=path, parser=parser_name)
                 )
                 self.knowledge.summary.copybooks += 1
                 
@@ -84,6 +102,39 @@ class RepositoryKnowledgeBuilder:
                 )
                 self.knowledge.summary.idcams_scripts += 1
 
+            # LISTCAT is a structural repository artifact, not merely a source
+            # of inferred datasets. Preserve it for the artifact explorer.
+            for path in inventory.listcat_files.keys():
+                catalog_name = self._unique_artifact_key(path, self.knowledge.catalogs)
+                self.knowledge.catalogs[catalog_name] = CatalogKnowledge(
+                    id=catalog_name,
+                    name=catalog_name,
+                    filepath=path,
+                    traceability=Traceability(source_file=path, parser="InventoryClassification"),
+                )
+                self.knowledge.summary.catalog_files += 1
+
+            # Keep discovery-only artifacts visible. They intentionally do not
+            # receive a fabricated structure; the UI reports their limitation.
+            for artifact_type, items in (
+                ("PLI", inventory.pli_files),
+                ("NATURAL", inventory.natural_files),
+                ("RPG", inventory.rpg_files),
+                ("METADATA", inventory.metadata_files),
+                ("OTHER", inventory.other_files),
+            ):
+                for path in items.keys():
+                    artifact_name = self._unique_artifact_key(path, self.knowledge.other_artifacts)
+                    classification = inventory.classification_details.get(path, {})
+                    self.knowledge.other_artifacts[artifact_name] = DiscoveredArtifactKnowledge(
+                        id=artifact_name,
+                        name=artifact_name,
+                        filepath=path,
+                        artifact_type=artifact_type,
+                        classification_reason=classification.get("reason"),
+                        traceability=Traceability(source_file=path, parser="InventoryClassification"),
+                    )
+
             # 4. Add Datasets from JCL and Listcat candidates
             for dsn in inventory.vsam_dsn_candidates:
                 if dsn not in self.knowledge.datasets:
@@ -105,7 +156,13 @@ class RepositoryKnowledgeBuilder:
             
             from src.metadata.schema_generator import SchemaGenerator
             schema_gen = SchemaGenerator()
+            self.session.execution_metadata.setdefault("audit_run_id", str(uuid.uuid4()))
             self.knowledge.database_schema = schema_gen.generate(self.knowledge)
+            self.knowledge.database_schema["run_id"] = self.session.execution_metadata["audit_run_id"]
+            # Generated schemas were built before this assignment; attach the
+            # stable run id to each canonical persistence object.
+            for generated in self.knowledge.database_schema.get("generated_schemas", []):
+                generated["run_id"] = self.session.execution_metadata["audit_run_id"]
             
             self._finalize_summary()
             from src.orchestrator.canonical_structure import build_all_canonical_structures
@@ -152,8 +209,9 @@ class RepositoryKnowledgeBuilder:
                 
         elif evidence.artifact_type == "JCL" and evidence.evidence_type == "DD":
             # Map JCL to Dataset
-            dsn = str(evidence.value)
-            if dsn not in self.knowledge.datasets:
+            dd_properties = evidence.properties or {}
+            dsn = dd_properties.get("dataset")
+            if dsn and dsn not in self.knowledge.datasets:
                 self.knowledge.datasets[dsn] = DatasetKnowledge(
                     id=dsn, 
                     name=dsn,
@@ -165,34 +223,74 @@ class RepositoryKnowledgeBuilder:
             # Create a relationship from JCL file to Dataset
             jcl_name = self._find_key_by_source(self.knowledge.jcl_jobs, evidence.source_file)
             if jcl_name:
-                self.knowledge.jcl_jobs[jcl_name].allocated_datasets.append(dsn)
-                self.knowledge.jcl_jobs[jcl_name].dd_statements.append({
+                dd_data = {
                     "dd_name": evidence.entity_name,
-                    "dataset": dsn,
-                    **(evidence.properties or {}),
+                    **dd_properties,
+                }
+                if dsn:
+                    self.knowledge.jcl_jobs[jcl_name].allocated_datasets.append(dsn)
+                self.knowledge.jcl_jobs[jcl_name].dd_statements.append(dd_data)
+
+                hierarchy = self.knowledge.jcl_jobs[jcl_name].properties.setdefault("jcl_hierarchy", {
+                    "job_level_dds": [], "steps": []
                 })
-            self.knowledge.relationships.append(Relationship(
-                source_id=jcl_name,
-                target_id=dsn,
-                rel_type="ALLOCATES",
-                properties={"dd_name": evidence.entity_name, "evidence_id": evidence.evidence_id}
-            ))
-            self.knowledge.summary.relationships += 1
+                scope = dd_data.get("scope")
+                step_name = dd_data.get("step_name")
+                dd_group = hierarchy["job_level_dds"]
+                if scope == "step" and step_name:
+                    step = next((item for item in hierarchy["steps"] if item.get("name") == step_name), None)
+                    if step is None:
+                        step = {"name": step_name, "exec": [], "dds": []}
+                        hierarchy["steps"].append(step)
+                    dd_group = step["dds"]
+
+                if dd_data.get("is_concatenation"):
+                    parent = next((item for item in reversed(dd_group) if item.get("name") == dd_data["dd_name"]), None)
+                    if parent is not None:
+                        parent.setdefault("concatenations", []).append(dd_data)
+                    else:
+                        # Keep malformed/incomplete parser output visible as a
+                        # standalone DD rather than pretending it has an owner.
+                        dd_group.append({"name": dd_data["dd_name"], **dd_data, "concatenations": []})
+                else:
+                    dd_group.append({"name": dd_data["dd_name"], **dd_data, "concatenations": []})
+            if dsn:
+                self.knowledge.relationships.append(Relationship(
+                    source_id=jcl_name,
+                    target_id=dsn,
+                    rel_type="ALLOCATES",
+                    properties={"dd_name": evidence.entity_name, "evidence_id": evidence.evidence_id}
+                ))
+                self.knowledge.summary.relationships += 1
 
         elif evidence.artifact_type == "JCL" and evidence.evidence_type == "EXEC":
             jcl_name = self._find_key_by_source(self.knowledge.jcl_jobs, evidence.source_file)
             if jcl_name:
-                self.knowledge.jcl_jobs[jcl_name].executed_programs.append(str(evidence.value))
-                self.knowledge.jcl_jobs[jcl_name].exec_statements.append({
+                exec_data = {
                     "step_name": (evidence.properties or {}).get("step_name"),
                     "program": str(evidence.value),
                     "kind": (evidence.properties or {}).get("kind", "PGM"),
+                    **{key: value for key, value in (evidence.properties or {}).items() if key != "step_name"},
+                }
+                self.knowledge.jcl_jobs[jcl_name].executed_programs.append(str(evidence.value))
+                self.knowledge.jcl_jobs[jcl_name].exec_statements.append(exec_data)
+                hierarchy = self.knowledge.jcl_jobs[jcl_name].properties.setdefault("jcl_hierarchy", {
+                    "job_level_dds": [], "steps": []
                 })
+                step_name = exec_data["step_name"] or "UNASSIGNED"
+                step = next((item for item in hierarchy["steps"] if item.get("name") == step_name), None)
+                if step is None:
+                    step = {"name": step_name, "exec": [], "dds": []}
+                    hierarchy["steps"].append(step)
+                step["exec"].append(exec_data)
 
         elif evidence.artifact_type == "JCL" and evidence.evidence_type == "JOB":
             jcl_name = self._find_key_by_source(self.knowledge.jcl_jobs, evidence.source_file)
             if jcl_name:
-                self.knowledge.jcl_jobs[jcl_name].job_card = evidence.properties or {}
+                self.knowledge.jcl_jobs[jcl_name].job_card = {
+                    "job_name": evidence.entity_name,
+                    **(evidence.properties or {}),
+                }
 
         elif evidence.artifact_type == "JCL" and evidence.evidence_type == "SYMBOL":
             jcl_name = self._find_key_by_source(self.knowledge.jcl_jobs, evidence.source_file)
@@ -219,6 +317,19 @@ class RepositoryKnowledgeBuilder:
             idcams_name = self._find_key_by_source(self.knowledge.idcams_definitions, evidence.source_file)
             if idcams_name:
                 self.knowledge.idcams_definitions[idcams_name].defined_clusters.append(dsn)
+                self.knowledge.idcams_definitions[idcams_name].properties.setdefault("definitions", []).append({
+                    "command": "DEFINE CLUSTER",
+                    "name": dsn,
+                    **(evidence.properties or {}),
+                })
+
+        elif evidence.artifact_type == "CATALOG" and evidence.evidence_type == "CATALOG_ENTRY":
+            catalog_name = self._find_key_by_source(self.knowledge.catalogs, evidence.source_file)
+            if catalog_name:
+                self.knowledge.catalogs[catalog_name].entries.append({
+                    "name": evidence.entity_name,
+                    **(evidence.properties or {}),
+                })
 
     def _parse_copybook_fields(self, content: str) -> List[FieldSchema]:
         import re
@@ -306,59 +417,6 @@ class RepositoryKnowledgeBuilder:
             return "NUMERIC"
         return "TEXT"
 
-    def _build_database_schema(self) -> Dict[str, Any]:
-        tables = {}
-        for copybook_id, copybook in self.knowledge.copybooks.items():
-            columns = []
-            key_fields = [field for field in copybook.fields if field.is_key]
-            if not key_fields:
-                key_fields = [field for field in copybook.fields if field.name.endswith("-ID") or field.name == "ID"]
-            primary_key = key_fields[0].name if key_fields else None
-
-            for field in copybook.fields:
-                if field.data_type == "GROUP":
-                    continue
-                columns.append({
-                    "name": field.name.lower().replace("-", "_"),
-                    "source_field": field.name,
-                    "source_pic": field.data_type,
-                    "sql_type": self._field_to_sql_type(field),
-                    "nullable": not field.is_key and field.name != primary_key,
-                    "primary_key": field.name == primary_key,
-                    "foreign_key": None,
-                })
-
-            tables[copybook_id.lower()] = {
-                "table_name": copybook_id.lower(),
-                "source_copybook": copybook.filepath,
-                "columns": columns,
-                "primary_key": primary_key.lower().replace("-", "_") if primary_key else None,
-                "foreign_keys": [],
-            }
-
-        return {
-            "dialect": "postgresql",
-            "tables": tables,
-            "relationships": [],
-            "ddl": self._generate_ddl(tables),
-        }
-
-    def _generate_ddl(self, tables: Dict[str, Any]) -> str:
-        statements = []
-        for table in tables.values():
-            column_lines = []
-            for column in table["columns"]:
-                line = f"  {column['name']} {column['sql_type']}"
-                if not column["nullable"]:
-                    line += " NOT NULL"
-                column_lines.append(line)
-            if table.get("primary_key"):
-                column_lines.append(f"  PRIMARY KEY ({table['primary_key']})")
-            if not column_lines:
-                column_lines.append("  id BIGSERIAL PRIMARY KEY")
-            statements.append(f"CREATE TABLE {table['table_name']} (\n" + ",\n".join(column_lines) + "\n);")
-        return "\n\n".join(statements)
-
     def _finalize_summary(self) -> None:
         summary = self.knowledge.summary
         summary.total_files = self._inventory_file_count(self.session.artifact_inventory)
@@ -366,6 +424,7 @@ class RepositoryKnowledgeBuilder:
         summary.copybooks = len(self.knowledge.copybooks)
         summary.jcl_jobs = len(self.knowledge.jcl_jobs)
         summary.idcams_scripts = len(self.knowledge.idcams_definitions)
+        summary.catalog_files = len(self.knowledge.catalogs)
         summary.datasets = len(self.knowledge.datasets)
         summary.relationships = len(self.knowledge.relationships)
         summary.business_rules = len(self.knowledge.business_rules)
@@ -436,7 +495,7 @@ class RepositoryKnowledgeBuilder:
             
             # Validation: JSON Output Serialization Check
             try:
-                dumped_dict = self.knowledge.model_dump() if hasattr(self.knowledge, "model_dump") else self.knowledge.dict()
+                dumped_dict = self.knowledge.model_dump(mode="json") if hasattr(self.knowledge, "model_dump") else self.knowledge.dict()
                 json_str = json.dumps(dumped_dict, indent=2)
             except Exception as e:
                 logger.error(f"Validation failed: JSON Serialization Error: {e}")

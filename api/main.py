@@ -5,22 +5,34 @@ import json
 import shutil
 import zipfile
 import asyncio
+import logging
 from datetime import datetime
+from pathlib import Path
 from typing import List, Optional
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from api.repository_api import router as repository_router
+from src.security.safety import (
+    MAX_UPLOAD_FILES, MAX_UPLOAD_SIZE, SecurityValidationError, count_files,
+    safe_extract_zip, safe_join, safe_upload_path, validate_repository_id,
+)
+
+logger = logging.getLogger(__name__)
 
 app = FastAPI(title="MainframeAI API", version="1.0.0")
 
 app.include_router(repository_router)
 
-# Enable CORS for frontend development
+# Development UI origins can be overridden without opening credentialed CORS to
+# every website by default.
+_cors_origins = [origin.strip() for origin in os.environ.get(
+    "CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173"
+).split(",") if origin.strip()]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Support all origins for easy development
+    allow_origins=_cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -30,6 +42,31 @@ app.add_middleware(
 UPLOAD_BASE_DIR = os.path.abspath("uploads")
 OUTPUT_BASE_DIR = os.path.abspath("outputs")
 JOBS_STATE_FILE = os.path.abspath("jobs_state.json")
+
+
+def _validated_job_id(job_id: str) -> str:
+    try:
+        return validate_repository_id(job_id)
+    except SecurityValidationError as exc:
+        raise HTTPException(status_code=400, detail="Invalid job identifier.") from exc
+
+
+def _job_path(base_dir: str, job_id: str) -> str:
+    return str(safe_join(base_dir, _validated_job_id(job_id)))
+
+
+def _record_security_event(job_id: str, event_type: str, summary: str, details: dict | None = None) -> None:
+    """Persist meaningful upload rejections without exposing their raw input."""
+    try:
+        from src.metadata.audit import AuditTrail
+        from src.metadata.session import DiscoverySession
+        session = DiscoverySession(repository_id=job_id)
+        trail = AuditTrail(session)
+        trail.record(stage="SECURITY", component="UploadAPI", action="validate_upload", event_type=event_type,
+                     status="REVIEW_REQUIRED", severity="WARNING", summary=summary, details=details or {})
+        trail.persist(_job_path(OUTPUT_BASE_DIR, job_id))
+    except Exception:
+        logger.exception("Could not persist security audit event")
 
 # Ensure base directories exist
 for d in ["uploads", "outputs", "logs", "temp", "knowledge"]:
@@ -224,6 +261,14 @@ def _repair_or_hide_error_jobs(jobs: list) -> list:
 
     return repaired_jobs
 
+
+def _public_job_status(job: dict) -> dict:
+    """Return job state without subprocess command/output internals."""
+    return {key: job.get(key) for key in (
+        "job_id", "status", "db", "dsn", "files_count", "created_at", "completed_at",
+        "warning", "return_code",
+    ) if key in job}
+
 def _find_json_files(root_dir: str, filename: str) -> list[str]:
     matches = []
     if not os.path.exists(root_dir):
@@ -339,8 +384,9 @@ def run_pipeline_subprocess(job_id: str, db: str, dsn: Optional[str], list_vsam:
     """
     update_job_status(job_id, "running")
     
-    input_dir = os.path.join(UPLOAD_BASE_DIR, job_id)
-    output_dir = os.path.join(OUTPUT_BASE_DIR, job_id)
+    job_id = validate_repository_id(job_id)
+    input_dir = _job_path(UPLOAD_BASE_DIR, job_id)
+    output_dir = _job_path(OUTPUT_BASE_DIR, job_id)
     os.makedirs(output_dir, exist_ok=True)
 
     pipeline = os.path.abspath("main.py")
@@ -365,7 +411,6 @@ def run_pipeline_subprocess(job_id: str, db: str, dsn: Optional[str], list_vsam:
     if list_vsam:
         cmd.append("--list-vsam")
 
-    cmd_str = " ".join(cmd)
     try:
         process = subprocess.run(
             cmd,
@@ -374,14 +419,7 @@ def run_pipeline_subprocess(job_id: str, db: str, dsn: Optional[str], list_vsam:
             text=True
         )
         
-        print("========== COMMAND ==========")
-        print(cmd_str)
-        print("========== STDOUT ==========")
-        print(process.stdout)
-        print("========== STDERR ==========")
-        print(process.stderr)
-        print("========== RETURN CODE ==========")
-        print(process.returncode)
+        logger.info("Pipeline subprocess completed for job %s with return code %s", job_id, process.returncode)
         
         print(f"After execution Output Dir: {os.listdir(output_dir)}")
 
@@ -397,9 +435,6 @@ def run_pipeline_subprocess(job_id: str, db: str, dsn: Optional[str], list_vsam:
                 "done",
                 error=None,
                 warning="Pipeline parser failed, so a fallback inventory result was generated.",
-                command=cmd_str,
-                stdout=process.stdout,
-                stderr=process.stderr,
                 return_code=process.returncode
             )
     except Exception as e:
@@ -413,7 +448,6 @@ def run_pipeline_subprocess(job_id: str, db: str, dsn: Optional[str], list_vsam:
             "done",
             error=None,
             warning="Pipeline runner failed, so a fallback inventory result was generated.",
-            command=cmd_str,
         )
 
 # Endpoints
@@ -422,6 +456,8 @@ async def upload_files(
     files: List[UploadFile] = File(...),
     paths: List[str] = Form(default=[])
 ):
+    if not files or len(files) > MAX_UPLOAD_FILES:
+        raise HTTPException(status_code=400, detail="Upload rejected.")
     job_id = str(uuid.uuid4())
     job_dir = os.path.join(UPLOAD_BASE_DIR, job_id)
     os.makedirs(job_dir, exist_ok=True)
@@ -431,24 +467,28 @@ async def upload_files(
     try:
         for i, f in enumerate(files):
             rel_path = paths[i] if i < len(paths) else f.filename
-            # Sanitize to prevent directory traversal
-            rel_path = rel_path.lstrip("/\\")
-            file_path = os.path.join(job_dir, rel_path)
-            # Ensure subdirectory paths are created if zip contains subfolders or if uploaded from folder
-            os.makedirs(os.path.dirname(file_path), exist_ok=True)
-            
+            file_path = safe_upload_path(job_dir, rel_path, f.filename)
+            file_path.parent.mkdir(parents=True, exist_ok=True)
+            written = 0
             with open(file_path, "wb") as buffer:
-                shutil.copyfileobj(f.file, buffer)
+                while chunk := await f.read(1024 * 1024):
+                    written += len(chunk)
+                    if written > MAX_UPLOAD_SIZE:
+                        raise SecurityValidationError("Upload exceeds the allowed size.")
+                    buffer.write(chunk)
+            if written == 0:
+                raise SecurityValidationError("Empty uploads are not accepted.")
             
             # If it's a zip file, unpack it
-            if f.filename.endswith(".zip"):
-                with zipfile.ZipFile(file_path, "r") as zip_ref:
-                    zip_ref.extractall(job_dir)
-                os.remove(file_path)  # Delete original zip to keep folder clean
+            if f.filename.lower().endswith(".zip"):
+                safe_extract_zip(file_path, job_dir)
+                file_path.unlink()  # Delete original zip to keep folder clean
+            if count_files(job_dir) > MAX_UPLOAD_FILES:
+                raise SecurityValidationError("Upload contains too many files.")
 
             saved_files.append({
-                "name": f.filename,
-                "size": os.path.getsize(file_path) if os.path.exists(file_path) else 0
+                "name": str(file_path.relative_to(Path(job_dir))).replace("\\", "/"),
+                "size": written
             })
             
         # Recount actual files in directory
@@ -461,21 +501,31 @@ async def upload_files(
             "file_count": total_files,
             "files": saved_files
         }
-    except Exception as e:
+    except SecurityValidationError as exc:
         # Clean up directory on error
         if os.path.exists(job_dir):
             shutil.rmtree(job_dir)
-        raise HTTPException(status_code=500, detail=f"File upload failed: {str(e)}")
+        logger.warning("Upload rejected: %s", exc)
+        _record_security_event(job_id, "upload_rejected", "Upload rejected by baseline input validation.", {"reason": str(exc)})
+        raise HTTPException(status_code=400, detail="Upload rejected.") from exc
+    except Exception as exc:
+        if os.path.exists(job_dir):
+            shutil.rmtree(job_dir)
+        logger.exception("Upload processing failed")
+        raise HTTPException(status_code=500, detail="Upload could not be processed.") from exc
 
 @app.post("/api/run")
 async def run_pipeline(payload: RunPipelineRequest, background_tasks: BackgroundTasks):
-    job_dir = os.path.join(UPLOAD_BASE_DIR, payload.job_id)
+    job_id = _validated_job_id(payload.job_id)
+    if payload.db not in {"postgresql", "mysql"} or (payload.dsn and (len(payload.dsn) > 256 or "\x00" in payload.dsn)):
+        raise HTTPException(status_code=400, detail="Invalid pipeline options.")
+    job_dir = _job_path(UPLOAD_BASE_DIR, job_id)
     if not os.path.exists(job_dir):
         raise HTTPException(status_code=404, detail="Uploaded files not found for this Job ID.")
 
     # Check if job already recorded
     jobs = load_jobs_state()
-    job_exists = any(j["job_id"] == payload.job_id for j in jobs)
+    job_exists = any(j["job_id"] == job_id for j in jobs)
     
     # Get files count
     files_count = 0
@@ -484,7 +534,7 @@ async def run_pipeline(payload: RunPipelineRequest, background_tasks: Background
 
     if not job_exists:
         job_info = {
-            "job_id": payload.job_id,
+            "job_id": job_id,
             "status": "queued",
             "db": payload.db,
             "dsn": payload.dsn or "ALL",
@@ -499,20 +549,21 @@ async def run_pipeline(payload: RunPipelineRequest, background_tasks: Background
     # Spawn async subprocess run in background
     background_tasks.add_task(
         run_pipeline_subprocess,
-        payload.job_id,
+        job_id,
         payload.db,
         payload.dsn,
         payload.list_vsam
     )
 
-    return {"job_id": payload.job_id, "status": "queued"}
+    return {"job_id": job_id, "status": "queued"}
 
 @app.get("/api/status/{job_id}")
 async def get_job_status(job_id: str):
+    job_id = _validated_job_id(job_id)
     jobs = _repair_or_hide_error_jobs(load_jobs_state())
     for job in jobs:
         if job["job_id"] == job_id:
-            return job
+            return _public_job_status(job)
     raise HTTPException(status_code=404, detail="Job record not found.")
 
 def _db_to_ui_results(job_id: str) -> list[dict]:
@@ -635,6 +686,7 @@ def _db_to_ui_results(job_id: str) -> list[dict]:
 
 @app.get("/api/result/{job_id}")
 async def get_job_result(job_id: str):
+    job_id = _validated_job_id(job_id)
     # Verify status first
     jobs = _repair_or_hide_error_jobs(load_jobs_state())
     target_job = None
@@ -649,34 +701,32 @@ async def get_job_result(job_id: str):
     if target_job["status"] == "error":
         return {
             "status": "error",
-            "error": target_job.get("error"),
-            "stdout": target_job.get("stdout"),
-            "stderr": target_job.get("stderr"),
-            "command": target_job.get("command"),
+            "error": "Pipeline could not be processed.",
             "return_code": target_job.get("return_code")
         }
     elif target_job["status"] != "done":
         return {"status": target_job["status"]}
 
     try:
-        knowledge_path = os.path.join(OUTPUT_BASE_DIR, job_id, "knowledge_store.json")
+        knowledge_path = str(safe_join(_job_path(OUTPUT_BASE_DIR, job_id), "knowledge_store.json"))
         if os.path.isfile(knowledge_path):
             with open(knowledge_path, "r", encoding="utf-8") as file:
                 return _knowledge_store_to_ui_results(json.load(file))
         return _db_to_ui_results(job_id)
-    except Exception as e:
-        print(f"Error reading from Supabase for result: {e}")
+    except Exception:
+        logger.exception("Error reading pipeline result")
         return []
 
 @app.get("/api/jobs")
 async def get_all_jobs():
-    return _repair_or_hide_error_jobs(load_jobs_state())
+    return [_public_job_status(job) for job in _repair_or_hide_error_jobs(load_jobs_state())]
 
 @app.delete("/api/jobs/{job_id}")
 async def delete_job(job_id: str):
+    job_id = _validated_job_id(job_id)
     # Remove files
-    upload_dir = os.path.join(UPLOAD_BASE_DIR, job_id)
-    output_dir = os.path.join(OUTPUT_BASE_DIR, job_id)
+    upload_dir = _job_path(UPLOAD_BASE_DIR, job_id)
+    output_dir = _job_path(OUTPUT_BASE_DIR, job_id)
     
     if os.path.exists(upload_dir):
         shutil.rmtree(upload_dir)
@@ -694,9 +744,5 @@ async def delete_job(job_id: str):
 async def health_check():
     return {
         "status": "ok", 
-        "version": "1.0.0",
-        "cwd": os.getcwd(),
-        "jobs_file": JOBS_STATE_FILE,
-        "uploads": UPLOAD_BASE_DIR,
-        "sys_executable": sys.executable
+        "version": "1.0.0"
     }

@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useAppStore } from '../store/appStore';
 import { useApi } from '../hooks/useApi';
 import ArtifactKnowledgeViewer from '../components/ArtifactKnowledgeViewer';
+import AuditTrail from '../components/AuditTrail';
 import { 
-  Folder, FileCode, Database, MessageSquare, List,
+  Folder, FileCode, FileText, Database, MessageSquare, List,
   ChevronRight, ChevronDown, CheckCircle, Activity, Award
 } from 'lucide-react';
 
@@ -97,6 +98,12 @@ const KnowledgeExplorer = () => {
     }
     if (structureData.idcams_definitions) {
       Object.entries(structureData.idcams_definitions).forEach(([id, i]) => addPath(i.filepath || id, id, <FileCode size={12}/>));
+    }
+    if (structureData.catalogs) {
+      Object.entries(structureData.catalogs).forEach(([id, c]) => addPath(c.filepath || `${id}.lst`, id, <List size={12}/>));
+    }
+    if (structureData.other_artifacts) {
+      Object.entries(structureData.other_artifacts).forEach(([id, artifact]) => addPath(artifact.filepath || id, id, <FileText size={12}/>));
     }
     if (structureData.datasets) {
       // Datasets might not have physical files but logical, if they do, we group them at root if no path
@@ -219,6 +226,7 @@ const KnowledgeExplorer = () => {
           </div>
         </div>
       </div>
+      <AuditTrail jobId={currentJobId} artifactId={selectedFile} onClearArtifact={() => setSelectedFile(null)} />
     </div>
   );
 };

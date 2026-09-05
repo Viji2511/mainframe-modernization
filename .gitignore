@@ -7,6 +7,8 @@ ENV/
 
 # Local configuration
 .env
+.env.*
+!.env.example
 
 # Build outputs
 dist/
