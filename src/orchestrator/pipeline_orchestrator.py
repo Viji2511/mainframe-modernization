@@ -83,6 +83,12 @@ class PipelineOrchestrator:
                              event_type="stale_metadata_detected", status="REVIEW_REQUIRED", severity="WARNING",
                              summary="Persisted copybook metadata predates the hierarchical semantic model; re-analysis is required.",
                              details={"copybook_model_version": "2.0.0"})
+            prior_programs = previous.get("programs") or {}
+            if prior_programs and any(not (item.get("properties") or {}).get("cobol_structure_version") for item in prior_programs.values()):
+                audit.record(stage="VALIDATION", component="PipelineOrchestrator", action="check_persisted_versions",
+                             event_type="stale_metadata_detected", status="REVIEW_REQUIRED", severity="WARNING",
+                             summary="Persisted COBOL metadata predates hierarchical ownership structure; re-analysis is required.",
+                             details={"cobol_structure_version": "2.0.0"})
         except (FileNotFoundError, json.JSONDecodeError, OSError):
             pass
 

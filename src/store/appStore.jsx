@@ -1,12 +1,21 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
 const AppStoreContext = createContext(null);
 const DEFAULT_API_BASE_URL = 'http://localhost:8000';
 
+const pageFromLocation = () => {
+  if (window.location.pathname === '/audit') return 'audit';
+  if (['upload', 'jobs', 'results', 'audit', 'settings'].includes(window.history.state?.page)) return window.history.state.page;
+  const page = new URLSearchParams(window.location.search).get('page');
+  return ['upload', 'jobs', 'results', 'audit', 'settings'].includes(page) ? page : null;
+};
+
+const pathForPage = (page) => (page === 'audit' ? '/audit' : '/');
+
 export const AppProvider = ({ children }) => {
-  const [currentPage, setCurrentPage] = useState(() => {
-    return localStorage.getItem('mainframe_ai_current_page') || 'upload';
+  const [currentPage, setCurrentPageState] = useState(() => {
+    return pageFromLocation() || localStorage.getItem('mainframe_ai_current_page') || 'upload';
   });
   const [activeTab, setActiveTab] = useState('overview');
   const [currentJobId, setCurrentJobId] = useState(() => {
@@ -29,6 +38,29 @@ export const AppProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem('mainframe_ai_current_page', currentPage);
   }, [currentPage]);
+
+  useEffect(() => {
+    if (!window.history.state?.page) {
+      window.history.replaceState({ page: currentPage }, '', pathForPage(currentPage));
+    }
+  }, [currentPage]);
+
+  // This application historically used persisted sidebar page state rather
+  // than a router library. Keep that model, but make Audit Trail addressable
+  // and browser-navigation-safe through the History API.
+  const setCurrentPage = useCallback((page) => {
+    setCurrentPageState(page);
+    const target = pathForPage(page);
+    if (window.location.pathname !== target || (target === '/' && window.location.search) || window.history.state?.page !== page) {
+      window.history.pushState({ page }, '', target);
+    }
+  }, []);
+
+  useEffect(() => {
+    const onPopState = () => setCurrentPageState(pageFromLocation() || localStorage.getItem('mainframe_ai_current_page') || 'upload');
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
 
   useEffect(() => {
     if (currentJobId) {

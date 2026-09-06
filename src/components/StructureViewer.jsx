@@ -28,6 +28,18 @@ const TreeNode = ({ label, children, defaultOpen = true }) => {
 
 const asArray = (value) => (Array.isArray(value) ? value : []);
 
+// Artifact-details is authoritative for the selected artifact.  Older stored
+// structure views may carry an absent or legacy label, which must not override
+// that backend classification and send a valid JCL view through the generic
+// unavailable branch.
+const normalizeArtifactType = (value) => {
+  const type = String(value || '').trim().toUpperCase();
+  if (['JCL', 'JCL_JOB', 'JOB', 'JCL_SCRIPT'].includes(type)) return 'JCL';
+  if (['COBOL', 'CBL'].includes(type)) return 'COBOL';
+  if (['COPYBOOK', 'CPY', 'COPY'].includes(type)) return 'COPYBOOK';
+  return type;
+};
+
 const copybookPayload = (data) => {
   const raw = data?.raw_structure || data;
   // Artifact details can contain the complete canonical artifact, while older
@@ -84,7 +96,8 @@ const CopybookViewer = ({ data }) => {
   const nestedRecords = asArray(payload.records).length
     ? payload.records
     : asArray(hierarchy.records || hierarchy.field_hierarchy);
-  const roots = nestedRecords.length ? nestedRecords : buildFieldHierarchy(payload.fields);
+  const fragmentRoots = asArray(hierarchy.copybook_fragment_hierarchy);
+  const roots = nestedRecords.length ? nestedRecords : (fragmentRoots.length ? fragmentRoots : buildFieldHierarchy(payload.fields));
   
   const renderField = (field, idx) => {
     const { name, level, pic, length, usage, occurs, redefines, children } = field;
@@ -320,7 +333,16 @@ const StructureViewer = ({ data, artifactType }) => {
 
   const normalizedStructure = data?.structure_view || data?.structureView;
   if (normalizedStructure) {
-    switch (String(normalizedStructure.artifact_type || artifactType).toUpperCase()) {
+    const parentType = normalizeArtifactType(
+      data?.raw_structure?.identity?.artifact_type
+      || data?.raw_structure?.artifact_type
+      || artifactType,
+    );
+    const structureType = normalizeArtifactType(normalizedStructure.artifact_type);
+    // Prefer the selected artifact's backend type. The normalized structure
+    // label is a compatibility fallback only when that type is absent.
+    const dispatchType = parentType && parentType !== 'UNKNOWN' ? parentType : structureType;
+    switch (dispatchType) {
       case 'COPYBOOK':
         return <CopybookViewer data={data} />;
       case 'JCL':
@@ -343,7 +365,7 @@ const StructureViewer = ({ data, artifactType }) => {
     || data?.type
     || (data?.fields || data?.structure?.fields ? 'COPYBOOK' : '');
 
-  switch (String(inferredType).toUpperCase()) {
+  switch (normalizeArtifactType(inferredType)) {
     case 'COPYBOOK':
       return <CopybookViewer data={data} />;
     case 'COBOL':

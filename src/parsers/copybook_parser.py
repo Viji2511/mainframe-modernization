@@ -123,6 +123,7 @@ class CopybookParser(BaseParser):
 
     def parse(self, file_path: str, content: str, session) -> list[Evidence]:
         roots = self.parse_structure(file_path, content)
+        fragment_hierarchy = self._fragment_hierarchy(file_path, content) if not roots else []
         evidence = self._evidence_for_nodes(file_path, roots)
         evidence_by_node = {item.properties["node_id"]: item.evidence_id for item in evidence}
         for node in self._walk(roots):
@@ -138,6 +139,11 @@ class CopybookParser(BaseParser):
             "record_length_min": record_min,
             "record_length_max": record_max,
             "source_file": file_path,
+            # Some .cpy files contain reusable procedure fragments instead of
+            # a record layout.  They are valid copybooks but cannot honestly
+            # be represented as COBOL fields.  Preserve their real paragraph
+            # and statement ownership as a separate parser-owned tree.
+            "copybook_fragment_hierarchy": fragment_hierarchy,
         }
         session.parser_versions["COPYBOOK"] = COPYBOOK_PARSER_VERSION
         if evidence:
@@ -182,6 +188,57 @@ class CopybookParser(BaseParser):
             stack.append(node)
         self._layout(roots, 0)
         return roots
+
+    @staticmethod
+    def _code_area(source: str) -> str:
+        """Strip a fixed-format sequence/indicator area for source matching."""
+        return source[7:] if re.match(r"^\d{6}", source) else source
+
+    @classmethod
+    def _fragment_hierarchy(cls, file_path: str, content: str) -> list[dict]:
+        """Extract only explicit procedure-fragment statements from a .cpy.
+
+        This is deliberately not a record-layout fallback: it is used only
+        when no level-number declarations exist, so DDL generation continues
+        to depend solely on actual copybook fields.
+        """
+        paragraph = re.compile(r"^\s*([A-Z0-9][A-Z0-9-]*)\.\s*$", re.IGNORECASE)
+        operation = re.compile(
+            r"^\s*(EXEC\s+(?:SQL|CICS)|OPEN|READ|WRITE|REWRITE|DELETE|START|CLOSE|SORT|MERGE|PERFORM|CALL|MOVE|SET|IF|EVALUATE|STRING|COMPUTE)\b(?:\s+(.*))?",
+            re.IGNORECASE,
+        )
+        fragment_children, current_paragraph = [], None
+        for line_number, original in enumerate(content.splitlines(), start=1):
+            source = cls._code_area(original)
+            if cls._is_comment(source):
+                continue
+            paragraph_match = paragraph.match(source)
+            if paragraph_match and not paragraph_match.group(1).upper().startswith(("END-", "ELSE", "WHEN")):
+                current_paragraph = {
+                    "node_id": f"{file_path}:{line_number}:paragraph:{paragraph_match.group(1).upper()}",
+                    "type": "paragraph", "name": paragraph_match.group(1).upper(),
+                    "properties": {"source_file": file_path, "source_line": line_number}, "children": [],
+                }
+                fragment_children.append(current_paragraph)
+                continue
+            operation_match = operation.match(source)
+            if not operation_match:
+                continue
+            keyword = operation_match.group(1).upper()
+            remainder = (operation_match.group(2) or "").strip().rstrip(".")
+            node = {
+                "node_id": f"{file_path}:{line_number}:statement:{keyword}",
+                "type": "statement", "name": f"{keyword}{(' ' + remainder) if remainder else ''}",
+                "properties": {"statement": keyword, "source_file": file_path, "source_line": line_number}, "children": [],
+            }
+            (current_paragraph["children"] if current_paragraph else fragment_children).append(node)
+        if not fragment_children:
+            return []
+        return [{
+            "node_id": f"{file_path}:0:copybook_fragment", "type": "copybook_fragment",
+            "name": "Procedure Fragment", "properties": {"source_file": file_path},
+            "children": fragment_children,
+        }]
 
     @staticmethod
     def _is_comment(line: str) -> bool:

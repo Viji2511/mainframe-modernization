@@ -63,6 +63,7 @@ class RepositoryKnowledgeBuilder:
                         "parser_version": parsed.get("parser_version"),
                         "record_length_min": parsed.get("record_length_min"),
                         "record_length_max": parsed.get("record_length_max"),
+                        "copybook_fragment_hierarchy": parsed.get("copybook_fragment_hierarchy", []),
                     }
                     parser_name = "CopybookParser"
                 else:

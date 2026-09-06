@@ -4,7 +4,7 @@ import { Copy, Check, ShieldAlert, Maximize2, X, Database } from 'lucide-react';
 import { createPortal } from 'react-dom';
 import { useApi } from '../hooks/useApi';
 
-const DDLPreview = ({ jobId, artifactId, dsn, fields, dialect }) => {
+const DDLPreview = ({ jobId, artifactId, dsn, fields, dialect, compact = false }) => {
   const [copied, setCopied] = useState(false);
   const [ddlSql, setDdlSql] = useState(null);
   const [ddlMeta, setDdlMeta] = useState(null);
@@ -59,8 +59,9 @@ const DDLPreview = ({ jobId, artifactId, dsn, fields, dialect }) => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `${artifactId || dsn}_schema.sql`;
+    link.download = `${artifactId || dsn}.sql`;
     link.click();
+    URL.revokeObjectURL(url);
   };
 
   const Modal = () => {
@@ -71,14 +72,26 @@ const DDLPreview = ({ jobId, artifactId, dsn, fields, dialect }) => {
             <div>
               <h3 className="font-mono text-sm font-bold text-gray-800">Generated PostgreSQL DDL</h3>
               <div className="text-xs text-zinc-500 font-mono mt-0.5">Artifact: {artifactId || dsn}</div>
+              <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 font-mono text-[10px] font-bold uppercase">
+                {ddlMeta?.status && <span className={ddlMeta.status === 'GENERATED' ? 'text-green-600' : 'text-amber-700'}>Status: {ddlMeta.status.replaceAll('_', ' ')}</span>}
+                {ddlMeta?.validation?.validation_status && <span className="text-zinc-600">PostgreSQL validation: {ddlMeta.validation.validation_status.replaceAll('_', ' ')}</span>}
+              </div>
             </div>
             <button onClick={() => setIsModalOpen(false)} className="rounded-md p-1 hover:bg-zinc-200 transition-colors">
               <X size={18} className="text-zinc-500" />
             </button>
           </div>
           
-          <div className="flex-1 overflow-auto p-4 bg-[#0d1117] font-mono text-[13px] text-[#e6edf3] leading-relaxed whitespace-pre select-text">
-            {ddlSql}
+          <div className="flex-1 overflow-auto bg-[#0d1117]">
+            {ddlMeta?.warnings?.length > 0 && (
+              <div className="border-b border-amber-700/60 bg-amber-950/70 p-4 font-sans text-xs text-amber-100">
+                <div className="mb-1 font-mono font-bold uppercase">{ddlMeta.status === 'REVIEW_REQUIRED' ? 'Review Required' : 'Warnings'}</div>
+                <ul className="list-disc space-y-1 pl-4">{ddlMeta.warnings.map((warning, index) => <li key={index}>{warning.reason || warning.message || String(warning)}</li>)}</ul>
+              </div>
+            )}
+            <div className="p-4 font-mono text-[13px] text-[#e6edf3] leading-relaxed whitespace-pre select-text">
+              {ddlSql}
+            </div>
           </div>
           
           <div className="border-t border-zinc-200 bg-zinc-50 p-3 flex justify-end gap-2">
@@ -86,7 +99,13 @@ const DDLPreview = ({ jobId, artifactId, dsn, fields, dialect }) => {
               onClick={handleCopy}
               className="flex items-center gap-1.5 border border-gray-300 bg-white px-3 py-1.5 text-xs font-mono font-bold uppercase tracking-wider text-gray-700 hover:bg-zinc-100 rounded shadow-sm"
             >
-              {copied ? <><Check size={14} className="text-green-600"/> Copied!</> : <><Copy size={14} /> Copy SQL</>}
+              {copied ? <><Check size={14} className="text-green-600"/> Copied</> : <><Copy size={14} /> Copy SQL</>}
+            </button>
+            <button
+              onClick={handleDownload}
+              className="flex items-center gap-1.5 border border-gray-300 bg-white px-3 py-1.5 text-xs font-mono font-bold uppercase tracking-wider text-gray-700 hover:bg-zinc-100 rounded shadow-sm"
+            >
+              Download .sql
             </button>
             <button
               onClick={() => setIsModalOpen(false)}
@@ -100,6 +119,36 @@ const DDLPreview = ({ jobId, artifactId, dsn, fields, dialect }) => {
       document.body
     );
   };
+
+  if (compact && loading) {
+    return <div className="font-mono text-[11px] text-zinc-500">Loading generated SQL...</div>;
+  }
+
+  if (compact && error) {
+    return <div className="font-mono text-[11px] text-red-600">Failed to load generated SQL.</div>;
+  }
+
+  if (compact && !ddlSql) {
+    return <button disabled className="cursor-not-allowed rounded border border-zinc-200 bg-zinc-100 px-3 py-2 font-mono text-[11px] font-bold text-zinc-400">Generated SQL not available</button>;
+  }
+
+  if (compact) {
+    return (
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2">
+        <div className="font-mono text-[10px] uppercase">
+          {ddlMeta?.status && <span className={ddlMeta.status === 'GENERATED' ? 'font-bold text-green-600' : 'font-bold text-amber-700'}>Status: {ddlMeta.status.replaceAll('_', ' ')}</span>}
+          {ddlMeta?.validation?.validation_status && <span className="ml-3 text-zinc-500">PostgreSQL validation: {ddlMeta.validation.validation_status.replaceAll('_', ' ')}</span>}
+        </div>
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="rounded border border-blue-700 bg-blue-600 px-3 py-1.5 font-mono text-[11px] font-bold uppercase tracking-wide text-white shadow-sm hover:bg-blue-700"
+        >
+          View Generated SQL
+        </button>
+        {isModalOpen && <Modal />}
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -174,6 +223,7 @@ DDLPreview.propTypes = {
   dsn: PropTypes.string.isRequired,
   fields: PropTypes.array.isRequired,
   dialect: PropTypes.string.isRequired,
+  compact: PropTypes.bool,
 };
 
 export default DDLPreview;

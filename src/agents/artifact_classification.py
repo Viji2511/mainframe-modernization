@@ -75,12 +75,18 @@ class ArtifactClassificationAgent:
         if ext in ('.jcl', '.job', '.cntl') or content.startswith("//") or "EXEC PGM=" in content.upper():
             return 'jcl', 'Matched JCL extension or JCL control-statement signature'
 
+        # A .cpy/.copy member is an include by contract.  Procedure
+        # copybooks frequently mention division names in their comments, so
+        # content-first COBOL detection would otherwise misclassify them.
+        if ext in ('.cpy', '.copy'):
+            return 'copybook', 'Matched copybook extension'
+
         # COBOL Sniffing
         if ext in ('.cbl', '.cob', '.cobol') or any(m in content.upper() for m in ("IDENTIFICATION DIVISION", "PROCEDURE DIVISION", "DATA DIVISION")):
             return 'cobol', 'Matched COBOL extension or division signature'
 
         # Copybook
-        if ext in ('.cpy', '.copy', '.h'):
+        if ext == '.h':
             return 'copybook', 'Matched copybook extension'
 
         return 'other', 'No supported artifact rule matched'

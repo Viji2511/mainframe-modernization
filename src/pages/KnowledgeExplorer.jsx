@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useAppStore } from '../store/appStore';
 import { useApi } from '../hooks/useApi';
 import ArtifactKnowledgeViewer from '../components/ArtifactKnowledgeViewer';
-import AuditTrail from '../components/AuditTrail';
 import { 
   Folder, FileCode, FileText, Database, MessageSquare, List,
   ChevronRight, ChevronDown, CheckCircle, Activity, Award
@@ -226,7 +225,6 @@ const KnowledgeExplorer = () => {
           </div>
         </div>
       </div>
-      <AuditTrail jobId={currentJobId} artifactId={selectedFile} onClearArtifact={() => setSelectedFile(null)} />
     </div>
   );
 };

@@ -4,6 +4,7 @@ import { useApi } from '../hooks/useApi';
 import ArtifactDetails from './ArtifactDetails';
 import { Loader2, ChevronRight, X } from 'lucide-react';
 import StructureViewer from './StructureViewer';
+import DDLPreview from './DDLPreview';
 
 const ObjectViewer = ({ data, depth = 0 }) => {
   if (data === null || data === undefined) return <span className="text-zinc-400">null</span>;
@@ -384,6 +385,33 @@ const CardSection = ({ title, data, onOpen }) => {
   );
 };
 
+const GeneratedSqlAction = ({ jobId, artifactId, artifact, schema }) => {
+  const artifactType = String(artifact?.type || '').toUpperCase();
+  const hasCanonicalDdl = Boolean(schema?.ddl);
+  // Copybooks are the normal generated-schema source. Other artifacts only
+  // receive this action when their existing backend detail response actually
+  // contains canonical SQL.
+  if (artifactType !== 'COPYBOOK' && !hasCanonicalDdl) return null;
+
+  return (
+    <section className="mb-2 rounded-md border border-zinc-200 bg-white p-3 shadow-sm">
+      <div className="mb-2 font-mono text-[11px] font-bold text-gray-800">Generated PostgreSQL SQL</div>
+      {hasCanonicalDdl ? (
+        <DDLPreview
+          compact
+          jobId={jobId}
+          artifactId={artifactId}
+          dsn={artifact?.name || artifactId || 'artifact'}
+          fields={[]}
+          dialect="PostgreSQL"
+        />
+      ) : (
+        <button disabled className="cursor-not-allowed rounded border border-zinc-200 bg-zinc-100 px-3 py-2 font-mono text-[11px] font-bold text-zinc-400">Generated SQL not available</button>
+      )}
+    </section>
+  );
+};
+
 const ArtifactKnowledgeViewer = ({ jobId, artifactId, onSelectDependency }) => {
   const api = useApi();
   const [data, setData] = useState(null);
@@ -445,8 +473,31 @@ const ArtifactKnowledgeViewer = ({ jobId, artifactId, onSelectDependency }) => {
     );
   }
 
-  const handleOpenModal = (title, data) => {
-    setModalState({ isOpen: true, title, data });
+  const handleOpenModal = async (title, modalData) => {
+    // Structure is the one view that must always reflect the persisted,
+    // backend-derived hierarchy.  A repository can finish re-analysis while
+    // its detail card is already mounted, so refresh it at the user action
+    // boundary instead of opening a stale, previously unavailable response.
+    if (title === 'Structure' && jobId && artifactId) {
+      try {
+        const refreshed = await api.get(`/api/repository/${jobId}/artifact-details/${encodeURIComponent(artifactId)}`);
+        setData(refreshed);
+        setModalState({
+          isOpen: true,
+          title,
+          data: {
+            raw_structure: refreshed.structure,
+            structure_view: refreshed.structure_view,
+          },
+        });
+        return;
+      } catch (refreshError) {
+        // Keep the already loaded response usable if a transient refresh
+        // fails; the normal visible error state still covers later retries.
+        console.error('Failed to refresh structure before opening modal:', refreshError);
+      }
+    }
+    setModalState({ isOpen: true, title, data: modalData });
   };
 
   return (
@@ -480,6 +531,7 @@ const ArtifactKnowledgeViewer = ({ jobId, artifactId, onSelectDependency }) => {
                   data={data.detailed_schema} 
                   onOpen={(t, d) => handleOpenModal('Schema', d)} 
                 />
+                <GeneratedSqlAction jobId={jobId} artifactId={artifactId} artifact={data.artifact} schema={data.detailed_schema} />
                 <CardSection title="Metadata" data={{
                    ...data.structure.metadata,
                    parser: data.artifact.parser,
@@ -508,6 +560,13 @@ ArtifactKnowledgeViewer.propTypes = {
   jobId: PropTypes.string,
   artifactId: PropTypes.string,
   onSelectDependency: PropTypes.func,
+};
+
+GeneratedSqlAction.propTypes = {
+  jobId: PropTypes.string,
+  artifactId: PropTypes.string,
+  artifact: PropTypes.object,
+  schema: PropTypes.object,
 };
 
 export default ArtifactKnowledgeViewer;

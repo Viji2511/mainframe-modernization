@@ -30,6 +30,10 @@ def _child(node, name):
     return next(item for item in node["children"] if item["name"] == name)
 
 
+def _exec(node):
+    return next(item for item in node["children"] if item["type"] == "exec")
+
+
 def test_jcl_parser_preserves_step_ownership_and_dd_concatenation(tmp_path):
     source = tmp_path / "TESTJOB.jcl"
     content = """//TESTJOB JOB CLASS=A
@@ -46,13 +50,13 @@ def test_jcl_parser_preserves_step_ownership_and_dd_concatenation(tmp_path):
     assert not any(item.entity_name == "CONCAT" for item in evidence)
 
     job = view["nodes"][0]
-    job_dds = _child(job, "JOB-level DDs")
-    joblib = _child(job_dds, "JOBLIB")
+    joblib = _child(job, "JOBLIB")
     assert [item["name"] for item in joblib["children"]] == ["A", "B"]
     assert joblib["children"][1]["properties"]["is_concatenation"] is True
 
     step1 = _child(job, "STEP1")
-    assert _child(step1, "EXEC")["properties"]["program"] == "AAA"
+    assert _exec(step1)["name"] == "AAA EXEC"
+    assert _exec(step1)["properties"]["program"] == "AAA"
     assert [item["name"] for item in _child(step1, "STEPLIB")["children"]] == ["C", "D"]
     sysprint = _child(step1, "SYSPRINT")
     assert sysprint["properties"]["sysout"] == "*"
@@ -72,10 +76,11 @@ def test_jcl_exec_proc_symbols_and_malformed_dd_are_preserved(tmp_path):
 """
     view, evidence = _build_jcl_view(source, content)
     job = view["nodes"][0]
-    assert _child(_child(job, "JOB-level DDs"), "JOBLIB")["children"][0]["name"] == "&LBNM..CNTL(DB2FREE)"
+    assert _child(job, "JOBLIB")["children"][0]["name"] == "&LBNM..CNTL(DB2FREE)"
     step = _child(job, "PSTEP")
-    assert _child(step, "EXEC")["properties"]["kind"] == "PROC"
-    assert _child(step, "EXEC")["properties"]["program"] == "MYPROC"
+    assert _exec(step)["name"] == "MYPROC EXEC"
+    assert _exec(step)["properties"]["kind"] == "PROC"
+    assert _exec(step)["properties"]["program"] == "MYPROC"
     out = _child(step, "OUT")
     assert out["properties"]["sysout"] == "*"
     assert [item["name"] for item in out["children"]] == ["ORPHAN"]
@@ -109,7 +114,7 @@ def test_real_creadb21_and_cbadmcdj_keep_hierarchical_dds():
     assert creadb21, "Expected the current repository's CREADB21 JCL file"
     view, _evidence = _build_jcl_view(creadb21)
     job = view["nodes"][0]
-    joblib = _child(_child(job, "JOB-level DDs"), "JOBLIB")
+    joblib = _child(job, "JOBLIB")
     assert [item["name"] for item in joblib["children"]] == [
         "OEM.DB2.&DB2S..SDSNLOAD", "OEM.DB2.&DB2S..SDSNLOAD", "CEE.SCEERUN"
     ]

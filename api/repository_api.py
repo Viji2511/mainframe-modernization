@@ -639,6 +639,7 @@ def _artifact_structure_view(artifact_struct: dict, artifact: dict) -> dict:
     if artifact_type == "COPYBOOK":
         hierarchy = raw.get("hierarchy") or {}
         fields = hierarchy.get("records") or raw.get("records") or raw.get("fields") or artifact_struct.get("fields") or []
+        fragment_hierarchy = hierarchy.get("copybook_fragment_hierarchy") or (artifact_struct.get("properties") or {}).get("copybook_fragment_hierarchy") or []
 
         def copybook_node(field):
             return _structure_node("field", field.get("name", "UNKNOWN"), {
@@ -653,7 +654,13 @@ def _artifact_structure_view(artifact_struct: dict, artifact: dict) -> dict:
                 "initial_value": field.get("initial_value"),
             }, [copybook_node(child) for child in field.get("children") or []])
 
-        nodes = [copybook_node(field) for field in fields]
+        def fragment_node(item):
+            return _structure_node(
+                item.get("type") or "copybook_fragment", item.get("name") or "Source Fragment",
+                item.get("properties") or {}, [fragment_node(child) for child in item.get("children") or []],
+            )
+
+        nodes = [copybook_node(field) for field in fields] or [fragment_node(item) for item in fragment_hierarchy]
 
     elif artifact_type == "JCL":
         extra = raw.get("extra_definitions") or []
@@ -669,7 +676,7 @@ def _artifact_structure_view(artifact_struct: dict, artifact: dict) -> dict:
 
         def dataset_node(item):
             properties = {key: value for key, value in item.items() if key not in {"name", "dd_name", "concatenations", "dataset"}}
-            dataset = item.get("dataset")
+            dataset = item.get("dataset") or item.get("dataset_reference") or item.get("dsn")
             # Older persisted analysis could contain a synthetic dataset value
             # for a DD state.  A DD with SYSOUT, DUMMY, or in-stream data is
             # still a DD, but it does not have a dataset child.
@@ -687,19 +694,21 @@ def _artifact_structure_view(artifact_struct: dict, artifact: dict) -> dict:
                 dataset = dataset_node(child)
                 if dataset:
                     child_nodes.append(dataset)
-            properties = {key: value for key, value in item.items() if key not in {"name", "dd_name", "dataset", "concatenations", "is_concatenation", "position"}}
+            properties = {key: value for key, value in item.items() if key not in {"name", "dd_name", "dataset", "dataset_reference", "dsn", "concatenations", "is_concatenation", "position"}}
             return _structure_node("dd", item.get("name") or item.get("dd_name") or "UNNAMED", properties, child_nodes)
+
+        def exec_node(statement):
+            program = statement.get("program") or statement.get("value")
+            label = f"{program} EXEC" if program and str(program).upper() != "UNKNOWN" else "EXEC"
+            return _structure_node("exec", label, {key: value for key, value in statement.items() if key != "step_name"})
 
         if parsed_hierarchy:
             root_children = []
-            job_dds = [dd_node(item) for item in parsed_hierarchy.get("job_level_dds") or []]
-            if job_dds:
-                root_children.append(_structure_node("job_dd_group", "JOB-level DDs", {}, job_dds))
+            # JOBLIB/JCLLIB and other job-level DDs belong directly to JOB;
+            # a synthetic bucket would hide their real ownership.
+            root_children.extend(dd_node(item) for item in parsed_hierarchy.get("job_level_dds") or [])
             for step in parsed_hierarchy.get("steps") or []:
-                step_children = [
-                    _structure_node("exec", "EXEC", {key: value for key, value in statement.items() if key != "step_name"})
-                    for statement in step.get("exec") or []
-                ]
+                step_children = [exec_node(statement) for statement in step.get("exec") or []]
                 step_children.extend(dd_node(item) for item in step.get("dds") or [])
                 root_children.append(_structure_node("step", step.get("name") or "UNASSIGNED", {}, step_children))
         else:
@@ -710,7 +719,7 @@ def _artifact_structure_view(artifact_struct: dict, artifact: dict) -> dict:
                     continue
                 step_children = []
                 for statement in step.get("exec") or []:
-                    step_children.append(_structure_node("exec", "EXEC", {key: value for key, value in statement.items() if key != "step_name"}))
+                    step_children.append(exec_node(statement))
                 for item in step.get("dd") or []:
                     step_children.append(dd_node(item))
                 steps.append(_structure_node("step", step.get("step_name") or "UNASSIGNED", {}, step_children))
@@ -729,7 +738,7 @@ def _artifact_structure_view(artifact_struct: dict, artifact: dict) -> dict:
                         continue
                     step_name = statement.get("step_name") or "UNASSIGNED"
                     exec_properties = {key: value for key, value in statement.items() if key != "step_name"}
-                    get_step(step_name)["children"].append(_structure_node("exec", "EXEC", exec_properties))
+                    get_step(step_name)["children"].append(exec_node({"step_name": step_name, **exec_properties}))
 
                 job_dds = []
                 for item in dds:
@@ -740,7 +749,7 @@ def _artifact_structure_view(artifact_struct: dict, artifact: dict) -> dict:
                         get_step(step_name)["children"].append(dd_node(item))
                     else:
                         job_dds.append(dd_node(item))
-                root_children = steps + ([_structure_node("job_dd_group", "JOB-level DDs", {}, job_dds)] if job_dds else [])
+                root_children = job_dds + steps
             else:
                 root_children = steps
         if raw.get("symbolic_parameters") or artifact_struct.get("symbolic_parameters") or (artifact_struct.get("constraints") or {}).get("symbolic_parameters"):
@@ -751,6 +760,28 @@ def _artifact_structure_view(artifact_struct: dict, artifact: dict) -> dict:
 
     elif artifact_type in {"COBOL", "CBL"}:
         properties = artifact_struct.get("properties") or raw.get("properties") or {}
+        parsed_hierarchy = (
+            (raw.get("hierarchy") or {}).get("cobol_hierarchy")
+            or (artifact_struct.get("hierarchy") or {}).get("cobol_hierarchy")
+            or properties.get("cobol_hierarchy")
+            or ((artifact_struct.get("metadata") or {}).get("properties") or {}).get("cobol_hierarchy")
+        )
+        if parsed_hierarchy:
+            def cobol_node(item):
+                return _structure_node(
+                    item.get("type") or "node", item.get("name") or "UNKNOWN", item.get("properties") or {},
+                    [cobol_node(child) for child in item.get("children") or []],
+                )
+            nodes = [_structure_node("program", identity.get("name") or artifact.get("name") or "PROGRAM", {}, [cobol_node(item) for item in parsed_hierarchy])]
+            return {
+                "artifact_type": artifact_type,
+                "structure_type": artifact_type.lower(),
+                "source_file": source_file,
+                "nodes": nodes,
+                "metadata": metadata,
+                "available": True,
+                "message": None,
+            }
         divisions = raw.get("divisions") or properties.get("divisions") or []
         sections = raw.get("sections") or properties.get("sections") or []
         paragraphs = raw.get("procedures") or raw.get("paragraphs") or properties.get("paragraphs") or []

@@ -151,11 +151,18 @@ class FileIngestionAgent:
         if ext in ('.jcl', '.job', '.cntl') or content.startswith("//") or "EXEC PGM=" in content.upper():
             return 'jcl'
 
-        # 3. COBOL Sniffing
+        # 3. Copybooks are includes by contract, even when a procedure
+        # copybook happens to mention "PROCEDURE DIVISION" in its comments.
+        # Classifying those files as programs loses their copybook identity
+        # before the parser and Structure Viewer ever see them.
+        if ext in ('.cpy', '.copy'):
+            return 'copybook'
+
+        # 4. COBOL Sniffing
         if ext in ('.cbl', '.cob', '.cobol') or any(m in content.upper() for m in ("IDENTIFICATION DIVISION", "PROCEDURE DIVISION", "DATA DIVISION")):
             return 'cobol'
 
-        # 4. PL/I Sniffing
+        # 5. PL/I Sniffing
         if ext in ('.pli', '.pl1', '.inc', '.dcl') or "PROCEDURE OPTIONS(MAIN)" in content.upper() or "DCL " in content.upper() or "DECLARE " in content.upper():
             if ext in ('.inc', '.dcl') or not any(m in content.upper() for m in ("IDENTIFICATION DIVISION", "PROCEDURE DIVISION")):
                 # PL/I copybook vs program
@@ -163,18 +170,18 @@ class FileIngestionAgent:
                     return 'copybook'
             return 'pli'
 
-        # 5. Natural Sniffing
+        # 6. Natural Sniffing
         if ext in ('.nsl', '.nsn', '.nsp', '.nsa', '.ddm') or "DEFINE DATA" in content.upper():
             if ext == '.ddm' or "DEFINE DATA PARAMETER" in content.upper():
                 return 'copybook'
             return 'natural'
 
-        # 6. RPG Sniffing
+        # 7. RPG Sniffing
         if ext in ('.rpg', '.rpgle', '.sqlrpgle') or any(m in content.lower() for m in ("dcl-s ", "dcl-f ", "dcl-ds ", "dcl-proc ")):
             return 'rpg'
 
-        # 7. Copybook/Include files
-        if ext in ('.cpy', '.copy', '.h'):
+        # 8. Other copybook/include files
+        if ext == '.h':
             return 'copybook'
 
         return 'other'

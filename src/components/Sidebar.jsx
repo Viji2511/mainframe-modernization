@@ -4,6 +4,7 @@ import {
   Upload, 
   Database, 
   FileText, 
+  History,
   Settings, 
   ChevronLeft, 
   ChevronRight, 
@@ -24,6 +25,7 @@ const Sidebar = () => {
     { id: 'upload', name: 'Upload & Prompt', icon: Upload },
     { id: 'jobs', name: 'Pipeline Jobs', icon: Database },
     { id: 'results', name: 'Results Viewer', icon: FileText },
+    { id: 'audit', name: 'Audit Trail', icon: History },
     { id: 'settings', name: 'Settings', icon: Settings },
   ];
 

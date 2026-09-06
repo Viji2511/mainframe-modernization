@@ -5,6 +5,7 @@ import { useAppStore } from './store/appStore';
 const UploadPage = lazy(() => import('./pages/UploadPage'));
 const JobsPage = lazy(() => import('./pages/JobsPage'));
 const KnowledgeExplorer = lazy(() => import('./pages/KnowledgeExplorer'));
+const AuditTrailPage = lazy(() => import('./pages/AuditTrailPage'));
 const SettingsPage = lazy(() => import('./pages/SettingsPage'));
 
 const App = () => {
@@ -18,6 +19,8 @@ const App = () => {
         return <JobsPage />;
       case 'results':
         return <KnowledgeExplorer />;
+      case 'audit':
+        return <AuditTrailPage />;
       case 'settings':
         return <SettingsPage />;
       default:

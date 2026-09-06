@@ -129,6 +129,15 @@ def build_canonical_structure(artifact_id: str, artifact_type: str, item: Any, k
         ]
         
         structure.exec_statements = (raw.get("properties") or {}).get("operations", [])
+        # A parser-produced ownership tree is the authoritative source for
+        # program Structure Views.  Keep legacy lists above for older clients,
+        # but persist this tree verbatim through the canonical contract.
+        cobol_hierarchy = (raw.get("properties") or {}).get("cobol_hierarchy")
+        if cobol_hierarchy:
+            structure.hierarchy = {
+                "cobol_structure_version": (raw.get("properties") or {}).get("cobol_structure_version"),
+                "cobol_hierarchy": cobol_hierarchy,
+            }
         
         dependencies.copybooks.extend(raw_copybooks)
         dependencies.datasets.extend(raw_datasets)
@@ -162,6 +171,7 @@ def build_canonical_structure(artifact_id: str, artifact_type: str, item: Any, k
         structure.hierarchy = {
             "record_name": (raw.get("properties") or {}).get("record_name"),
             "records": roots,
+            "copybook_fragment_hierarchy": (raw.get("properties") or {}).get("copybook_fragment_hierarchy", []),
         }
         
         semantics.entities.append({"id": artifact_id, "type": "Copybook", "name": identity.name})

@@ -463,6 +463,7 @@ async def upload_files(
     os.makedirs(job_dir, exist_ok=True)
 
     saved_files = []
+    skipped_empty_files = 0
     
     try:
         for i, f in enumerate(files):
@@ -477,7 +478,13 @@ async def upload_files(
                         raise SecurityValidationError("Upload exceeds the allowed size.")
                     buffer.write(chunk)
             if written == 0:
-                raise SecurityValidationError("Empty uploads are not accepted.")
+                # Source repositories commonly retain otherwise-empty
+                # directories using .gitkeep (and similar zero-byte marker
+                # files). They contain no analyzable content, so ignore them
+                # without weakening the all-empty upload rejection below.
+                file_path.unlink(missing_ok=True)
+                skipped_empty_files += 1
+                continue
             
             # If it's a zip file, unpack it
             if f.filename.lower().endswith(".zip"):
@@ -490,6 +497,9 @@ async def upload_files(
                 "name": str(file_path.relative_to(Path(job_dir))).replace("\\", "/"),
                 "size": written
             })
+
+        if not saved_files:
+            raise SecurityValidationError("Upload must contain at least one non-empty file.")
             
         # Recount actual files in directory
         total_files = 0
@@ -499,7 +509,8 @@ async def upload_files(
         return {
             "job_id": job_id,
             "file_count": total_files,
-            "files": saved_files
+            "files": saved_files,
+            "skipped_empty_files": skipped_empty_files,
         }
     except SecurityValidationError as exc:
         # Clean up directory on error
